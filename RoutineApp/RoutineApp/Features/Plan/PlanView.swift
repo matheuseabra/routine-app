@@ -17,7 +17,7 @@ struct PlanView: View {
                     .frame(maxWidth: .infinity)
                     .multilineTextAlignment(.center)
                     .padding(.bottom, RoutineSpacing.sm)
-                Text("Our users report they get 3x more done using Routine.")
+                Text("See how consistent habits can compound over time.")
                     .routineSubtitleStyle()
                     .frame(maxWidth: .infinity)
                     .multilineTextAlignment(.center)
@@ -81,8 +81,8 @@ struct PlanView: View {
 
     private var legend: some View {
         HStack(spacing: RoutineSpacing.lg) {
-            legendItem(title: "Without Routine", color: RoutineColors.tertiaryText)
-            legendItem(title: "With Routine", color: RoutineColors.primaryText)
+            legendItem(title: "Without routine", color: RoutineColors.tertiaryText)
+            legendItem(title: "With routine", color: RoutineColors.primaryText)
         }
         .font(RoutineTypography.small)
     }
