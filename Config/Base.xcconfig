@@ -1,0 +1,8 @@
+// Shared, non-secret defaults. Override locally in Local.xcconfig.
+APP_DISPLAY_NAME = Routine
+APP_BUNDLE_ID = com.example.RoutineApp
+APP_TEST_BUNDLE_ID = com.example.RoutineAppTests
+APP_UI_TEST_BUNDLE_ID = com.example.RoutineAppUITests
+DEVELOPMENT_TEAM_ID =
+
+#include? "Local.xcconfig"
