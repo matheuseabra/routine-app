@@ -5,6 +5,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 project="$repo_root/RoutineApp/RoutineApp.xcodeproj"
 scheme="${IOS_SCHEME:-RoutineApp}"
 derived_data="${IOS_DERIVED_DATA:-$repo_root/.build/verify}"
+full_ui_tests="${IOS_FULL_UI_TESTS:-0}"
 
 command -v xcodebuild >/dev/null || { echo "xcodebuild is required" >&2; exit 1; }
 command -v xcrun >/dev/null || { echo "xcrun is required" >&2; exit 1; }
@@ -31,10 +32,19 @@ fi
 xcrun simctl boot "$simulator_id" 2>/dev/null || true
 xcrun simctl bootstatus "$simulator_id" -b
 
-xcodebuild \
-  -project "$project" \
-  -scheme "$scheme" \
-  -destination "platform=iOS Simulator,id=$simulator_id" \
-  -derivedDataPath "$derived_data" \
-  CODE_SIGNING_ALLOWED=NO \
-  test
+common_args=(
+  -project "$project"
+  -scheme "$scheme"
+  -destination "platform=iOS Simulator,id=$simulator_id"
+  -derivedDataPath "$derived_data"
+  CODE_SIGNING_ALLOWED=NO
+)
+
+# Compile the app, unit tests, and UI test bundle on every verification run.
+xcodebuild "${common_args[@]}" build-for-testing
+
+if [[ "$full_ui_tests" == "1" ]]; then
+  xcodebuild "${common_args[@]}" test-without-building
+else
+  xcodebuild "${common_args[@]}" test-without-building -only-testing:RoutineAppTests
+fi
