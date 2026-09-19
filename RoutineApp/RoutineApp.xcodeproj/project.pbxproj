@@ -7,10 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1B2C3D4E5F60718293A4B5C /* PhosphorSwift in Frameworks */ = {
-			isa = PBXBuildFile;
-			productRef = A1B2C3D4E5F60718293A4B5D /* PhosphorSwift */;
-		};
 		RC0000000000000000000001 /* RevenueCat in Frameworks */ = {
 			isa = PBXBuildFile;
 			productRef = RC0000000000000000000002 /* RevenueCat */;
@@ -65,7 +61,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1B2C3D4E5F60718293A4B5C /* PhosphorSwift in Frameworks */,
 				RC0000000000000000000001 /* RevenueCat in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -120,14 +115,6 @@
 /* End PBXGroup section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		A1B2C3D4E5F60718293A4B5E /* XCRemoteSwiftPackageReference "swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/phosphor-icons/swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.1.0;
-			};
-		};
 		RC0000000000000000000003 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
@@ -139,11 +126,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		A1B2C3D4E5F60718293A4B5D /* PhosphorSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A1B2C3D4E5F60718293A4B5E /* XCRemoteSwiftPackageReference "swift" */;
-			productName = PhosphorSwift;
-		};
 		RC0000000000000000000002 /* RevenueCat */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = RC0000000000000000000003 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
@@ -169,7 +151,6 @@
 			);
 			name = RoutineApp;
 			packageProductDependencies = (
-				A1B2C3D4E5F60718293A4B5D /* PhosphorSwift */,
 				RC0000000000000000000002 /* RevenueCat */,
 			);
 			productName = RoutineApp;
@@ -264,7 +245,6 @@
 			projectDirPath = "";
 			projectRoot = "";
 			packageReferences = (
-				A1B2C3D4E5F60718293A4B5E /* XCRemoteSwiftPackageReference "swift" */,
 				RC0000000000000000000003 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 			);
 			targets = (
