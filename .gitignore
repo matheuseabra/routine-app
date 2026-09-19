@@ -12,3 +12,6 @@ xcuserdata/
 
 # Swift Package Manager
 .swiftpm/
+
+# Local app configuration / signing
+Config/Local.xcconfig
