@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RoutinePricingCard: View {
-    let plan: Plan
+    let plan: SubscriptionPlan
     let isSelected: Bool
     let action: () -> Void
     @State private var hapticTrigger = 0
@@ -14,7 +14,7 @@ struct RoutinePricingCard: View {
             HStack(spacing: RoutineSpacing.sm) {
                 Text(plan.displayName)
                     .font(RoutineTypography.button)
-                Text(plan.price)
+                Text(plan.priceDescription)
                     .font(RoutineTypography.price)
                     .foregroundStyle(RoutineColors.secondaryText)
                 Spacer()
@@ -32,7 +32,7 @@ struct RoutinePricingCard: View {
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.selection, trigger: hapticTrigger)
-        .accessibilityLabel("\(plan.displayName), \(plan.price)")
+        .accessibilityLabel("\(plan.displayName), \(plan.priceDescription)")
         .accessibilityValue(isSelected ? "Selected" : "Not selected")
     }
 }
