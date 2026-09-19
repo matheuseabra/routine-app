@@ -11,13 +11,6 @@ enum RoutineScreen: String, CaseIterable, Hashable {
     case reminder
     case paywall
     case main
-
-    var next: RoutineScreen? {
-        guard let index = Self.allCases.firstIndex(of: self), index + 1 < Self.allCases.count else {
-            return nil
-        }
-        return Self.allCases[index + 1]
-    }
 }
 
 @Observable
@@ -37,13 +30,31 @@ final class AppRouter {
     }
 
     func advance() {
-        guard let nextScreen = screen.next else { return }
-        screen = nextScreen
+        switch screen {
+        case .launch: screen = .onboarding
+        case .onboarding: screen = .quiz
+        case .quiz: screen = .plan
+        case .plan: screen = .authentication
+        case .authentication: screen = .paywall2
+        case .paywall2: screen = .reminder
+        case .reminder: screen = .paywall
+        case .paywall: screen = .main
+        case .main: break
+        }
     }
 
     func goBack() {
-        guard let index = RoutineScreen.allCases.firstIndex(of: screen), index > 0 else { return }
-        screen = RoutineScreen.allCases[index - 1]
+        switch screen {
+        case .launch: break
+        case .onboarding: screen = .launch
+        case .quiz: screen = .onboarding
+        case .plan: screen = .quiz
+        case .authentication: screen = .plan
+        case .paywall2: screen = .authentication
+        case .reminder: screen = .paywall2
+        case .paywall: screen = .reminder
+        case .main: screen = .paywall
+        }
     }
 }
 
