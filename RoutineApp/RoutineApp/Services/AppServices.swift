@@ -41,7 +41,7 @@ final class AppServices {
 
     init(
         auth: any AuthProviding = MockAuthProvider(),
-        subscriptions: any SubscriptionProviding = StoreKitSubscriptionProvider(),
+        subscriptions: any SubscriptionProviding = RevenueCatSubscriptionProvider(),
         analytics: any AnalyticsTracking = NoopAnalyticsTracker()
     ) {
         self.auth = auth
