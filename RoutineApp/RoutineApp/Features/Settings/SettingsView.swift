@@ -22,8 +22,10 @@ struct SettingsView: View {
                     setting(.creditCard, "Restore purchases") {
                         Task {
                             do {
-                                try await services.subscriptions.restore()
-                                statusMessage = "Purchases restored."
+                                let restored = try await services.subscriptions.restore()
+                                statusMessage = restored
+                                    ? "Subscription restored."
+                                    : "No active subscription was found."
                             } catch {
                                 statusMessage = "Purchases could not be restored."
                             }
