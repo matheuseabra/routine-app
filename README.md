@@ -25,14 +25,41 @@ cd routine-app
 
 ./scripts/bootstrap.sh \
   --name "My App" \
-  --bundle-id com.example.myapp \
-  --revenuecat-key appl_your_public_sdk_key \
-  --revenuecat-entitlement pro
+  --bundle-id com.example.myapp
 
 ./scripts/run-app.sh
 ```
 
-The bootstrap script writes `Config/Local.xcconfig`, which is intentionally ignored by Git. The internal Xcode target remains `RoutineApp`; only the user-facing identity and bundle identifiers need to change for most starter use cases.
+The bootstrap script writes `Config/Local.xcconfig`, which is intentionally ignored by Git. A fresh clone runs without third-party credentials. The internal Xcode target remains `RoutineApp`; only the user-facing identity and bundle identifiers need to change for most starter use cases.
+
+## Optional integrations
+
+### RevenueCat
+
+Enable real subscriptions when you are ready:
+
+```bash
+./scripts/bootstrap.sh \
+  --name "My App" \
+  --bundle-id com.example.myapp \
+  --revenuecat-key appl_your_public_sdk_key \
+  --revenuecat-entitlement pro
+```
+
+Without a RevenueCat key, the starter shows demo pricing but purchase/restore calls remain disabled.
+
+### Authentication
+
+Authentication is off by default. To expose the auth step during development:
+
+```bash
+./scripts/bootstrap.sh \
+  --name "My App" \
+  --bundle-id com.example.myapp \
+  --enable-auth
+```
+
+Debug builds use the mock auth provider. Release builds intentionally use an unavailable provider until you connect a real implementation.
 
 ## Verify
 
@@ -41,6 +68,14 @@ The bootstrap script writes `Config/Local.xcconfig`, which is intentionally igno
 ```
 
 The same verification entry point is used by CI. It compiles the app plus unit/UI test targets and runs the unit suite. Run the complete UI suite locally with `IOS_FULL_UI_TESTS=1 ./scripts/verify.sh`.
+
+Before a release, run:
+
+```bash
+./scripts/preflight.sh
+```
+
+It checks for placeholder bundle IDs, missing signing/RevenueCat configuration, and example legal/support URLs.
 
 See [customization](docs/customization.md), [architecture](docs/architecture.md), and the [shipping checklist](docs/shipping-checklist.md).
 
