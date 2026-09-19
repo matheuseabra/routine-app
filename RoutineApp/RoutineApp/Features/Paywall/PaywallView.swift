@@ -3,8 +3,8 @@ import SwiftUI
 struct PaywallView: View {
     @Environment(AppServices.self) private var services
 
-    @State private var plans = RevenueCatSubscriptionProvider.demoPlans
-    @State private var selectedPlanID = RevenueCatSubscriptionProvider.demoPlans.first?.id
+    @State private var plans = StarterDemoData.subscriptionPlans
+    @State private var selectedPlanID = StarterDemoData.subscriptionPlans.first?.id
     @State private var isPurchasing = false
     @State private var errorMessage: String?
 
