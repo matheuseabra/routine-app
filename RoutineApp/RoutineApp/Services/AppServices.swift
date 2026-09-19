@@ -12,6 +12,14 @@ protocol AuthProviding {
     func signOut() async throws
 }
 
+enum AuthProviderError: LocalizedError {
+    case notConfigured
+
+    var errorDescription: String? {
+        "Authentication is enabled, but no production auth provider is configured."
+    }
+}
+
 struct MockAuthProvider: AuthProviding {
     func signInWithApple() async throws -> AuthUser {
         AuthUser(id: "preview-apple-user", displayName: "Preview User")
@@ -22,6 +30,20 @@ struct MockAuthProvider: AuthProviding {
     }
 
     func signOut() async throws {}
+}
+
+struct UnavailableAuthProvider: AuthProviding {
+    func signInWithApple() async throws -> AuthUser {
+        throw AuthProviderError.notConfigured
+    }
+
+    func signInWithGoogle() async throws -> AuthUser {
+        throw AuthProviderError.notConfigured
+    }
+
+    func signOut() async throws {
+        throw AuthProviderError.notConfigured
+    }
 }
 
 protocol AnalyticsTracking {
@@ -40,12 +62,25 @@ final class AppServices {
     let analytics: any AnalyticsTracking
 
     init(
-        auth: any AuthProviding = MockAuthProvider(),
+        auth: (any AuthProviding)? = nil,
         subscriptions: any SubscriptionProviding = RevenueCatSubscriptionProvider(),
         analytics: any AnalyticsTracking = NoopAnalyticsTracker()
     ) {
-        self.auth = auth
+        if let auth {
+            self.auth = auth
+        } else {
+            self.auth = Self.defaultAuthProvider()
+        }
+
         self.subscriptions = subscriptions
         self.analytics = analytics
+    }
+
+    private static func defaultAuthProvider() -> any AuthProviding {
+        #if DEBUG
+        MockAuthProvider()
+        #else
+        UnavailableAuthProvider()
+        #endif
     }
 }
