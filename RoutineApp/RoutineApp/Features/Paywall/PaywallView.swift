@@ -145,7 +145,11 @@ struct PaywallView: View {
                 }
             } catch {
                 isPurchasing = false
-                errorMessage = "Purchase could not be completed. Please try again."
+                if error is SubscriptionError {
+                    errorMessage = error.localizedDescription
+                } else {
+                    errorMessage = "Purchase could not be completed. Please try again."
+                }
             }
         }
     }
