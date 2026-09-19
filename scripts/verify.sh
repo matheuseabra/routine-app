@@ -7,6 +7,10 @@ scheme="${IOS_SCHEME:-RoutineApp}"
 derived_data="${IOS_DERIVED_DATA:-$repo_root/.build/verify}"
 full_ui_tests="${IOS_FULL_UI_TESTS:-0}"
 
+for script in "$repo_root"/scripts/*.sh; do
+  bash -n "$script"
+done
+
 command -v xcodebuild >/dev/null || { echo "xcodebuild is required" >&2; exit 1; }
 command -v xcrun >/dev/null || { echo "xcrun is required" >&2; exit 1; }
 
