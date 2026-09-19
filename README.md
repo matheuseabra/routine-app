@@ -8,7 +8,7 @@ A production-oriented SwiftUI starter for consumer habit, productivity, and subs
 - iOS 18 deployment target
 - onboarding + quiz flow
 - authentication UI
-- subscription/paywall flow
+- RevenueCat-backed subscription/paywall flow
 - notification permission flow
 - task/habit dashboard
 - insights and profile screens
@@ -25,7 +25,9 @@ cd routine-app
 
 ./scripts/bootstrap.sh \
   --name "My App" \
-  --bundle-id com.example.myapp
+  --bundle-id com.example.myapp \
+  --revenuecat-key appl_your_public_sdk_key \
+  --revenuecat-entitlement pro
 
 ./scripts/run-app.sh
 ```
@@ -44,7 +46,7 @@ See [customization](docs/customization.md), [architecture](docs/architecture.md)
 
 ## Philosophy
 
-This starter favors native Apple frameworks and small protocols over a large dependency graph. External authentication, analytics, persistence, or purchase providers can be swapped behind service seams without rewriting the UI.
+This starter favors native Apple frameworks and small protocols. RevenueCat is the default subscription layer so purchase state, Offerings, Entitlements, restore behavior, and receipt validation stay outside the app. Other external services remain replaceable behind small service seams.
 
 ## License
 
