@@ -38,7 +38,7 @@ The bootstrap script writes `Config/Local.xcconfig`, which is intentionally igno
 ./scripts/verify.sh
 ```
 
-The same verification entry point is used by CI.
+The same verification entry point is used by CI. It compiles the app plus unit/UI test targets and runs the unit suite. Run the complete UI suite locally with `IOS_FULL_UI_TESTS=1 ./scripts/verify.sh`.
 
 See [customization](docs/customization.md), [architecture](docs/architecture.md), and the [shipping checklist](docs/shipping-checklist.md).
 
