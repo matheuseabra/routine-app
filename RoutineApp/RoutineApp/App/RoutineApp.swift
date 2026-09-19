@@ -8,6 +8,7 @@ struct RoutineApp: App {
 
     init() {
         Self.registerFonts()
+        RevenueCatBootstrap.configureIfNeeded()
     }
 
     var body: some Scene {
