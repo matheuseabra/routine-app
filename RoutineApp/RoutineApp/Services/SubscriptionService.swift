@@ -16,7 +16,7 @@ struct SubscriptionPlan: Identifiable, Equatable {
 protocol SubscriptionProviding {
     func plans() async throws -> [SubscriptionPlan]
     func purchase(planID: String) async throws -> Bool
-    func restore() async throws
+    func restore() async throws -> Bool
     func hasActiveEntitlement() async -> Bool
 }
 
@@ -88,10 +88,10 @@ struct RevenueCatSubscriptionProvider: SubscriptionProviding {
         }
     }
 
-    func restore() async throws {
+    func restore() async throws -> Bool {
         try requireConfiguration()
 
-        let _: CustomerInfo = try await withCheckedThrowingContinuation { continuation in
+        let customerInfo: CustomerInfo = try await withCheckedThrowingContinuation { continuation in
             Purchases.shared.restorePurchases { customerInfo, error in
                 if let error {
                     continuation.resume(throwing: error)
@@ -102,6 +102,10 @@ struct RevenueCatSubscriptionProvider: SubscriptionProviding {
                 }
             }
         }
+
+        return customerInfo.entitlements
+            .all[AppConfig.revenueCatEntitlementID]?
+            .isActive == true
     }
 
     func hasActiveEntitlement() async -> Bool {
