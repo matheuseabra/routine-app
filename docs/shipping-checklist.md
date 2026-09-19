@@ -1,5 +1,9 @@
 # Shipping checklist
 
+## Preflight
+
+- [ ] Run `./scripts/preflight.sh`
+
 ## Identity and signing
 
 - [ ] Run `scripts/bootstrap.sh`
@@ -16,14 +20,14 @@
 - [ ] Verify the configured RevenueCat entitlement ID
 - [ ] Upload the App Store In-App Purchase Key to RevenueCat
 - [ ] Verify restore purchases
-- [ ] Connect the desired authentication provider
+- [ ] If authentication is enabled, replace the Debug mock / Release unavailable provider with the desired production provider
 - [ ] Implement account deletion for the selected backend
 - [ ] Review notification copy and permission timing
 
 ## Quality
 
 - [ ] Run `./scripts/verify.sh`
-- [ ] Test first launch and returning-user launch
+- [ ] Test first launch, returning-user paywall routing, and active-subscriber direct launch
 - [ ] Test empty/loading/error states
 - [ ] Test purchase cancellation and failed purchase
 - [ ] Test VoiceOver labels and Dynamic Type
