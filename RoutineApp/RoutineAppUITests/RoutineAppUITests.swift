@@ -116,14 +116,14 @@ final class RoutineAppUITests: XCTestCase {
     }
 
     @MainActor
-    func testPlanSwipeAdvancesToAuthentication() throws {
+    func testPlanSwipeSkipsOptionalAuthenticationByDefault() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-screen", "plan"]
         app.launch()
 
         XCTAssertTrue(app.staticTexts["A clearer path\nto your goals."].waitForExistence(timeout: 3))
         app.swipeLeft()
-        XCTAssertTrue(app.staticTexts["Save your progress."].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.staticTexts["Your trial timeline."].waitForExistence(timeout: 2))
     }
 
     @MainActor
