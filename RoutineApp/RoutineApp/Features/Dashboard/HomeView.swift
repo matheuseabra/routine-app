@@ -2,8 +2,8 @@ import SwiftUI
 
 struct HomeView: View {
     @Binding var selectedTab: AppTab
-    @Binding var tasks: [RoutineTask]
-    @State private var removingTaskIDs: Set<UUID> = []
+    let tasks: [RoutineTask]
+    let onToggleTask: (RoutineTask) -> Void
     @State private var insightsHapticTrigger = 0
 
     var body: some View {
@@ -14,7 +14,7 @@ struct HomeView: View {
                     .padding(.bottom, RoutineSpacing.xl)
                 RoutineSectionHeader(title: "TODAY'S PLAN")
                     .padding(.bottom, RoutineSpacing.sm)
-                if visibleTasks.isEmpty {
+                if tasks.isEmpty {
                     emptyState
                 } else {
                     taskList
@@ -51,8 +51,7 @@ struct HomeView: View {
     private var emptyState: some View {
         VStack(spacing: RoutineSpacing.md) {
             ZStack {
-                Circle()
-                    .fill(RoutineColors.track)
+                Circle().fill(RoutineColors.track)
                 RoutineIcon(.clipboardText, color: RoutineColors.secondaryText)
                     .frame(width: 30, height: 30)
             }
@@ -63,7 +62,6 @@ struct HomeView: View {
             Text("Add a task to start building your routine.")
                 .routineSubtitleStyle()
                 .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, RoutineSpacing.xxl)
@@ -74,15 +72,13 @@ struct HomeView: View {
 
     private var taskList: some View {
         VStack(spacing: 0) {
-            ForEach(Array(visibleTasks.enumerated()), id: \.element.id) { index, task in
+            ForEach(Array(tasks.enumerated()), id: \.element.id) { index, task in
                 RoutineTaskRow(task: task) {
-                    toggleTask(task)
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        onToggleTask(task)
+                    }
                 }
-                .transition(.asymmetric(
-                    insertion: .opacity,
-                    removal: .opacity.combined(with: .move(edge: .leading))
-                ))
-                if index < visibleTasks.count - 1 {
+                if index < tasks.count - 1 {
                     Divider().overlay(RoutineColors.border)
                 }
             }
@@ -90,35 +86,13 @@ struct HomeView: View {
         .padding(.horizontal, RoutineSpacing.md)
         .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
     }
-
-    private var visibleTasks: [RoutineTask] {
-        tasks.filter { !removingTaskIDs.contains($0.id) }
-    }
-
-    private func toggleTask(_ task: RoutineTask) {
-        guard let taskIndex = tasks.firstIndex(where: { $0.id == task.id }) else { return }
-        if task.isCompleted {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                tasks[taskIndex].isCompleted = false
-            }
-            return
-        }
-
-        _ = withAnimation(.easeOut(duration: 0.24)) {
-            removingTaskIDs.insert(task.id)
-        }
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(240))
-            withAnimation(.easeInOut(duration: 0.2)) {
-                tasks.removeAll { $0.id == task.id }
-                removingTaskIDs.remove(task.id)
-            }
-        }
-    }
 }
 
 #Preview("Home") {
     @Previewable @State var tab: AppTab = .home
-    @Previewable @State var tasks: [RoutineTask] = []
-    HomeView(selectedTab: $tab, tasks: $tasks)
+    HomeView(
+        selectedTab: $tab,
+        tasks: [RoutineTask(title: "Morning walk")],
+        onToggleTask: { _ in }
+    )
 }

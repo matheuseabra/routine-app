@@ -1,0 +1,14 @@
+// Shared, non-secret defaults. Override locally in Local.xcconfig.
+APP_DISPLAY_NAME = Routine
+APP_BUNDLE_ID = com.example.RoutineApp
+APP_TEST_BUNDLE_ID = com.example.RoutineAppTests
+APP_UI_TEST_BUNDLE_ID = com.example.RoutineAppUITests
+DEVELOPMENT_TEAM_ID =
+
+REVENUECAT_API_KEY =
+REVENUECAT_ENTITLEMENT_ID = pro
+
+#include? "Local.xcconfig"
+
+INFOPLIST_KEY_REVENUECAT_API_KEY = $(REVENUECAT_API_KEY)
+INFOPLIST_KEY_REVENUECAT_ENTITLEMENT_ID = $(REVENUECAT_ENTITLEMENT_ID)

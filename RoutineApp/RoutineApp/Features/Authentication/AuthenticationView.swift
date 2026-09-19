@@ -1,6 +1,10 @@
 import SwiftUI
 
 struct AuthenticationView: View {
+    @Environment(AppServices.self) private var services
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+
     let onContinue: () -> Void
 
     var body: some View {
@@ -23,21 +27,69 @@ struct AuthenticationView: View {
                         .padding(.bottom, RoutineSpacing.xl)
                     VStack(spacing: RoutineSpacing.sm) {
                         RoutineSecondaryButton(
-                            title: "Continue with Apple",
+                            title: isLoading ? "Signing in..." : "Continue with Apple",
                             assetImage: "apple",
-                            style: .filled,
-                            action: onContinue
-                        )
-                        RoutineSecondaryButton(title: "Continue with Google", assetImage: "google", action: onContinue)
+                            style: .filled
+                        ) {
+                            signIn(using: .apple)
+                        }
+                        .disabled(isLoading)
+
+                        RoutineSecondaryButton(
+                            title: "Continue with Google",
+                            assetImage: "google"
+                        ) {
+                            signIn(using: .google)
+                        }
+                        .disabled(isLoading)
+                    }
+
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .font(RoutineTypography.smallRegular)
+                            .foregroundStyle(RoutineColors.secondaryText)
+                            .multilineTextAlignment(.center)
+                            .padding(.top, RoutineSpacing.md)
                     }
                 }
                 Spacer()
             }
         } bottom: {
             footer
-        .font(RoutineTypography.smallRegular)
+                .font(RoutineTypography.smallRegular)
                 .multilineTextAlignment(.center)
                 .lineSpacing(3)
+        }
+    }
+
+    private enum Provider {
+        case apple
+        case google
+    }
+
+    private func signIn(using provider: Provider) {
+        guard !isLoading else { return }
+        isLoading = true
+        errorMessage = nil
+
+        Task {
+            do {
+                switch provider {
+                case .apple:
+                    _ = try await services.auth.signInWithApple()
+                case .google:
+                    _ = try await services.auth.signInWithGoogle()
+                }
+
+                services.analytics.track("authentication_succeeded", properties: [
+                    "provider": provider == .apple ? "apple" : "google"
+                ])
+                isLoading = false
+                onContinue()
+            } catch {
+                isLoading = false
+                errorMessage = "Sign in could not be completed. Please try again."
+            }
         }
     }
 
@@ -52,4 +104,5 @@ struct AuthenticationView: View {
 
 #Preview("Auth") {
     AuthenticationView {}
+        .environment(AppServices())
 }

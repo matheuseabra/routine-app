@@ -6,7 +6,7 @@ project_path="$repo_root/RoutineApp/RoutineApp.xcodeproj"
 scheme="${IOS_SCHEME:-RoutineApp}"
 configuration="${IOS_CONFIGURATION:-Debug}"
 derived_data="${IOS_DERIVED_DATA:-$repo_root/.build/ios}"
-bundle_id="${IOS_BUNDLE_ID:-com.matheuseabra.RoutineApp}"
+bundle_id="${IOS_BUNDLE_ID:-}"
 physical=0
 
 usage() {
@@ -32,7 +32,7 @@ Build overrides:
   IOS_DERIVED_DATA            DerivedData directory (default: ./.build/ios).
   IOS_CONFIGURATION           Build configuration (default: Debug).
   IOS_SCHEME                  Xcode scheme (default: RoutineApp).
-  IOS_BUNDLE_ID               Bundle identifier (default: com.matheuseabra.RoutineApp).
+  IOS_BUNDLE_ID               Optional bundle identifier override. Defaults to Config/Local.xcconfig or Config/Base.xcconfig.
   IOS_ALLOW_PROVISIONING_UPDATES=1  Allow Xcode to update signing profiles for a physical build.
 
 Examples:
@@ -73,6 +73,13 @@ require_command xcodebuild
 require_command xcrun
 mkdir -p "$derived_data"
 
+if [[ -z "$bundle_id" ]]; then
+  config_file="$repo_root/Config/Local.xcconfig"
+  [[ -f "$config_file" ]] || config_file="$repo_root/Config/Base.xcconfig"
+  bundle_id="$(awk -F= '/^[[:space:]]*APP_BUNDLE_ID[[:space:]]*=/ { value=$2; gsub(/^[[:space:]]+|[[:space:]]+$/, "", value); print value; exit }' "$config_file")"
+fi
+[[ -n "$bundle_id" ]] || fail "Could not resolve APP_BUNDLE_ID. Set IOS_BUNDLE_ID or configure Config/Local.xcconfig."
+
 if [[ "$physical" -eq 1 ]]; then
   device_id="${IOS_DEVICE_ID:-${DEVICE_ID:-}}"
   if [[ -z "$device_id" ]]; then
@@ -92,9 +99,11 @@ if [[ "$physical" -eq 1 ]]; then
     -configuration "$configuration"
     -destination "$destination"
     -derivedDataPath "$derived_data"
-    DEVELOPMENT_TEAM="${IOS_TEAM_ID:-F6XDWDLG6B}"
     CODE_SIGN_STYLE=Automatic
   )
+  if [[ -n "${IOS_TEAM_ID:-}" ]]; then
+    build_args+=(DEVELOPMENT_TEAM="$IOS_TEAM_ID")
+  fi
   if [[ "${IOS_ALLOW_PROVISIONING_UPDATES:-0}" == "1" ]]; then
     build_args+=(-allowProvisioningUpdates)
   fi

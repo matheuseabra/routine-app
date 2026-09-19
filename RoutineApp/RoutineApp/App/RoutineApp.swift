@@ -1,17 +1,23 @@
 import CoreText
+import SwiftData
 import SwiftUI
 
 @main
 struct RoutineApp: App {
+    @State private var services = AppServices()
+
     init() {
         Self.registerFonts()
+        RevenueCatBootstrap.configureIfNeeded()
     }
 
     var body: some Scene {
         WindowGroup {
             RoutineRootView()
+                .environment(services)
                 .environment(\.font, RoutineTypography.body)
         }
+        .modelContainer(for: [RoutineTask.self, RoutineHabit.self, RoutineCheckIn.self])
     }
 
     private static func registerFonts() {
