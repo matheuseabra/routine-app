@@ -62,7 +62,15 @@ struct PaywallView: View {
 
                 Button("Restore purchases") {
                     Task {
-                        try? await services.subscriptions.restore()
+                        do {
+                            if try await services.subscriptions.restore() {
+                                onContinue()
+                            } else {
+                                errorMessage = "No active subscription was found to restore."
+                            }
+                        } catch {
+                            errorMessage = error.localizedDescription
+                        }
                     }
                 }
                 .font(RoutineTypography.small)
