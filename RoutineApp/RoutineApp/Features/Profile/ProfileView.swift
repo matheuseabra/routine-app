@@ -2,12 +2,14 @@ import SwiftUI
 
 struct ProfileView: View {
     let tasks: [RoutineTask]
+    let checkIns: [RoutineCheckIn]
 
     @State private var isSettingsPresented = false
     @State private var settingsHapticTrigger = 0
 
-    init(tasks: [RoutineTask] = []) {
+    init(tasks: [RoutineTask] = [], checkIns: [RoutineCheckIn] = []) {
         self.tasks = tasks
+        self.checkIns = checkIns
     }
 
     var body: some View {
@@ -36,6 +38,10 @@ struct ProfileView: View {
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
         }
+    }
+
+    private var summary: InsightSummary {
+        InsightSummary.make(checkIns: checkIns)
     }
 
     private var header: some View {
@@ -75,7 +81,7 @@ struct ProfileView: View {
                     HStack(alignment: .top, spacing: RoutineSpacing.lg) {
                         profileDetail(label: "NAME", value: "Your name")
                         Spacer(minLength: 0)
-                        profileDetail(label: "JOINED", value: "Not set", alignment: .trailing)
+                        profileDetail(label: "JOINED", value: "Local", alignment: .trailing)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -87,8 +93,8 @@ struct ProfileView: View {
 
             HStack(spacing: 0) {
                 profileStat(value: "\(tasks.count)", label: "TASKS")
-                profileStat(value: "\(completedTaskCount)", label: "CHECK-INS")
-                profileStat(value: "0", label: "DAY STREAK")
+                profileStat(value: "\(checkIns.count)", label: "CHECK-INS")
+                profileStat(value: "\(summary.currentStreak)", label: "DAY STREAK")
             }
         }
         .padding(RoutineSpacing.lg)
@@ -101,8 +107,6 @@ struct ProfileView: View {
         VStack(alignment: .leading, spacing: RoutineSpacing.lg) {
             Text("Routines are the habits that work for you.")
                 .font(RoutineTypography.body)
-                .fixedSize(horizontal: false, vertical: true)
-
             HStack(spacing: RoutineSpacing.md) {
                 ForEach(0..<3, id: \.self) { _ in
                     Circle()
@@ -112,23 +116,36 @@ struct ProfileView: View {
                             RoutineIcon(.question, weight: .regular, color: RoutineColors.secondaryText)
                                 .frame(width: 30, height: 30)
                         }
-                        .accessibilityHidden(true)
                 }
             }
         }
         .padding(RoutineSpacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Routines are the habits that work for you. No routines yet.")
     }
 
     private var recentHistoryCard: some View {
-        Text("No entries yet")
-            .font(RoutineTypography.compactTitle)
-            .frame(maxWidth: .infinity, minHeight: 88)
-            .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
-            .accessibilityLabel("Recent history. No entries yet.")
+        Group {
+            if checkIns.isEmpty {
+                Text("No entries yet")
+                    .font(RoutineTypography.compactTitle)
+                    .frame(maxWidth: .infinity, minHeight: 88)
+            } else {
+                VStack(spacing: RoutineSpacing.sm) {
+                    ForEach(checkIns.prefix(4)) { checkIn in
+                        HStack {
+                            RoutineIcon(.check, color: RoutineColors.secondaryText)
+                                .frame(width: 18, height: 18)
+                            Text(checkIn.completedAt, format: .dateTime.month().day().hour().minute())
+                                .font(RoutineTypography.secondary)
+                            Spacer()
+                        }
+                    }
+                }
+                .padding(RoutineSpacing.md)
+            }
+        }
+        .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
     }
 
     private func profileDetail(
@@ -160,10 +177,6 @@ struct ProfileView: View {
                 .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity)
-    }
-
-    private var completedTaskCount: Int {
-        tasks.filter(\.isCompleted).count
     }
 }
 
