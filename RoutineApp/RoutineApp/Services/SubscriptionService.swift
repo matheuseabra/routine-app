@@ -23,7 +23,7 @@ protocol SubscriptionProviding {
 struct StoreKitSubscriptionProvider: SubscriptionProviding {
     private let productIDs: [String]
 
-    init(productIDs: [String] = ["routine.weekly", "routine.yearly"]) {
+    init(productIDs: [String] = AppConfig.StoreKit.productIDs) {
         self.productIDs = productIDs
     }
 
