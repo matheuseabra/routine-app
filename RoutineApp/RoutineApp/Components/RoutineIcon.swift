@@ -1,5 +1,4 @@
 import SwiftUI
-import PhosphorSwift
 
 enum RoutineIconName: Hashable {
     case arrowLeft
@@ -36,41 +35,41 @@ enum RoutineIconName: Hashable {
     case listChecks
     case personSimpleRun
 
-    var phosphor: Ph {
+    var systemName: String {
         switch self {
-        case .arrowLeft: .arrowLeft
-        case .arrowsClockwise: .arrowsClockwise
-        case .bell: .bell
-        case .brain: .brain
-        case .calendarCheck: .calendarCheck
-        case .chartBar: .chartBar
-        case .chartLineUp: .chartLineUp
-        case .check: .check
-        case .clock: .clock
-        case .creditCard: .creditCard
-        case .crown: .crown
-        case .fileText: .fileText
-        case .house: .house
-        case .magnifyingGlass: .magnifyingGlass
-        case .moon: .moon
-        case .moonStars: .moonStars
-        case .user: .user
-        case .plus: .plus
-        case .question: .question
-        case .shieldCheck: .shieldCheck
-        case .sliders: .sliders
-        case .star: .star
-        case .sun: .sun
-        case .sunHorizon: .sunHorizon
-        case .target: .target
-        case .trash: .trash
-        case .caretRight: .caretRight
-        case .x: .x
-        case .clipboardText: .clipboardText
-        case .cloudCheck: .cloudCheck
-        case .gear: .gear
-        case .listChecks: .listChecks
-        case .personSimpleRun: .personSimpleRun
+        case .arrowLeft: "arrow.left"
+        case .arrowsClockwise: "arrow.clockwise"
+        case .bell: "bell"
+        case .brain: "brain"
+        case .calendarCheck: "calendar.badge.checkmark"
+        case .chartBar: "chart.bar"
+        case .chartLineUp: "chart.line.uptrend.xyaxis"
+        case .check: "checkmark"
+        case .clock: "clock"
+        case .creditCard: "creditcard"
+        case .crown: "crown"
+        case .fileText: "doc.text"
+        case .house: "house"
+        case .magnifyingGlass: "magnifyingglass"
+        case .moon: "moon"
+        case .moonStars: "moon.stars"
+        case .user: "person"
+        case .plus: "plus"
+        case .question: "questionmark"
+        case .shieldCheck: "checkmark.shield"
+        case .sliders: "slider.horizontal.3"
+        case .star: "star"
+        case .sun: "sun.max"
+        case .sunHorizon: "sun.horizon"
+        case .target: "target"
+        case .trash: "trash"
+        case .caretRight: "chevron.right"
+        case .x: "xmark"
+        case .clipboardText: "list.clipboard"
+        case .cloudCheck: "checkmark.icloud"
+        case .gear: "gearshape"
+        case .listChecks: "checklist"
+        case .personSimpleRun: "figure.run"
         }
     }
 }
@@ -83,14 +82,12 @@ enum RoutineIconWeight {
     case fill
     case duotone
 
-    var phosphor: Ph.IconWeight {
+    var fontWeight: Font.Weight {
         switch self {
-        case .regular: .regular
         case .thin: .thin
         case .light: .light
         case .bold: .bold
-        case .fill: .fill
-        case .duotone: .duotone
+        case .regular, .fill, .duotone: .regular
         }
     }
 }
@@ -100,16 +97,34 @@ struct RoutineIcon: View {
     var weight: RoutineIconWeight = .regular
     var color: Color = RoutineColors.primaryText
 
-    init(_ name: RoutineIconName, weight: RoutineIconWeight = .regular, color: Color = RoutineColors.primaryText) {
+    init(
+        _ name: RoutineIconName,
+        weight: RoutineIconWeight = .regular,
+        color: Color = RoutineColors.primaryText
+    ) {
         self.name = name
         self.weight = weight
         self.color = color
     }
 
+    @ViewBuilder
     var body: some View {
-        name.phosphor
-            .weight(weight.phosphor)
-            .color(color)
+        switch weight {
+        case .fill:
+            symbol
+                .symbolVariant(.fill)
+        case .duotone:
+            symbol
+                .symbolRenderingMode(.hierarchical)
+        default:
+            symbol
+        }
+    }
+
+    private var symbol: some View {
+        Image(systemName: name.systemName)
+            .fontWeight(weight.fontWeight)
+            .foregroundStyle(color)
             .aspectRatio(contentMode: .fit)
     }
 }
