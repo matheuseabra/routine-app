@@ -38,7 +38,7 @@ struct OnboardingView: View {
                     VStack(spacing: slideIndex == 0 ? RoutineSpacing.sm : 0) {
                         RoutineOnboardingIcon(kind: slides[slideIndex].icon)
                         if slideIndex == 0 {
-                        Text("Routine")
+                        Text(AppConfig.displayName)
                                 .font(RoutineTypography.compactTitle)
                                 .foregroundStyle(RoutineColors.primaryText)
                         }
