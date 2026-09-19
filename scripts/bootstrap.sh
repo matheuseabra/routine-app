@@ -4,13 +4,15 @@ set -euo pipefail
 name=""
 bundle_id=""
 team_id=""
+revenuecat_key=""
+revenuecat_entitlement="pro"
 
 usage() {
   cat <<'EOF'
 Configure a local Routine starter clone.
 
 Usage:
-  ./scripts/bootstrap.sh --name "My App" --bundle-id com.example.myapp [--team-id TEAMID]
+  ./scripts/bootstrap.sh --name "My App" --bundle-id com.example.myapp [--team-id TEAMID] [--revenuecat-key KEY] [--revenuecat-entitlement pro]
 
 Writes Config/Local.xcconfig. This file is ignored by Git.
 EOF
@@ -21,6 +23,8 @@ while [[ $# -gt 0 ]]; do
     --name) name="${2:-}"; shift 2 ;;
     --bundle-id) bundle_id="${2:-}"; shift 2 ;;
     --team-id) team_id="${2:-}"; shift 2 ;;
+    --revenuecat-key) revenuecat_key="${2:-}"; shift 2 ;;
+    --revenuecat-entitlement) revenuecat_entitlement="${2:-}"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown argument: $1" >&2; usage; exit 1 ;;
   esac
@@ -39,6 +43,8 @@ APP_BUNDLE_ID = $bundle_id
 APP_TEST_BUNDLE_ID = $bundle_id.tests
 APP_UI_TEST_BUNDLE_ID = $bundle_id.uitests
 DEVELOPMENT_TEAM_ID = $team_id
+REVENUECAT_API_KEY = $revenuecat_key
+REVENUECAT_ENTITLEMENT_ID = $revenuecat_entitlement
 EOF
 
 echo "Wrote Config/Local.xcconfig"
