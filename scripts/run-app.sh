@@ -6,7 +6,7 @@ project_path="$repo_root/RoutineApp/RoutineApp.xcodeproj"
 scheme="${IOS_SCHEME:-RoutineApp}"
 configuration="${IOS_CONFIGURATION:-Debug}"
 derived_data="${IOS_DERIVED_DATA:-$repo_root/.build/ios}"
-bundle_id="${IOS_BUNDLE_ID:-com.matheuseabra.RoutineApp}"
+bundle_id="${IOS_BUNDLE_ID:-com.example.RoutineApp}"
 physical=0
 
 usage() {
@@ -92,9 +92,11 @@ if [[ "$physical" -eq 1 ]]; then
     -configuration "$configuration"
     -destination "$destination"
     -derivedDataPath "$derived_data"
-    DEVELOPMENT_TEAM="${IOS_TEAM_ID:-F6XDWDLG6B}"
     CODE_SIGN_STYLE=Automatic
   )
+  if [[ -n "${IOS_TEAM_ID:-}" ]]; then
+    build_args+=(DEVELOPMENT_TEAM="$IOS_TEAM_ID")
+  fi
   if [[ "${IOS_ALLOW_PROVISIONING_UPDATES:-0}" == "1" ]]; then
     build_args+=(-allowProvisioningUpdates)
   fi
