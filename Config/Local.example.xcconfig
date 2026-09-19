@@ -1,0 +1,6 @@
+// Copy to Local.xcconfig or run scripts/bootstrap.sh.
+APP_DISPLAY_NAME = My App
+APP_BUNDLE_ID = com.example.myapp
+APP_TEST_BUNDLE_ID = com.example.myapp.tests
+APP_UI_TEST_BUNDLE_ID = com.example.myapp.uitests
+DEVELOPMENT_TEAM_ID = YOUR_TEAM_ID
