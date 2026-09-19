@@ -11,7 +11,10 @@
 
 - [ ] Replace placeholder marketing copy
 - [ ] Replace example Terms / Privacy / Support URLs
-- [ ] Configure real StoreKit product IDs
+- [ ] Add the RevenueCat public Apple SDK key
+- [ ] Configure RevenueCat products and current Offering
+- [ ] Verify the configured RevenueCat entitlement ID
+- [ ] Upload the App Store In-App Purchase Key to RevenueCat
 - [ ] Verify restore purchases
 - [ ] Connect the desired authentication provider
 - [ ] Implement account deletion for the selected backend
