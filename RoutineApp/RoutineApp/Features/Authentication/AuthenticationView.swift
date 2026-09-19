@@ -88,7 +88,11 @@ struct AuthenticationView: View {
                 onContinue()
             } catch {
                 isLoading = false
-                errorMessage = "Sign in could not be completed. Please try again."
+                if error is AuthProviderError {
+                    errorMessage = error.localizedDescription
+                } else {
+                    errorMessage = "Sign in could not be completed. Please try again."
+                }
             }
         }
     }

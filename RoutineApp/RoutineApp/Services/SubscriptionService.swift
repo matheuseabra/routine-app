@@ -52,7 +52,7 @@ enum RevenueCatBootstrap {
 struct RevenueCatSubscriptionProvider: SubscriptionProviding {
     func plans() async throws -> [SubscriptionPlan] {
         guard AppConfig.revenueCatAPIKey != nil else {
-            return Self.demoPlans
+            return StarterDemoData.subscriptionPlans
         }
 
         let offering = try await currentOffering()
@@ -120,11 +120,6 @@ struct RevenueCatSubscriptionProvider: SubscriptionProviding {
             }
         }
     }
-
-    static let demoPlans = [
-        SubscriptionPlan(id: "$rc_weekly", displayName: "Weekly", displayPrice: "$9.99", period: "week", hasTrial: true),
-        SubscriptionPlan(id: "$rc_annual", displayName: "Yearly", displayPrice: "$59.99", period: "year", hasTrial: true)
-    ]
 
     private func currentOffering() async throws -> Offering {
         try requireConfiguration()
