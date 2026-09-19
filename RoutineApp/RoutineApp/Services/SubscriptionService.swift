@@ -91,7 +91,7 @@ struct RevenueCatSubscriptionProvider: SubscriptionProviding {
     func restore() async throws {
         try requireConfiguration()
 
-        _ = try await withCheckedThrowingContinuation { continuation in
+        let _: CustomerInfo = try await withCheckedThrowingContinuation { continuation in
             Purchases.shared.restorePurchases { customerInfo, error in
                 if let error {
                     continuation.resume(throwing: error)
@@ -101,7 +101,7 @@ struct RevenueCatSubscriptionProvider: SubscriptionProviding {
                     continuation.resume(throwing: SubscriptionError.revenueCatNotConfigured)
                 }
             }
-        } as CustomerInfo
+        }
     }
 
     func hasActiveEntitlement() async -> Bool {
