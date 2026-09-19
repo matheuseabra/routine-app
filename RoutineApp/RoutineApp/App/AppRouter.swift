@@ -19,22 +19,29 @@ final class AppRouter {
     var name = ""
     var quizAnswers = Array<String?>(repeating: nil, count: 5)
 
-    init(arguments: [String] = ProcessInfo.processInfo.arguments) {
+    let usesScreenOverride: Bool
+
+    init(
+        arguments: [String] = ProcessInfo.processInfo.arguments,
+        hasCompletedOnboarding: Bool = false
+    ) {
         if let screenIndex = arguments.firstIndex(of: "-screen"),
            arguments.indices.contains(screenIndex + 1),
            let requestedScreen = RoutineScreen(rawValue: arguments[screenIndex + 1]) {
             screen = requestedScreen
+            usesScreenOverride = true
         } else {
-            screen = .launch
+            screen = hasCompletedOnboarding ? .paywall : .launch
+            usesScreenOverride = false
         }
     }
 
-    func advance() {
+    func advance(authEnabled: Bool = AppConfig.authenticationEnabled) {
         switch screen {
         case .launch: screen = .onboarding
         case .onboarding: screen = .quiz
         case .quiz: screen = .plan
-        case .plan: screen = .authentication
+        case .plan: screen = authEnabled ? .authentication : .paywall2
         case .authentication: screen = .paywall2
         case .paywall2: screen = .reminder
         case .reminder: screen = .paywall
@@ -43,25 +50,42 @@ final class AppRouter {
         }
     }
 
-    func goBack() {
+    func goBack(authEnabled: Bool = AppConfig.authenticationEnabled) {
         switch screen {
         case .launch: break
         case .onboarding: screen = .launch
         case .quiz: screen = .onboarding
         case .plan: screen = .quiz
         case .authentication: screen = .plan
-        case .paywall2: screen = .authentication
+        case .paywall2: screen = authEnabled ? .authentication : .plan
         case .reminder: screen = .paywall2
         case .paywall: screen = .reminder
         case .main: screen = .paywall
         }
     }
+
+    func resolveReturningSession(hasActiveEntitlement: Bool) {
+        guard !usesScreenOverride else { return }
+        screen = hasActiveEntitlement ? .main : .paywall
+    }
 }
 
 struct RoutineRootView: View {
-    @State private var router = AppRouter()
+    @Environment(AppServices.self) private var services
+
+    @State private var appState: AppState
+    @State private var router: AppRouter
     @State private var swipeHaptic = 0
     @State private var transitionDirection: Edge = .trailing
+
+    init(arguments: [String] = ProcessInfo.processInfo.arguments) {
+        let appState = AppState()
+        _appState = State(initialValue: appState)
+        _router = State(initialValue: AppRouter(
+            arguments: arguments,
+            hasCompletedOnboarding: appState.hasCompletedOnboarding
+        ))
+    }
 
     var body: some View {
         @Bindable var router = router
@@ -75,7 +99,12 @@ struct RoutineRootView: View {
                     case .onboarding:
                         OnboardingView(onContinue: advanceScreen)
                     case .quiz:
-                        QuizView(name: $router.name, answers: $router.quizAnswers, onBack: goBackScreen, onContinue: advanceScreen)
+                        QuizView(
+                            name: $router.name,
+                            answers: $router.quizAnswers,
+                            onBack: goBackScreen,
+                            onContinue: advanceScreen
+                        )
                     case .plan:
                         PlanView(onContinue: advanceScreen)
                     case .authentication:
@@ -103,6 +132,9 @@ struct RoutineRootView: View {
         .contentShape(Rectangle())
         .highPriorityGesture(rootSwipeGesture)
         .sensoryFeedback(.impact(weight: .light), trigger: swipeHaptic)
+        .task {
+            await resolveReturningSession()
+        }
     }
 
     private var rootSwipeGesture: some Gesture {
@@ -124,14 +156,28 @@ struct RoutineRootView: View {
     private func advanceScreen() {
         withAnimation(.easeInOut(duration: 0.2)) {
             transitionDirection = .trailing
-            router.advance()
+            let previousScreen = router.screen
+            router.advance(authEnabled: AppConfig.authenticationEnabled)
+
+            if previousScreen == .paywall, router.screen == .main {
+                appState.completeOnboarding()
+            }
         }
     }
 
     private func goBackScreen() {
         withAnimation(.easeInOut(duration: 0.2)) {
             transitionDirection = .leading
-            router.goBack()
+            router.goBack(authEnabled: AppConfig.authenticationEnabled)
+        }
+    }
+
+    private func resolveReturningSession() async {
+        guard appState.hasCompletedOnboarding, !router.usesScreenOverride else { return }
+        let hasActiveEntitlement = await services.subscriptions.hasActiveEntitlement()
+
+        withAnimation(.easeInOut(duration: 0.2)) {
+            router.resolveReturningSession(hasActiveEntitlement: hasActiveEntitlement)
         }
     }
 }
