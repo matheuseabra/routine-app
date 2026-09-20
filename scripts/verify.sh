@@ -47,6 +47,19 @@ common_args=(
 # Compile the app, unit tests, and UI test bundle on every verification run.
 xcodebuild "${common_args[@]}" build-for-testing
 
+app_plist="$derived_data/Build/Products/Debug-iphonesimulator/$scheme.app/Info.plist"
+[[ -f "$app_plist" ]] || {
+  echo "Built app Info.plist not found: $app_plist" >&2
+  exit 1
+}
+
+for key in AUTH_ENABLED REVENUECAT_API_KEY REVENUECAT_ENTITLEMENT_ID; do
+  /usr/libexec/PlistBuddy -c "Print :$key" "$app_plist" >/dev/null 2>&1 || {
+    echo "Missing runtime config key in built app Info.plist: $key" >&2
+    exit 1
+  }
+done
+
 if [[ "$full_ui_tests" == "1" ]]; then
   xcodebuild "${common_args[@]}" test-without-building
 else
