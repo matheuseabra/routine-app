@@ -21,9 +21,7 @@ struct PaywallTrialReminderView: View {
     var body: some View {
         RoutineScreenLayout(contentAlignment: .center) {
             VStack(spacing: 0) {
-                RoutineIcon(.clock, weight: .regular)
-                    .frame(width: 48, height: 48)
-                    .accessibilityHidden(true)
+                RoutineHeroIcon(.clock)
                     .padding(.top, RoutineSpacing.lg)
                     .padding(.bottom, RoutineSpacing.md)
                 Text("Your trial timeline.")

@@ -23,26 +23,35 @@ final class RoutineAppUITests: XCTestCase {
     }
 
     @MainActor
-    func testPaywallLaunchesWithWeeklyPlanSelected() throws {
+    func testPaywallLaunchesWithYearlyPlanSelected() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-screen", "paywall"]
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["Invest in better habits."].waitForExistence(timeout: 3))
-        XCTAssertEqual(app.buttons["Weekly, $9.99 / week"].value as? String, "Selected")
+        XCTAssertTrue(app.staticTexts["Build stronger consistency with your personal plan."].waitForExistence(timeout: 3))
+        let yearlyPlan = app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", "Yearly")).firstMatch
+        XCTAssertTrue(yearlyPlan.waitForExistence(timeout: 3))
+        XCTAssertEqual(yearlyPlan.value as? String, "Selected")
+        XCTAssertTrue(yearlyPlan.label.localizedCaseInsensitiveContains("Best value"))
     }
 
     @MainActor
-    func testTrialReminderPaywallContinuesThroughRemindersToPlanSelection() throws {
+    func testPlanReadyContinuesDirectlyToPaywall() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["-screen", "paywall2"]
+        app.launchArguments = ["-screen", "planReady"]
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["Your trial timeline."].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Your plan is ready."].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Without Routine"].exists)
+        XCTAssertTrue(app.staticTexts["With Routine"].exists)
         app.buttons["Continue"].tap()
-        XCTAssertTrue(app.staticTexts["Never miss a moment."].waitForExistence(timeout: 2))
-        app.buttons["Not now"].tap()
-        XCTAssertTrue(app.staticTexts["Invest in better habits."].waitForExistence(timeout: 2))
+        let appleSignIn = app.buttons["Continue with Apple"]
+        if appleSignIn.waitForExistence(timeout: 1) {
+            appleSignIn.tap()
+        }
+        XCTAssertTrue(app.staticTexts["Build stronger consistency with your personal plan."].waitForExistence(timeout: 2))
+        XCTAssertFalse(app.staticTexts["Your trial timeline."].exists)
+        XCTAssertFalse(app.staticTexts["Never miss a moment."].exists)
     }
 
     @MainActor
@@ -70,60 +79,95 @@ final class RoutineAppUITests: XCTestCase {
     }
 
     @MainActor
-    func testQuizCompletesDirectlyToPlan() throws {
+    func testNameStepCreatesPersonalizedGuidance() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-screen", "quiz", "-quiz-question", "5"]
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["What would help you\nstay consistent?"].waitForExistence(timeout: 3))
-        app.buttons["Continue"].tap()
-        XCTAssertTrue(app.staticTexts["A clearer path\nto your goals."].waitForExistence(timeout: 2))
-        XCTAssertFalse(app.staticTexts["your plan\nis ready."].exists)
+        XCTAssertTrue(app.staticTexts["What should we call you?"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts["Next up —"].exists)
+        XCTAssertFalse(app.buttons["Create my plan"].isEnabled)
+        let nameField = app.textFields["Your name"]
+        nameField.tap()
+        nameField.typeText("Matheus")
+        XCTAssertTrue(app.buttons["Create my plan"].isEnabled)
+        app.buttons["Create my plan"].tap()
+        XCTAssertTrue(app.staticTexts["Matheus, here’s where to start."].waitForExistence(timeout: 2))
     }
 
     @MainActor
-    func testQuizQuestionTwoUsesMultipleChoiceCards() throws {
+    func testQuizQuestionOneUsesReferenceOutcomeChoices() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["-screen", "quiz", "-quiz-question", "2"]
+        app.launchArguments = ["-screen", "quiz", "-quiz-question", "1"]
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["What are your\nmain goals?"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.buttons["Better focus"].exists)
-        XCTAssertTrue(app.buttons["Stay organized"].exists)
-        XCTAssertFalse(app.staticTexts["Next up:"].exists)
+        XCTAssertTrue(app.staticTexts["What would you most like to improve?"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["Stay more consistent"].exists)
+        XCTAssertTrue(app.buttons["Create a better daily routine"].exists)
+        XCTAssertFalse(app.textFields["Your name"].exists)
     }
 
     @MainActor
-    func testOnboardingSwipeAdvancesToTheNextSlide() throws {
+    func testQuizConsistencyAndTimeDefaultsMatchReference() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-screen", "quiz", "-quiz-question", "3"]
+        app.launch()
+
+        XCTAssertTrue(app.staticTexts["Your starting point helps us shape the right plan."].waitForExistence(timeout: 3))
+        XCTAssertEqual(app.buttons["Starting again"].value as? String, "Selected")
+        XCTAssertFalse(app.staticTexts["I’m new to this and building the habit."].exists)
+
+        app.terminate()
+        app.launchArguments = ["-screen", "quiz", "-quiz-question", "4"]
+        app.launch()
+        XCTAssertEqual(app.buttons["10–15 minutes"].value as? String, "Selected")
+    }
+
+    @MainActor
+    func testWelcomeContinuesToTheFirstQuizStep() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-screen", "onboarding"]
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["Build better habits,\none day at a time."].waitForExistence(timeout: 3))
-        app.swipeLeft()
-        XCTAssertTrue(app.staticTexts["Make time for\nwhat matters."].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.staticTexts["Build better habits that actually stick."].waitForExistence(timeout: 3))
+        app.buttons["Get started"].tap()
+        XCTAssertTrue(app.staticTexts["What would you most like to improve?"].waitForExistence(timeout: 2))
     }
 
     @MainActor
-    func testQuizSwipeAdvancesToTheNextQuestion() throws {
+    func testQuizRequiresAnswerBeforeSwipeAdvances() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-screen", "quiz"]
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["What should we\ncall you?"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["What would you most like to improve?"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.buttons["Continue"].isEnabled)
         app.swipeLeft()
-        XCTAssertTrue(app.staticTexts["What are your\nmain goals?"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.staticTexts["What would you most like to improve?"].exists)
+        app.buttons["Stay more consistent"].tap()
+        XCTAssertTrue(app.buttons["Continue"].isEnabled)
+        app.swipeLeft()
+        XCTAssertTrue(app.staticTexts["What usually gets in the way?"].waitForExistence(timeout: 2))
     }
 
     @MainActor
-    func testPlanSwipeSkipsOptionalAuthenticationByDefault() throws {
+    func testQuizBackButtonReturnsToOnboardingFromFirstStep() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["-screen", "plan"]
+        app.launchArguments = ["-screen", "quiz", "-quiz-question", "1"]
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["A clearer path\nto your goals."].waitForExistence(timeout: 3))
-        app.swipeLeft()
-        XCTAssertTrue(app.staticTexts["Your trial timeline."].waitForExistence(timeout: 2))
+        app.buttons["Back"].tap()
+        XCTAssertTrue(app.staticTexts["Build better habits that actually stick."].waitForExistence(timeout: 2))
+    }
+
+    @MainActor
+    func testPlanGenerationAndReadyStagesAreAvailableToTheRouter() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-screen", "planGeneration"]
+        app.launch()
+
+        XCTAssertTrue(app.staticTexts["Creating your personal plan..."].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Your plan is ready."].waitForExistence(timeout: 6))
     }
 
     @MainActor

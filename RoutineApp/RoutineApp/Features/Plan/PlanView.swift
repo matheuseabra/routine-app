@@ -1,100 +1,105 @@
-import Charts
 import SwiftUI
 
 struct PlanView: View {
+    let context: RoutinePlanContext
     let onContinue: () -> Void
 
-    private let withRoutine = [2.0, 2.8, 3.4, 4.1, 4.8, 5.5, 6.1]
-    private let withoutRoutine = [1.0, 1.8, 1.4, 2.4, 2.1, 3.1, 3.6]
-    private let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    init(name: String, answers: [String?], onContinue: @escaping () -> Void) {
+        context = RoutinePlanContext(name: name, answers: answers)
+        self.onContinue = onContinue
+    }
 
     var body: some View {
-        RoutineScreenLayout {
-            VStack(alignment: .leading, spacing: 0) {
-                Spacer(minLength: 0)
-                Text("A clearer path\nto your goals.")
-                    .routineTitleStyle()
-                    .frame(maxWidth: .infinity)
+        RoutineScreenLayout(contentAlignment: .center, minimumBottomSafeArea: 32) {
+            VStack(alignment: .center, spacing: 0) {
+                RoutineFunnelBrandHeader()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top, RoutineSpacing.xxl)
+                    .padding(.bottom, RoutineSpacing.lg)
+
+                Spacer(minLength: RoutineSpacing.lg)
+
+                Text(context.guidanceTitle)
+                    .font(RoutineTypography.funnelTitle)
+                    .foregroundStyle(RoutineColors.primaryText)
+                    .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.center)
-                    .padding(.bottom, RoutineSpacing.sm)
-                Text("See how consistent habits can compound over time.")
-                    .routineSubtitleStyle()
                     .frame(maxWidth: .infinity)
+                    .accessibilityLabel(context.guidanceTitle.replacingOccurrences(of: "\n", with: " "))
+                    .padding(.bottom, RoutineSpacing.sm)
+
+                Text(context.diagnosis)
+                    .font(RoutineTypography.funnelSubtitle)
+                    .foregroundStyle(RoutineColors.funnelSecondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, RoutineSpacing.xxl + RoutineSpacing.xxs)
+
+                VStack(spacing: RoutineSpacing.sm) {
+                    ForEach(insights, id: \.title) { insight in
+                        insightRow(insight)
+                    }
+                }
+
+                Spacer(minLength: RoutineSpacing.lg)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } bottom: {
+            RoutinePrimaryButton(title: "See my plan", action: onContinue, visualStyle: .funnel)
+        }
+    }
+
+    private let insights = [
+        RoutinePlanInsight(icon: "leaf", title: "Start smaller", subtitle: "Tiny steps create real progress."),
+        RoutinePlanInsight(icon: "calendar", title: "Focus on repeatable actions", subtitle: "Routines beat motivation."),
+        RoutinePlanInsight(icon: "arrow.up.right", title: "Build momentum first", subtitle: "Progress fuels consistency.")
+    ]
+
+    private func insightRow(_ insight: RoutinePlanInsight) -> some View {
+        VStack(spacing: RoutineSpacing.xs) {
+            HStack(spacing: RoutineSpacing.sm) {
+                Image(systemName: insight.icon)
+                    .font(.system(size: 18, weight: .regular))
+                    .foregroundStyle(RoutineColors.primaryText)
+                    .accessibilityHidden(true)
+
+                Text(insight.title)
+                    .font(RoutineTypography.funnelBodyMedium)
+                    .foregroundStyle(RoutineColors.primaryText)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
-                    .padding(.bottom, RoutineSpacing.lg)
-                chartCard
-                Spacer(minLength: 0)
             }
-        } bottom: {
-            RoutinePrimaryButton(title: "Continue", action: onContinue)
-        }
-    }
+            .frame(maxWidth: .infinity, alignment: .center)
 
-    private var chartCard: some View {
-        RoutineCard {
-            VStack(alignment: .leading, spacing: RoutineSpacing.md) {
-                Text("Tasks completed over time")
-                    .font(RoutineTypography.timelineTitle)
-                Chart {
-                    ForEach(Array(zip(days, withoutRoutine)), id: \.0) { day, value in
-                        LineMark(
-                            x: .value("Time", day),
-                            y: .value("Tasks", value),
-                            series: .value("Series", "Without Routine")
-                        )
-                            .foregroundStyle(RoutineColors.tertiaryText)
-                            .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
-                            .interpolationMethod(.catmullRom)
-                    }
-                    ForEach(Array(zip(days, withRoutine)), id: \.0) { day, value in
-                        LineMark(
-                            x: .value("Time", day),
-                            y: .value("Tasks", value),
-                            series: .value("Series", "With Routine")
-                        )
-                            .foregroundStyle(RoutineColors.primaryText)
-                            .lineStyle(StrokeStyle(lineWidth: 2.2, lineCap: .round))
-                            .interpolationMethod(.catmullRom)
-                    }
-                }
-                .chartYScale(domain: 0...8)
-                .chartXAxisLabel("time", alignment: .trailing)
-                .chartYAxisLabel("tasks", position: .top)
-                .chartXAxis {
-                    AxisMarks(values: days) { _ in
-                        AxisValueLabel().font(RoutineTypography.chartLabel)
-                    }
-                }
-                .chartYAxis {
-                    AxisMarks(position: .leading, values: [0, 2, 4, 6, 8]) { _ in
-                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
-                            .foregroundStyle(RoutineColors.border)
-                        AxisValueLabel().font(RoutineTypography.chartLabel)
-                    }
-                }
-                .frame(height: 220)
-                legend
-            }
+            Text(insight.subtitle)
+                .font(RoutineTypography.funnelCaption)
+                .foregroundStyle(RoutineColors.funnelSecondaryText)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity)
         }
-    }
-
-    private var legend: some View {
-        HStack(spacing: RoutineSpacing.lg) {
-            legendItem(title: "Without routine", color: RoutineColors.tertiaryText)
-            legendItem(title: "With routine", color: RoutineColors.primaryText)
-        }
-        .font(RoutineTypography.small)
-    }
-
-    private func legendItem(title: String, color: Color) -> some View {
-        HStack(spacing: 6) {
-            Circle().fill(color).frame(width: 8, height: 8)
-            Text(title).lineLimit(1)
+        .padding(.horizontal, RoutineSpacing.md)
+        .padding(.vertical, RoutineSpacing.sm)
+        .frame(maxWidth: .infinity, minHeight: 76)
+        .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 12))
+        .overlay {
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(RoutineColors.border.opacity(0.55), lineWidth: 0.7)
         }
     }
 }
 
-#Preview("Plan") {
-    PlanView {}
+private struct RoutinePlanInsight {
+    let icon: String
+    let title: String
+    let subtitle: String
+}
+
+#Preview("Personal plan guidance") {
+    PlanView(
+        name: "Matheus",
+        answers: ["Stay more consistent", "I struggle with consistency", "Starting again", "10–15 minutes", nil],
+        onContinue: {}
+    )
 }

@@ -43,9 +43,8 @@ struct RoutineSectionHeader: View {
     let title: String
 
     var body: some View {
-        Text(title.uppercased())
+        Text(title)
             .font(RoutineTypography.sectionTitle)
             .foregroundStyle(RoutineColors.primaryText)
-            .tracking(-0.2)
     }
 }

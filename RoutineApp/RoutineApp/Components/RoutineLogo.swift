@@ -69,13 +69,27 @@ struct RoutineOnboardingIcon: View {
             case .brand:
                 RoutineLogo(size: .medium)
             case .focus:
-                RoutineIcon(.clock, weight: .regular)
+                RoutineHeroIcon(.clock)
             case .consistency:
-                RoutineIcon(.arrowsClockwise, weight: .regular)
+                RoutineHeroIcon(.arrowsClockwise)
             }
         }
         .foregroundStyle(RoutineColors.primaryText)
-        .frame(width: 66, height: 66)
+        .frame(width: RoutineIconMetrics.heroDimension, height: RoutineIconMetrics.heroDimension)
         .accessibilityHidden(true)
+    }
+}
+
+struct RoutineHeroIcon: View {
+    let name: RoutineIconName
+
+    init(_ name: RoutineIconName) {
+        self.name = name
+    }
+
+    var body: some View {
+        RoutineIcon(name, pointSize: RoutineIconMetrics.heroPointSize)
+            .frame(width: RoutineIconMetrics.heroDimension, height: RoutineIconMetrics.heroDimension)
+            .accessibilityHidden(true)
     }
 }

@@ -96,15 +96,18 @@ struct RoutineIcon: View {
     let name: RoutineIconName
     var weight: RoutineIconWeight = .regular
     var color: Color = RoutineColors.primaryText
+    var pointSize: CGFloat?
 
     init(
         _ name: RoutineIconName,
         weight: RoutineIconWeight = .regular,
-        color: Color = RoutineColors.primaryText
+        color: Color = RoutineColors.primaryText,
+        pointSize: CGFloat? = nil
     ) {
         self.name = name
         self.weight = weight
         self.color = color
+        self.pointSize = pointSize
     }
 
     @ViewBuilder
@@ -123,6 +126,7 @@ struct RoutineIcon: View {
 
     private var symbol: some View {
         Image(systemName: name.systemName)
+            .font(pointSize.map { .system(size: $0, weight: weight.fontWeight) })
             .fontWeight(weight.fontWeight)
             .foregroundStyle(color)
             .aspectRatio(contentMode: .fit)

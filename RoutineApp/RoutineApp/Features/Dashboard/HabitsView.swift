@@ -35,7 +35,7 @@ struct HabitsView: View {
                     }
                 }
 
-                RoutineSectionHeader(title: "A SIMPLE RHYTHM")
+                RoutineSectionHeader(title: "A simple rhythm")
                     .padding(.top, RoutineSpacing.xxl)
                     .padding(.bottom, RoutineSpacing.sm)
 

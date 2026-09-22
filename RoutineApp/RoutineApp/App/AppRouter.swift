@@ -6,9 +6,9 @@ enum RoutineScreen: String, CaseIterable, Hashable {
     case onboarding
     case quiz
     case plan
+    case planGeneration
+    case planReady
     case authentication
-    case paywall2
-    case reminder
     case paywall
     case main
 }
@@ -17,7 +17,7 @@ enum RoutineScreen: String, CaseIterable, Hashable {
 final class AppRouter {
     var screen: RoutineScreen
     var name = ""
-    var quizAnswers = Array<String?>(repeating: nil, count: 5)
+    var quizAnswers: [String?] = [nil, nil, "Starting again", "10–15 minutes", nil]
 
     let usesScreenOverride: Bool
 
@@ -25,6 +25,11 @@ final class AppRouter {
         arguments: [String] = ProcessInfo.processInfo.arguments,
         hasCompletedOnboarding: Bool = false
     ) {
+        if let nameIndex = arguments.firstIndex(of: "-demo-name"),
+           arguments.indices.contains(nameIndex + 1) {
+            name = arguments[nameIndex + 1]
+        }
+
         if let screenIndex = arguments.firstIndex(of: "-screen"),
            arguments.indices.contains(screenIndex + 1),
            let requestedScreen = RoutineScreen(rawValue: arguments[screenIndex + 1]) {
@@ -41,10 +46,10 @@ final class AppRouter {
         case .launch: screen = .onboarding
         case .onboarding: screen = .quiz
         case .quiz: screen = .plan
-        case .plan: screen = authEnabled ? .authentication : .paywall2
-        case .authentication: screen = .paywall2
-        case .paywall2: screen = .reminder
-        case .reminder: screen = .paywall
+        case .plan: screen = .planGeneration
+        case .planGeneration: screen = .planReady
+        case .planReady: screen = authEnabled ? .authentication : .paywall
+        case .authentication: screen = .paywall
         case .paywall: screen = .main
         case .main: break
         }
@@ -56,10 +61,10 @@ final class AppRouter {
         case .onboarding: screen = .launch
         case .quiz: screen = .onboarding
         case .plan: screen = .quiz
-        case .authentication: screen = .plan
-        case .paywall2: screen = authEnabled ? .authentication : .plan
-        case .reminder: screen = .paywall2
-        case .paywall: screen = .reminder
+        case .planGeneration: screen = .plan
+        case .planReady: screen = .plan
+        case .authentication: screen = .planReady
+        case .paywall: screen = authEnabled ? .authentication : .planReady
         case .main: screen = .paywall
         }
     }
@@ -106,13 +111,13 @@ struct RoutineRootView: View {
                             onContinue: advanceScreen
                         )
                     case .plan:
-                        PlanView(onContinue: advanceScreen)
+                        PlanView(name: router.name, answers: router.quizAnswers, onContinue: advanceScreen)
+                    case .planGeneration:
+                        PlanGenerationView(name: router.name, answers: router.quizAnswers, onComplete: advanceScreen)
+                    case .planReady:
+                        PlanReadyView(name: router.name, answers: router.quizAnswers, onContinue: advanceScreen)
                     case .authentication:
                         AuthenticationView(onContinue: advanceScreen)
-                    case .paywall2:
-                        PaywallTrialReminderView(onContinue: advanceScreen)
-                    case .reminder:
-                        ReminderView(onContinue: advanceScreen)
                     case .paywall:
                         PaywallView(onContinue: advanceScreen)
                     case .main:
@@ -142,6 +147,7 @@ struct RoutineRootView: View {
             .onEnded { value in
                 guard router.screen != .main, router.screen != .launch,
                       router.screen != .onboarding, router.screen != .quiz,
+                      router.screen != .planGeneration,
                       abs(value.translation.width) > abs(value.translation.height),
                       abs(value.translation.width) > 50 else { return }
                 swipeHaptic += 1

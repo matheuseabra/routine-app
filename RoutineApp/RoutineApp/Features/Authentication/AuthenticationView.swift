@@ -8,55 +8,53 @@ struct AuthenticationView: View {
     let onContinue: () -> Void
 
     var body: some View {
-        RoutineScreenLayout {
-            VStack(spacing: 0) {
-                Spacer()
-                VStack(spacing: 0) {
-                    RoutineIcon(.cloudCheck, weight: .regular)
-                        .frame(width: 66, height: 66)
-                        .accessibilityHidden(true)
-                        .padding(.bottom, RoutineSpacing.xl)
-                    Text("Save your progress.")
-                        .routineTitleStyle()
-                        .multilineTextAlignment(.center)
-                        .padding(.bottom, RoutineSpacing.sm)
-                    Text("Create an account to sync your data\nacross all your devices.")
-                        .routineSubtitleStyle()
-                        .multilineTextAlignment(.center)
-                        .lineSpacing(3)
-                        .padding(.bottom, RoutineSpacing.xl)
-                    VStack(spacing: RoutineSpacing.sm) {
-                        RoutineSecondaryButton(
-                            title: isLoading ? "Signing in..." : "Continue with Apple",
-                            assetImage: "apple",
-                            style: .filled
-                        ) {
-                            signIn(using: .apple)
-                        }
-                        .disabled(isLoading)
+        RoutineScreenLayout(contentAlignment: .topLeading, minimumBottomSafeArea: 32) {
+            VStack(alignment: .leading, spacing: 0) {
+                RoutineFunnelBrandHeader()
+                    .padding(.top, RoutineSpacing.md)
+                    .padding(.bottom, RoutineSpacing.xxl)
 
-                        RoutineSecondaryButton(
-                            title: "Continue with Google",
-                            assetImage: "google"
-                        ) {
-                            signIn(using: .google)
-                        }
-                        .disabled(isLoading)
-                    }
+                Text("Save your progress.")
+                    .font(RoutineTypography.funnelTitle)
+                    .foregroundStyle(RoutineColors.primaryText)
+                    .padding(.bottom, RoutineSpacing.xs)
 
-                    if let errorMessage {
-                        Text(errorMessage)
-                            .font(RoutineTypography.smallRegular)
-                            .foregroundStyle(RoutineColors.secondaryText)
-                            .multilineTextAlignment(.center)
-                            .padding(.top, RoutineSpacing.md)
+                Text("Create an account to sync your data across all your devices.")
+                    .font(RoutineTypography.funnelSubtitle)
+                    .foregroundStyle(RoutineColors.funnelSecondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.bottom, RoutineSpacing.xl)
+
+                VStack(spacing: RoutineSpacing.sm) {
+                    RoutineSecondaryButton(
+                        title: isLoading ? "Signing in..." : "Continue with Apple",
+                        assetImage: "apple",
+                        style: .filled
+                    ) {
+                        signIn(using: .apple)
                     }
+                    .disabled(isLoading)
+
+                    RoutineSecondaryButton(
+                        title: "Continue with Google",
+                        assetImage: "google"
+                    ) {
+                        signIn(using: .google)
+                    }
+                    .disabled(isLoading)
                 }
-                Spacer()
+
+                if let errorMessage {
+                    Text(errorMessage)
+                        .font(RoutineTypography.funnelCaption)
+                        .foregroundStyle(RoutineColors.funnelSecondaryText)
+                        .multilineTextAlignment(.leading)
+                        .padding(.top, RoutineSpacing.md)
+                }
             }
         } bottom: {
             footer
-                .font(RoutineTypography.smallRegular)
+                .font(RoutineTypography.funnelCaption)
                 .multilineTextAlignment(.center)
                 .lineSpacing(3)
         }

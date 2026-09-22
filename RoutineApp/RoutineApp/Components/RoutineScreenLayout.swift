@@ -1,9 +1,11 @@
+import UIKit
 import SwiftUI
 
 struct RoutineScreenLayout<Content: View, Bottom: View>: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     var scrolls = false
     var contentAlignment: Alignment = .center
+    var minimumBottomSafeArea: CGFloat = 0
     @ViewBuilder let content: Content
     @ViewBuilder let bottom: Bottom
 
@@ -27,8 +29,19 @@ struct RoutineScreenLayout<Content: View, Bottom: View>: View {
                 bottom
                     .padding(.horizontal, RoutineSpacing.lg)
                     .padding(.top, RoutineSpacing.md)
+                    .padding(.bottom, bottomSafeAreaPadding)
             }
         }
+    }
+
+    private var bottomSafeAreaPadding: CGFloat {
+        guard minimumBottomSafeArea > 0 else { return 0 }
+        let safeAreaBottom = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first(where: \.isKeyWindow)?
+            .safeAreaInsets.bottom ?? 0
+        return max(0, minimumBottomSafeArea - safeAreaBottom)
     }
 }
 

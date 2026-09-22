@@ -1,8 +1,15 @@
 import SwiftUI
 
 struct RoutinePrimaryButton: View {
+    enum VisualStyle: Equatable {
+        case standard
+        case funnel
+    }
+
     let title: String
     let action: () -> Void
+    var visualStyle: VisualStyle = .standard
+    var isEnabled = true
     @State private var hapticTrigger = 0
 
     var body: some View {
@@ -11,14 +18,21 @@ struct RoutinePrimaryButton: View {
             action()
         } label: {
             Text(title)
-                .font(RoutineTypography.button)
+                .font(visualStyle == .funnel ? RoutineTypography.funnelButton : RoutineTypography.button)
                 .frame(maxWidth: .infinity)
-                .frame(height: 54)
-                .foregroundStyle(RoutineColors.inverseText)
-                .background(RoutineColors.primaryText, in: RoundedRectangle(cornerRadius: 12))
+                .frame(height: visualStyle == .funnel ? 48 : 54)
+                .foregroundStyle(isEnabled ? RoutineColors.inverseText : RoutineColors.primaryText)
+                .background {
+                    if visualStyle == .funnel {
+                        Capsule().fill(isEnabled ? RoutineColors.primaryText : RoutineColors.track)
+                    } else {
+                        RoundedRectangle(cornerRadius: 12).fill(isEnabled ? RoutineColors.primaryText : RoutineColors.track)
+                    }
+                }
         }
         .buttonStyle(.plain)
-        .contentShape(RoundedRectangle(cornerRadius: 12))
+        .contentShape(Capsule())
+        .disabled(!isEnabled)
         .sensoryFeedback(.impact(weight: .medium), trigger: hapticTrigger)
         .accessibilityLabel(title)
     }

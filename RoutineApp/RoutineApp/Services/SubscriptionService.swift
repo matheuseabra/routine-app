@@ -50,11 +50,13 @@ enum RevenueCatBootstrap {
 }
 
 struct RevenueCatSubscriptionProvider: SubscriptionProviding {
-    func plans() async throws -> [SubscriptionPlan] {
-        guard AppConfig.revenueCatAPIKey != nil else {
-            return StarterDemoData.subscriptionPlans
-        }
+    private let apiKey: String?
 
+    init(apiKey: String? = AppConfig.revenueCatAPIKey) {
+        self.apiKey = apiKey
+    }
+
+    func plans() async throws -> [SubscriptionPlan] {
         let offering = try await currentOffering()
         return offering.availablePackages.map(Self.plan(from:))
     }
@@ -109,7 +111,7 @@ struct RevenueCatSubscriptionProvider: SubscriptionProviding {
     }
 
     func hasActiveEntitlement() async -> Bool {
-        guard AppConfig.revenueCatAPIKey != nil else { return false }
+        guard apiKey != nil else { return false }
 
         return await withCheckedContinuation { continuation in
             Purchases.shared.getCustomerInfo { customerInfo, _ in
@@ -138,7 +140,7 @@ struct RevenueCatSubscriptionProvider: SubscriptionProviding {
     }
 
     private func requireConfiguration() throws {
-        guard AppConfig.revenueCatAPIKey != nil else {
+        guard apiKey != nil else {
             throw SubscriptionError.revenueCatNotConfigured
         }
     }

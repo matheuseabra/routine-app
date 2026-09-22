@@ -42,6 +42,12 @@ struct MainAppView: View {
             }
         }
         .background(RoutineColors.background.ignoresSafeArea())
+        .task {
+            DemoDataSeeder.seedIfRequested(
+                arguments: ProcessInfo.processInfo.arguments,
+                modelContext: modelContext
+            )
+        }
         .sheet(isPresented: $isAddTaskPresented) {
             AddTaskSheet { title in
                 modelContext.insert(RoutineTask(title: title))

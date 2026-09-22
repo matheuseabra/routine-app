@@ -19,11 +19,11 @@ struct ProfileView: View {
                     .padding(.top, RoutineSpacing.lg)
                     .padding(.bottom, RoutineSpacing.xl)
                 profileCard
-                RoutineSectionHeader(title: "ROUTINES")
+                RoutineSectionHeader(title: "Routines")
                     .padding(.top, RoutineSpacing.xxl)
                     .padding(.bottom, RoutineSpacing.sm)
                 routinesCard
-                RoutineSectionHeader(title: "RECENT HISTORY")
+                RoutineSectionHeader(title: "Recent history")
                     .padding(.top, RoutineSpacing.xxl)
                     .padding(.bottom, RoutineSpacing.sm)
                 recentHistoryCard
@@ -79,9 +79,9 @@ struct ProfileView: View {
                     Text("Routine ID")
                         .font(RoutineTypography.compactTitle)
                     HStack(alignment: .top, spacing: RoutineSpacing.lg) {
-                        profileDetail(label: "NAME", value: "Your name")
+                        profileDetail(label: "Name", value: "Your name")
                         Spacer(minLength: 0)
-                        profileDetail(label: "JOINED", value: "Local", alignment: .trailing)
+                        profileDetail(label: "Joined", value: "Local", alignment: .trailing)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -92,9 +92,9 @@ struct ProfileView: View {
                 .padding(.vertical, RoutineSpacing.md)
 
             HStack(spacing: 0) {
-                profileStat(value: "\(tasks.count)", label: "TASKS")
-                profileStat(value: "\(checkIns.count)", label: "CHECK-INS")
-                profileStat(value: "\(summary.currentStreak)", label: "DAY STREAK")
+                profileStat(value: "\(tasks.count)", label: "Tasks")
+                profileStat(value: "\(checkIns.count)", label: "Check-ins")
+                profileStat(value: "\(summary.currentStreak)", label: "Day streak")
             }
         }
         .padding(RoutineSpacing.lg)
@@ -157,7 +157,6 @@ struct ProfileView: View {
             Text(label)
                 .font(RoutineTypography.small)
                 .foregroundStyle(RoutineColors.secondaryText)
-                .tracking(0.5)
             Text(value)
                 .font(RoutineTypography.body)
                 .foregroundStyle(RoutineColors.secondaryText)
@@ -172,7 +171,6 @@ struct ProfileView: View {
             Text(label)
                 .font(RoutineTypography.small)
                 .foregroundStyle(RoutineColors.secondaryText)
-                .tracking(0.4)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }

@@ -6,7 +6,7 @@ struct QuizView: View {
     let onBack: () -> Void
     let onContinue: () -> Void
 
-    @State private var questionIndex = 0
+    @State private var questionIndex: Int
     @State private var swipeHaptic = 0
 
     init(
@@ -20,64 +20,69 @@ struct QuizView: View {
         _answers = answers
         self.onBack = onBack
         self.onContinue = onContinue
-        let requestedIndex = arguments.firstIndex(of: "-quiz-question")
+        let requestedStep = arguments.firstIndex(of: "-quiz-question")
             .flatMap { arguments.indices.contains($0 + 1) ? Int(arguments[$0 + 1]) : nil } ?? 1
-        _questionIndex = State(initialValue: min(max(requestedIndex - 1, 0), 4))
+        _questionIndex = State(initialValue: min(max(requestedStep, 1), 5) - 1)
     }
 
     private let questions = [
         QuizQuestion(
-            prompt: "What should we\ncall you?",
-            subtitle: "We’ll use your name to personalize your routine.",
-            options: []
+            prompt: "What would you most like to improve?",
+            subtitle: "Choose the outcome that matters most to you right now.",
+            options: [
+                QuizOption(title: "Stay more consistent", icon: "repeat"),
+                QuizOption(title: "Get more done", icon: "checkmark.circle"),
+                QuizOption(title: "Feel more focused", icon: "scope"),
+                QuizOption(title: "Build healthier habits", icon: "heart"),
+                QuizOption(title: "Create a better daily routine", icon: "calendar")
+            ]
         ),
-        QuizQuestion(prompt: "What are your\nmain goals?", options: [
-            QuizOption(title: "Better focus", icon: .brain),
-            QuizOption(title: "Move more", icon: .personSimpleRun),
-            QuizOption(title: "Sleep better", icon: .moonStars),
-            QuizOption(title: "Stay organized", icon: .listChecks)
-        ]),
-        QuizQuestion(prompt: "When do you feel\nmost productive?", options: [
-            QuizOption(title: "Morning", icon: .sun),
-            QuizOption(title: "Afternoon", icon: .sunHorizon),
-            QuizOption(title: "Evening", icon: .moon),
-            QuizOption(title: "It varies", icon: .arrowsClockwise)
-        ]),
-        QuizQuestion(prompt: "How much time can you\ndedicate each day?", options: [
-            QuizOption(title: "5 minutes"),
-            QuizOption(title: "15 minutes"),
-            QuizOption(title: "30 minutes"),
-            QuizOption(title: "An hour or more")
-        ]),
-        QuizQuestion(prompt: "What would help you\nstay consistent?", options: [
-            QuizOption(title: "Gentle reminders", icon: .bell),
-            QuizOption(title: "A clear plan", icon: .calendarCheck),
-            QuizOption(title: "Progress insights", icon: .chartLineUp),
-            QuizOption(title: "All of the above", icon: .star)
-        ])
+        QuizQuestion(
+            prompt: "What usually gets in the way?",
+            subtitle: "We’ll use this to make your plan easier to stick with.",
+            options: [
+                QuizOption(title: "I struggle with consistency", icon: "arrow.clockwise"),
+                QuizOption(title: "I lose motivation", icon: "flame"),
+                QuizOption(title: "I don’t know where to start", icon: "questionmark.circle"),
+                QuizOption(title: "I don’t have enough time", icon: "clock"),
+                QuizOption(title: "I try to do too much at once", icon: "list.bullet.rectangle")
+            ]
+        ),
+        QuizQuestion(
+            prompt: "How consistent do you feel right now?",
+            subtitle: "Your starting point helps us shape the\nright plan.",
+            options: [
+                QuizOption(title: "Just starting", icon: "leaf"),
+                QuizOption(title: "Starting again", icon: "arrow.counterclockwise"),
+                QuizOption(title: "Somewhat consistent", icon: "chart.line.uptrend.xyaxis"),
+                QuizOption(title: "Very consistent", icon: "checkmark.seal")
+            ]
+        ),
+        QuizQuestion(
+            prompt: "How much time can you realistically commit?",
+            subtitle: "Consistency matters more than intensity.",
+            options: [
+                QuizOption(title: "5 minutes a day", icon: "timer"),
+                QuizOption(title: "10–15 minutes", icon: "clock"),
+                QuizOption(title: "20–30 minutes", icon: "clock.fill"),
+                QuizOption(title: "My schedule changes often", icon: "calendar.badge.clock")
+            ]
+        ),
+        QuizQuestion(prompt: "What should we call you?", options: [])
     ]
 
     var body: some View {
-        RoutineScreenLayout {
+        RoutineScreenLayout(minimumBottomSafeArea: 32) {
             VStack(alignment: .leading, spacing: 0) {
                 quizHeader
-                    .padding(.top, RoutineSpacing.md)
-                    .padding(.bottom, RoutineSpacing.huge)
+                    .padding(.top, RoutineSpacing.huge)
+                    .padding(.bottom, RoutineSpacing.lg)
+
                 Group {
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text(currentQuestion.prompt)
-                            .routineTitleStyle()
-                            .padding(.bottom, currentQuestion.subtitle == nil ? RoutineSpacing.lg : RoutineSpacing.sm)
-                        if let subtitle = currentQuestion.subtitle {
-                            Text(subtitle)
-                                .routineSubtitleStyle()
-                                .padding(.bottom, RoutineSpacing.lg)
-                        }
-                        if questionIndex == 0 {
-                            nameInput
-                        } else {
-                            optionList
-                        }
+                    if questionIndex == 4 {
+                        nameQuestion
+                    } else {
+                        choiceQuestion
                     }
                 }
                 .id(questionIndex)
@@ -85,11 +90,17 @@ struct QuizView: View {
                     insertion: .move(edge: .trailing).combined(with: .opacity),
                     removal: .move(edge: .leading).combined(with: .opacity)
                 ))
-                Spacer()
+
+                Spacer(minLength: 0)
             }
             .animation(.easeInOut(duration: 0.2), value: questionIndex)
         } bottom: {
-            RoutinePrimaryButton(title: "Continue", action: continueTapped)
+            RoutinePrimaryButton(
+                title: questionIndex == 4 ? "Create my plan" : "Continue",
+                action: continueTapped,
+                visualStyle: .funnel,
+                isEnabled: canAdvance
+            )
         }
         .contentShape(Rectangle())
         .highPriorityGesture(swipeGesture)
@@ -97,87 +108,131 @@ struct QuizView: View {
     }
 
     private var currentQuestion: QuizQuestion { questions[questionIndex] }
+    private var canAdvance: Bool {
+        if questionIndex == questions.count - 1 {
+            return !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        }
+        guard answers.indices.contains(questionIndex), let answer = answers[questionIndex] else { return false }
+        return currentQuestion.options.contains { $0.title == answer }
+    }
 
     private var quizHeader: some View {
-        HStack(spacing: RoutineSpacing.md) {
+        HStack(spacing: RoutineSpacing.lg) {
             Button(action: backTapped) {
-                RoutineIcon(.arrowLeft, weight: .bold)
-                    .frame(width: 17, height: 17)
-                    .frame(width: 44, height: 44)
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(RoutineColors.primaryText)
+                    .frame(width: 34, height: 24, alignment: .leading)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Back")
-            RoutineProgressBar(progress: Double(questionIndex + 1) / 5, height: 5)
-            Text("\(questionIndex + 1) / 5")
-                .font(RoutineTypography.small)
-                .frame(width: 38, alignment: .trailing)
+
+            RoutineProgressBar(progress: Double(questionIndex + 1) / 5, height: 3)
+                .accessibilityElement()
+                .accessibilityLabel("Quiz progress")
+                .accessibilityValue("Question \(questionIndex + 1) of 5")
         }
     }
 
-    private var nameInput: some View {
-        TextField("Your name", text: $name)
-            .font(RoutineTypography.body)
-            .textInputAutocapitalization(.words)
-            .submitLabel(.continue)
-            .padding(.horizontal, RoutineSpacing.md)
-            .frame(height: 56)
-            .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 12))
-            .overlay {
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(RoutineColors.border, lineWidth: 1)
+    private var choiceQuestion: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            questionHeading
+            optionList
+        }
+    }
+
+    private var questionHeading: some View {
+        VStack(alignment: .leading, spacing: RoutineSpacing.md) {
+            Text(currentQuestion.prompt)
+                .font(RoutineTypography.funnelTitle)
+                .foregroundStyle(RoutineColors.primaryText)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if let subtitle = currentQuestion.subtitle {
+                Text(subtitle)
+                    .font(RoutineTypography.funnelSubtitle)
+                    .foregroundStyle(RoutineColors.funnelSecondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityLabel(subtitle.replacingOccurrences(of: "\n", with: " "))
+                    .padding(.bottom, questionIndex == 2 ? RoutineSpacing.md + RoutineSpacing.xxs : RoutineSpacing.lg)
+            } else {
+                Color.clear.frame(height: RoutineSpacing.md)
             }
-            .onSubmit(continueTapped)
-            .accessibilityLabel("Your name")
+        }
+        .padding(.bottom, RoutineSpacing.xs)
     }
 
     private var optionList: some View {
-        VStack(spacing: RoutineSpacing.sm) {
+        VStack(spacing: RoutineSpacing.xs) {
             ForEach(currentQuestion.options) { option in
-                Button {
-                    withAnimation(.easeInOut(duration: 0.15)) {
-                        answers[questionIndex] = option.title
-                    }
-                } label: {
-                    HStack(spacing: RoutineSpacing.md) {
-                        if let icon = option.icon {
-                            RoutineIcon(icon, color: RoutineColors.secondaryText)
-                                .frame(width: 24, height: 24)
-                        }
-                        Text(option.title)
-                            .font(RoutineTypography.body)
-                        Spacer()
-                    }
-                    .padding(.horizontal, RoutineSpacing.md)
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: 56)
-                    .foregroundStyle(RoutineColors.primaryText)
-                    .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 12))
-                    .overlay {
-                        if answers[questionIndex] == option.title {
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(RoutineColors.primaryText, lineWidth: 1.5)
-                        }
-                    }
-                }
-                .buttonStyle(.plain)
-                .sensoryFeedback(.selection, trigger: answers[questionIndex])
-                .accessibilityLabel(option.title)
-                .accessibilityValue(answers[questionIndex] == option.title ? "Selected" : "Not selected")
+                optionButton(option)
             }
         }
     }
 
-    private func backTapped() {
-        if questionIndex == 0 {
-            onBack()
-        } else {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                questionIndex -= 1
+    private func optionButton(_ option: QuizOption) -> some View {
+        let isSelected = answers[questionIndex] == option.title
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                answers[questionIndex] = option.title
             }
+        } label: {
+            HStack(spacing: RoutineSpacing.md) {
+                Image(systemName: option.icon)
+                    .font(.system(size: 18, weight: .regular))
+                    .foregroundStyle(isSelected ? RoutineColors.primaryText : RoutineColors.secondaryText)
+                    .frame(width: 24, height: 24)
+                    .accessibilityHidden(true)
+
+                Text(option.title)
+                    .font(RoutineTypography.funnelBodyMedium)
+                    .foregroundStyle(RoutineColors.primaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(maxWidth: .infinity, minHeight: 54, alignment: .leading)
+            .padding(.horizontal, RoutineSpacing.md)
+            .background(isSelected ? RoutineColors.funnelSelection : RoutineColors.surface, in: RoundedRectangle(cornerRadius: 11))
+            .overlay {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 11)
+                        .stroke(RoutineColors.primaryText, lineWidth: 1.4)
+                }
+            }
+            .shadow(color: RoutineColors.primaryText.opacity(0.07), radius: 4, x: 0, y: 2)
+            .contentShape(RoundedRectangle(cornerRadius: 11))
+        }
+        .buttonStyle(.plain)
+        .sensoryFeedback(.selection, trigger: answers[questionIndex])
+        .accessibilityLabel(option.title)
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+    }
+
+    private var nameQuestion: some View {
+        VStack(alignment: .leading, spacing: RoutineSpacing.lg) {
+            Text(currentQuestion.prompt)
+                .font(RoutineTypography.funnelTitle)
+                .foregroundStyle(RoutineColors.primaryText)
+
+            TextField("Your name", text: $name)
+                .font(RoutineTypography.funnelBody)
+                .textInputAutocapitalization(.words)
+                .submitLabel(.continue)
+                .padding(.horizontal, RoutineSpacing.md)
+                .frame(height: 52)
+                .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 11))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 11)
+                        .stroke(RoutineColors.border.opacity(0.85), lineWidth: 0.8)
+                }
+                .onSubmit(continueTapped)
+                .accessibilityLabel("Your name")
         }
     }
 
     private func continueTapped() {
+        guard canAdvance else { return }
         if questionIndex < questions.count - 1 {
             withAnimation(.easeInOut(duration: 0.2)) {
                 questionIndex += 1
@@ -187,16 +242,28 @@ struct QuizView: View {
         }
     }
 
+    private func backTapped() {
+        if questionIndex > 0 {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                questionIndex -= 1
+            }
+        } else {
+            onBack()
+        }
+    }
+
     private var swipeGesture: some Gesture {
         DragGesture(minimumDistance: 40)
             .onEnded { value in
                 guard abs(value.translation.width) > abs(value.translation.height),
                       abs(value.translation.width) > 50 else { return }
                 swipeHaptic += 1
-                if value.translation.width < 0, questionIndex < questions.count - 1 {
+                if value.translation.width < 0, questionIndex < questions.count - 1, canAdvance {
                     withAnimation(.easeInOut(duration: 0.2)) { questionIndex += 1 }
                 } else if value.translation.width > 0, questionIndex > 0 {
                     withAnimation(.easeInOut(duration: 0.2)) { questionIndex -= 1 }
+                } else if value.translation.width > 0 {
+                    onBack()
                 }
             }
     }
@@ -216,18 +283,13 @@ private struct QuizQuestion {
 
 private struct QuizOption: Identifiable {
     let title: String
-    let icon: RoutineIconName?
+    let icon: String
 
     var id: String { title }
-
-    init(title: String, icon: RoutineIconName? = nil) {
-        self.title = title
-        self.icon = icon
-    }
 }
 
 #Preview("Quiz") {
     @Previewable @State var name = "Matheus"
-    @Previewable @State var answers = Array<String?>(repeating: nil, count: 5)
+    @Previewable @State var answers: [String?] = [nil, nil, "Starting again", "10–15 minutes", nil]
     QuizView(name: $name, answers: $answers, onBack: {}, onContinue: {})
 }

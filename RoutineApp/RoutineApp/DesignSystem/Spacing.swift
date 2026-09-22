@@ -11,3 +11,7 @@ enum RoutineSpacing {
     static let huge: CGFloat = 48
 }
 
+enum RoutineIconMetrics {
+    static let heroDimension: CGFloat = 66
+    static let heroPointSize: CGFloat = 44
+}

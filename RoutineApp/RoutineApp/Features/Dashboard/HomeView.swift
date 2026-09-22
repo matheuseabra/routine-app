@@ -12,7 +12,7 @@ struct HomeView: View {
                 header
                     .padding(.top, RoutineSpacing.lg)
                     .padding(.bottom, RoutineSpacing.xl)
-                RoutineSectionHeader(title: "TODAY'S PLAN")
+                RoutineSectionHeader(title: "Today's plan")
                     .padding(.bottom, RoutineSpacing.sm)
                 if tasks.isEmpty {
                     emptyState

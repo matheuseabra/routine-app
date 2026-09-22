@@ -33,7 +33,7 @@ struct InsightsView: View {
                 .padding(.top, RoutineSpacing.lg)
                 .padding(.bottom, RoutineSpacing.xl)
 
-                RoutineSectionHeader(title: "OVERVIEW")
+                RoutineSectionHeader(title: "Overview")
                     .padding(.bottom, RoutineSpacing.sm)
                 rangePicker
                     .padding(.bottom, RoutineSpacing.lg)
@@ -102,6 +102,8 @@ struct InsightsView: View {
                 Text(value).font(RoutineTypography.metric)
                 Text(label)
                     .font(RoutineTypography.small)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
                     .foregroundStyle(RoutineColors.secondaryText)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
