@@ -3,13 +3,15 @@ import SwiftUI
 struct ProfileView: View {
     let tasks: [RoutineTask]
     let checkIns: [RoutineCheckIn]
+    let onOpenHabits: () -> Void
 
     @State private var isSettingsPresented = false
     @State private var settingsHapticTrigger = 0
 
-    init(tasks: [RoutineTask] = [], checkIns: [RoutineCheckIn] = []) {
+    init(tasks: [RoutineTask] = [], checkIns: [RoutineCheckIn] = [], onOpenHabits: @escaping () -> Void = {}) {
         self.tasks = tasks
         self.checkIns = checkIns
+        self.onOpenHabits = onOpenHabits
     }
 
     var body: some View {
@@ -19,10 +21,6 @@ struct ProfileView: View {
                     .padding(.top, RoutineSpacing.lg)
                     .padding(.bottom, RoutineSpacing.xl)
                 profileCard
-                RoutineSectionHeader(title: "Routines")
-                    .padding(.top, RoutineSpacing.xxl)
-                    .padding(.bottom, RoutineSpacing.sm)
-                routinesCard
                 RoutineSectionHeader(title: "Recent history")
                     .padding(.top, RoutineSpacing.xxl)
                     .padding(.bottom, RoutineSpacing.sm)
@@ -76,13 +74,10 @@ struct ProfileView: View {
                     .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: RoutineSpacing.xs) {
-                    Text("Routine ID")
+                    Text("Your routine")
                         .font(RoutineTypography.compactTitle)
-                    HStack(alignment: .top, spacing: RoutineSpacing.lg) {
-                        profileDetail(label: "Name", value: "Your name")
-                        Spacer(minLength: 0)
-                        profileDetail(label: "Joined", value: "Local", alignment: .trailing)
-                    }
+                    Text("A record of the steps you’ve taken.")
+                        .routineSubtitleStyle()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -103,33 +98,16 @@ struct ProfileView: View {
         .accessibilityLabel("Routine profile")
     }
 
-    private var routinesCard: some View {
-        VStack(alignment: .leading, spacing: RoutineSpacing.lg) {
-            Text("Routines are the habits that work for you.")
-                .font(RoutineTypography.body)
-            HStack(spacing: RoutineSpacing.md) {
-                ForEach(0..<3, id: \.self) { _ in
-                    Circle()
-                        .fill(RoutineColors.track)
-                        .frame(width: 64, height: 64)
-                        .overlay {
-                            RoutineIcon(.question, weight: .regular, color: RoutineColors.secondaryText)
-                                .frame(width: 30, height: 30)
-                        }
-                }
-            }
-        }
-        .padding(RoutineSpacing.lg)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
-    }
-
     private var recentHistoryCard: some View {
         Group {
             if checkIns.isEmpty {
-                Text("No entries yet")
-                    .font(RoutineTypography.compactTitle)
-                    .frame(maxWidth: .infinity, minHeight: 88)
+                RoutineEmptyState(
+                    icon: .check,
+                    title: "No check-ins yet",
+                    message: "Finish a task and your first entry will appear here.",
+                    actionTitle: "View your habits",
+                    action: onOpenHabits
+                )
             } else {
                 VStack(spacing: RoutineSpacing.sm) {
                     ForEach(checkIns.prefix(4)) { checkIn in
@@ -143,24 +121,8 @@ struct ProfileView: View {
                     }
                 }
                 .padding(RoutineSpacing.md)
+                .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
             }
-        }
-        .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
-    }
-
-    private func profileDetail(
-        label: String,
-        value: String,
-        alignment: HorizontalAlignment = .leading
-    ) -> some View {
-        VStack(alignment: alignment, spacing: RoutineSpacing.xxs) {
-            Text(label)
-                .font(RoutineTypography.small)
-                .foregroundStyle(RoutineColors.secondaryText)
-            Text(value)
-                .font(RoutineTypography.body)
-                .foregroundStyle(RoutineColors.secondaryText)
-                .lineLimit(1)
         }
     }
 

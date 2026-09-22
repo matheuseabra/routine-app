@@ -23,17 +23,19 @@ struct MainAppView: View {
         Group {
             switch selectedTab {
             case .home:
-                HomeView(selectedTab: $selectedTab, tasks: tasks, onToggleTask: toggleTask)
-            case .profile:
-                ProfileView(tasks: tasks, checkIns: checkIns)
-            case .habits:
-                HabitsView {
+                HomeView(selectedTab: $selectedTab, tasks: tasks, onToggleTask: toggleTask) {
                     isAddTaskPresented = true
                 }
+            case .profile:
+                ProfileView(tasks: tasks, checkIns: checkIns, onOpenHabits: { selectedTab = .habits })
+            case .habits:
+                HabitsView(tasks: tasks, onToggleTask: toggleTask) { isAddTaskPresented = true }
             case .insights:
-                InsightsView(checkIns: checkIns)
+                InsightsView(checkIns: checkIns, onOpenHabits: { selectedTab = .habits })
             case .add:
-                HomeView(selectedTab: $selectedTab, tasks: tasks, onToggleTask: toggleTask)
+                HomeView(selectedTab: $selectedTab, tasks: tasks, onToggleTask: toggleTask) {
+                    isAddTaskPresented = true
+                }
             }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {

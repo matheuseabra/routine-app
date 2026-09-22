@@ -35,6 +35,7 @@ struct RoutineNavItem: View {
 }
 
 struct RoutineNavigationBar: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Binding var selectedTab: AppTab
     let onAdd: () -> Void
 
@@ -63,8 +64,10 @@ struct RoutineNavigationBar: View {
                     .accessibilityLabel("Add")
                 } else {
                     RoutineNavItem(tab: tab, isSelected: selectedTab == tab) {
-                        withAnimation(.easeInOut(duration: 0.18)) {
+                        if reduceMotion {
                             selectedTab = tab
+                        } else {
+                            withAnimation(.easeInOut(duration: 0.18)) { selectedTab = tab }
                         }
                     }
                 }

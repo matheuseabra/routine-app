@@ -16,11 +16,13 @@ private struct InsightPoint: Identifiable {
 
 struct InsightsView: View {
     let checkIns: [RoutineCheckIn]
+    let onOpenHabits: () -> Void
     @State private var selectedRange: InsightRange = .week
     @State private var rangeHapticTrigger = 0
 
-    init(checkIns: [RoutineCheckIn] = []) {
+    init(checkIns: [RoutineCheckIn] = [], onOpenHabits: @escaping () -> Void = {}) {
         self.checkIns = checkIns
+        self.onOpenHabits = onOpenHabits
     }
 
     var body: some View {
@@ -33,13 +35,23 @@ struct InsightsView: View {
                 .padding(.top, RoutineSpacing.lg)
                 .padding(.bottom, RoutineSpacing.xl)
 
-                RoutineSectionHeader(title: "Overview")
-                    .padding(.bottom, RoutineSpacing.sm)
-                rangePicker
-                    .padding(.bottom, RoutineSpacing.lg)
-                metrics
-                    .padding(.bottom, RoutineSpacing.lg)
-                trendCard
+                if checkIns.isEmpty {
+                    RoutineEmptyState(
+                        icon: .chartLineUp,
+                        title: "Your progress starts with a check-in",
+                        message: "Complete a task to see your activity and consistency here.",
+                        actionTitle: "View your habits",
+                        action: onOpenHabits
+                    )
+                } else {
+                    RoutineSectionHeader(title: "Overview")
+                        .padding(.bottom, RoutineSpacing.sm)
+                    rangePicker
+                        .padding(.bottom, RoutineSpacing.lg)
+                    metrics
+                        .padding(.bottom, RoutineSpacing.lg)
+                    trendCard
+                }
             }
             .padding(.horizontal, RoutineSpacing.lg)
             .padding(.bottom, RoutineSpacing.huge)

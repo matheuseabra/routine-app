@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct RoutinePrimaryButton: View {
+    @Environment(\.isEnabled) private var environmentIsEnabled
     enum VisualStyle: Equatable {
         case standard
         case funnel
@@ -13,6 +14,7 @@ struct RoutinePrimaryButton: View {
     @State private var hapticTrigger = 0
 
     var body: some View {
+        let enabled = isEnabled && environmentIsEnabled
         Button {
             hapticTrigger += 1
             action()
@@ -21,13 +23,13 @@ struct RoutinePrimaryButton: View {
                 .font(visualStyle == .funnel ? RoutineTypography.funnelButton : RoutineTypography.button)
                 .frame(maxWidth: .infinity)
                 .frame(height: visualStyle == .funnel ? 48 : 54)
-                .foregroundStyle(isEnabled ? RoutineColors.inverseText : RoutineColors.primaryText)
+                .foregroundStyle(enabled ? RoutineColors.inverseText : RoutineColors.secondaryText)
                 .background {
                     if visualStyle == .funnel {
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(isEnabled ? RoutineColors.primaryText : RoutineColors.track)
+                            .fill(enabled ? RoutineColors.primaryText : RoutineColors.track)
                     } else {
-                        RoundedRectangle(cornerRadius: 12).fill(isEnabled ? RoutineColors.primaryText : RoutineColors.track)
+                        RoundedRectangle(cornerRadius: 12).fill(enabled ? RoutineColors.primaryText : RoutineColors.track)
                     }
                 }
         }
@@ -121,6 +123,7 @@ struct RoutineCard<Content: View>: View {
 }
 
 struct RoutineProgressBar: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let progress: Double
     var height: CGFloat = 6
 
@@ -131,7 +134,7 @@ struct RoutineProgressBar: View {
                 Capsule()
                     .fill(RoutineColors.primaryText)
                     .frame(width: max(0, geometry.size.width * min(max(progress, 0), 1)))
-                    .animation(.easeInOut(duration: 0.25), value: progress)
+                    .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: progress)
             }
         }
         .frame(height: height)
@@ -142,6 +145,7 @@ struct RoutineProgressBar: View {
 }
 
 struct RoutinePageIndicator: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let count: Int
     let selectedIndex: Int
 
@@ -153,7 +157,7 @@ struct RoutinePageIndicator: View {
                     .frame(width: index == selectedIndex ? 24 : 8, height: 8)
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: selectedIndex)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: selectedIndex)
         .accessibilityLabel("Page \(selectedIndex + 1) of \(count)")
     }
 }

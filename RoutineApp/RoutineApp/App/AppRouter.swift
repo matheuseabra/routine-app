@@ -77,6 +77,7 @@ final class AppRouter {
 
 struct RoutineRootView: View {
     @Environment(AppServices.self) private var services
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var appState: AppState
     @State private var router: AppRouter
@@ -125,12 +126,12 @@ struct RoutineRootView: View {
                     }
                 }
                 .id(router.screen)
-                .transition(.asymmetric(
+                .transition(reduceMotion ? .opacity : .asymmetric(
                     insertion: .move(edge: transitionDirection).combined(with: .opacity),
                     removal: .move(edge: transitionDirection == .trailing ? .leading : .trailing).combined(with: .opacity)
                 ))
             }
-            .animation(.easeInOut(duration: 0.2), value: router.screen)
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: router.screen)
             .toolbar(.hidden, for: .navigationBar)
         }
         .tint(RoutineColors.primaryText)

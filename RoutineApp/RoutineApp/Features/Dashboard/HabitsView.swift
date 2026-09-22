@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct HabitsView: View {
+    let tasks: [RoutineTask]
+    let onToggleTask: (RoutineTask) -> Void
     let onAddTask: () -> Void
 
     var body: some View {
@@ -8,41 +10,38 @@ struct HabitsView: View {
             VStack(alignment: .leading, spacing: 0) {
                 RoutinePageHeader(
                     title: "Habits",
-                    subtitle: "Build habits that fit your real life."
+                    subtitle: tasks.isEmpty
+                        ? "A steady routine begins with one task."
+                        : "The small steps you chose for yourself."
                 )
                 .padding(.top, RoutineSpacing.lg)
                 .padding(.bottom, RoutineSpacing.xl)
 
-                RoutineCard {
-                    VStack(alignment: .leading, spacing: RoutineSpacing.md) {
-                        ZStack {
-                            Circle()
-                                .fill(RoutineColors.primaryText)
-                            RoutineIcon(.listChecks, weight: .regular, color: RoutineColors.inverseText)
-                                .frame(width: 26, height: 26)
-                        }
-                        .frame(width: 52, height: 52)
+                if tasks.isEmpty {
+                    RoutineEmptyState(
+                        icon: .listChecks,
+                        title: "Make room for a new habit",
+                        message: "Choose something small enough to repeat. You can always add more later.",
+                        actionTitle: "Add a task",
+                        action: onAddTask
+                    )
+                } else {
+                    RoutineSectionHeader(title: "Your routine")
+                        .padding(.bottom, RoutineSpacing.sm)
 
-                        VStack(alignment: .leading, spacing: RoutineSpacing.xs) {
-                            Text("Your routine starts here")
-                                .font(RoutineTypography.compactTitle)
-                            Text("Create a small daily task, repeat it, and let consistency do the heavy lifting.")
-                                .routineSubtitleStyle()
-                                .fixedSize(horizontal: false, vertical: true)
+                    VStack(spacing: 0) {
+                        ForEach(Array(tasks.enumerated()), id: \.element.id) { index, task in
+                            RoutineTaskRow(task: task) { onToggleTask(task) }
+                            if index < tasks.count - 1 {
+                                Divider().overlay(RoutineColors.border)
+                            }
                         }
-
-                        RoutinePrimaryButton(title: "Add a task", action: onAddTask)
                     }
-                }
+                    .padding(.horizontal, RoutineSpacing.md)
+                    .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
 
-                RoutineSectionHeader(title: "A simple rhythm")
-                    .padding(.top, RoutineSpacing.xxl)
-                    .padding(.bottom, RoutineSpacing.sm)
-
-                VStack(spacing: RoutineSpacing.xs) {
-                    rhythmRow(icon: .target, title: "Choose one thing", subtitle: "Start with a task you can repeat.")
-                    rhythmRow(icon: .arrowsClockwise, title: "Return to it daily", subtitle: "Small actions become a routine over time.")
-                    rhythmRow(icon: .chartLineUp, title: "Notice your progress", subtitle: "Insights will follow as you build momentum.")
+                    RoutinePrimaryButton(title: "Add another task", action: onAddTask)
+                        .padding(.top, RoutineSpacing.lg)
                 }
             }
             .padding(.horizontal, RoutineSpacing.lg)
@@ -51,26 +50,8 @@ struct HabitsView: View {
         .scrollIndicators(.hidden)
         .background(RoutineColors.background)
     }
-
-    private func rhythmRow(icon: RoutineIconName, title: String, subtitle: String) -> some View {
-        HStack(spacing: RoutineSpacing.md) {
-            RoutineIcon(icon, weight: .regular)
-                .frame(width: 22, height: 22)
-            VStack(alignment: .leading, spacing: RoutineSpacing.xxs) {
-                Text(title)
-                    .font(RoutineTypography.timelineTitle)
-                Text(subtitle)
-                    .font(RoutineTypography.small)
-                    .foregroundStyle(RoutineColors.secondaryText)
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(.horizontal, RoutineSpacing.md)
-        .frame(minHeight: 64)
-        .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
-    }
 }
 
 #Preview("Habits") {
-    HabitsView {}
+    HabitsView(tasks: [], onToggleTask: { _ in }, onAddTask: {})
 }

@@ -8,16 +8,16 @@ struct SettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Settings")
-                    .routineTitleStyle()
-                    .font(RoutineTypography.settingsTitle)
+                RoutinePageHeader(title: "Settings", subtitle: "Manage your Routine experience.")
                     .padding(.top, RoutineSpacing.xl)
                     .padding(.bottom, RoutineSpacing.lg)
 
                 VStack(spacing: 0) {
-                    setting(.bell, "Notifications") {}
-                    divider
-                    setting(.sliders, "Preferences") {}
+                    setting(.bell, "Notification settings") {
+                        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                            openURL(settingsURL)
+                        }
+                    }
                     divider
                     setting(.creditCard, "Restore purchases") {
                         Task {
@@ -45,17 +45,26 @@ struct SettingsView: View {
                     }
                     divider
                     setting(.trash, "Delete Account") {
-                        statusMessage = "Connect your production account provider to implement deletion."
+                        statusMessage = "Account deletion is unavailable in this build. Contact support for help."
                     }
                 }
                 .padding(.horizontal, RoutineSpacing.md)
                 .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
 
                 if let statusMessage {
-                    Text(statusMessage)
-                        .font(RoutineTypography.smallRegular)
-                        .foregroundStyle(RoutineColors.secondaryText)
-                        .padding(.top, RoutineSpacing.md)
+                    RoutineCard {
+                        VStack(alignment: .leading, spacing: RoutineSpacing.sm) {
+                            Text(statusMessage)
+                                .font(RoutineTypography.secondary)
+                                .foregroundStyle(RoutineColors.primaryText)
+                            if statusMessage.contains("deletion") {
+                                Button("Contact support") { openURL(AppConfig.supportURL) }
+                                    .font(RoutineTypography.small)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.top, RoutineSpacing.md)
                 }
             }
             .padding(.horizontal, RoutineSpacing.lg)

@@ -4,6 +4,7 @@ struct HomeView: View {
     @Binding var selectedTab: AppTab
     let tasks: [RoutineTask]
     let onToggleTask: (RoutineTask) -> Void
+    let onAddTask: () -> Void
     @State private var insightsHapticTrigger = 0
 
     var body: some View {
@@ -15,6 +16,10 @@ struct HomeView: View {
                 if tasks.isEmpty {
                     emptyState
                 } else {
+                    progressCard
+                        .padding(.bottom, RoutineSpacing.xl)
+                    RoutineSectionHeader(title: "Your tasks")
+                        .padding(.bottom, RoutineSpacing.sm)
                     taskList
                 }
             }
@@ -36,7 +41,7 @@ struct HomeView: View {
                     selectedTab = .insights
                 }
             } label: {
-                RoutineIcon(.magnifyingGlass, weight: .bold)
+                RoutineIcon(.chartLineUp)
                     .frame(width: 21, height: 21)
                     .frame(width: 44, height: 44)
             }
@@ -47,25 +52,35 @@ struct HomeView: View {
     }
 
     private var emptyState: some View {
-        VStack(spacing: RoutineSpacing.md) {
-            ZStack {
-                Circle().fill(RoutineColors.track)
-                RoutineIcon(.clipboardText, color: RoutineColors.secondaryText)
-                    .frame(width: 30, height: 30)
+        RoutineEmptyState(
+            icon: .clipboardText,
+            title: "Start with one small step",
+            message: "Add a task you can complete today. You can build from there.",
+            actionTitle: "Add your first task",
+            action: onAddTask
+        )
+    }
+
+    private var progressCard: some View {
+        let completed = tasks.filter(\.isCompleted).count
+        return RoutineCard {
+            VStack(alignment: .leading, spacing: RoutineSpacing.sm) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(completed == tasks.count ? "All done for now" : "One step at a time")
+                        .font(RoutineTypography.timelineTitle)
+                    Spacer()
+                    Text("\(completed) of \(tasks.count)")
+                        .font(RoutineTypography.small)
+                        .foregroundStyle(RoutineColors.secondaryText)
+                }
+                RoutineProgressBar(progress: Double(completed) / Double(tasks.count))
+                Text(completed == tasks.count
+                     ? "You followed through. Add another task whenever you’re ready."
+                     : "Your next task is \(tasks.first(where: { !$0.isCompleted })?.title ?? "ready when you are").")
+                    .font(RoutineTypography.smallRegular)
+                    .foregroundStyle(RoutineColors.secondaryText)
             }
-            .frame(width: 64, height: 64)
-            Text("Nothing planned yet")
-                .font(RoutineTypography.compactTitle)
-                .multilineTextAlignment(.center)
-            Text("Add a task to start building your routine.")
-                .routineSubtitleStyle()
-                .multilineTextAlignment(.center)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, RoutineSpacing.xxl)
-        .padding(.horizontal, RoutineSpacing.lg)
-        .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
-        .accessibilityElement(children: .combine)
     }
 
     private var taskList: some View {
@@ -91,6 +106,7 @@ struct HomeView: View {
     HomeView(
         selectedTab: $tab,
         tasks: [RoutineTask(title: "Morning walk")],
-        onToggleTask: { _ in }
+        onToggleTask: { _ in },
+        onAddTask: {}
     )
 }
