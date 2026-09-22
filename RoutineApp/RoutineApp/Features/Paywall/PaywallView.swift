@@ -44,9 +44,12 @@ struct PaywallView: View {
                     .frame(maxWidth: 320)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.bottom, RoutineSpacing.md)
-
+            }
+            .frame(maxWidth: .infinity)
+        } bottom: {
+            VStack(spacing: 0) {
                 pricingCards
-                    .padding(.bottom, RoutineSpacing.md)
+                    .padding(.bottom, RoutineSpacing.sm)
 
                 if let errorMessage {
                     Text(errorMessage)
@@ -67,17 +70,10 @@ struct PaywallView: View {
                 Text("No commitment. Cancel anytime.")
                     .font(RoutineTypography.funnelCaption)
                     .foregroundStyle(RoutineColors.tertiaryText)
-                    .frame(maxWidth: .infinity)
-                    .contextMenu {
-                        Button("Restore purchases", systemImage: "arrow.clockwise") {
-                            restorePurchases()
-                        }
-                        .disabled(!isSubscriptionReady || isPurchasing)
-                    }
+                    .padding(.bottom, RoutineSpacing.xxs)
+
+                legalLinks
             }
-            .frame(maxWidth: .infinity)
-        } bottom: {
-            EmptyView()
         }
         .task {
             defer { isLoadingPlans = false }
@@ -134,6 +130,31 @@ struct PaywallView: View {
         }
     }
 
+    private var legalLinks: some View {
+        HStack(spacing: RoutineSpacing.xs) {
+            Link("Terms", destination: AppConfig.termsURL)
+                .accessibilityIdentifier("paywall-terms-link")
+            footerSeparator
+            Link("Privacy", destination: AppConfig.privacyURL)
+                .accessibilityIdentifier("paywall-privacy-link")
+            footerSeparator
+            Button("Restore", action: restorePurchases)
+                .disabled(!isSubscriptionReady || isPurchasing)
+                .accessibilityIdentifier("paywall-restore-button")
+        }
+        .font(RoutineTypography.funnelCaption)
+        .foregroundStyle(RoutineColors.secondaryText)
+        .tint(RoutineColors.secondaryText)
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
+    }
+
+    private var footerSeparator: some View {
+        Text("·")
+            .foregroundStyle(RoutineColors.tertiaryText)
+            .accessibilityHidden(true)
+    }
+
     private var orderedPlans: [SubscriptionPlan] {
         plans.sorted { planRank($0) < planRank($1) }
     }
@@ -149,7 +170,7 @@ struct PaywallView: View {
         let isYearly = isYearlyPlan(plan)
         let isWeekly = isWeeklyPlan(plan)
         let cadenceName = isYearly ? "Yearly" : (isWeekly ? "Weekly" : plan.displayName)
-        let billingInterval = isYearly ? "per year" : (isWeekly ? "per week" : "per \(plan.period)")
+        let billingInterval = isYearly ? "/year" : (isWeekly ? "/week" : "/\(plan.period)")
         return Button {
             withAnimation(.easeInOut(duration: 0.2)) {
                 selectedPlanID = plan.id
@@ -175,12 +196,11 @@ struct PaywallView: View {
                 Spacer(minLength: RoutineSpacing.sm)
 
                 VStack(alignment: .trailing, spacing: RoutineSpacing.xxs) {
-                    Text(plan.displayPrice)
-                        .font(RoutineTypography.funnelBodyMedium)
+                    Text("\(plan.displayPrice)\(billingInterval)")
+                        .font(RoutineTypography.funnelBodyMedium.weight(.semibold))
                         .foregroundStyle(RoutineColors.primaryText)
-                    Text(billingInterval)
-                        .font(RoutineTypography.funnelCaption)
-                        .foregroundStyle(RoutineColors.funnelSecondaryText)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
                 .multilineTextAlignment(.trailing)
             }
@@ -194,7 +214,7 @@ struct PaywallView: View {
             .contentShape(RoundedRectangle(cornerRadius: 11))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("\(cadenceName), \(plan.priceDescription)\(isYearly ? ", Best value" : "")")
+        .accessibilityLabel("\(cadenceName), \(plan.displayPrice)\(billingInterval)\(isYearly ? ", Best value" : "")")
         .accessibilityValue(isSelected ? "Selected" : "Not selected")
     }
 

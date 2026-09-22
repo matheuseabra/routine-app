@@ -75,12 +75,23 @@ struct RoutineFunnelContextHeader: View {
     let icon: String
     let title: String
     let subtitle: String
+    var successBadgeIcon: String? = nil
 
     var body: some View {
         VStack(spacing: RoutineSpacing.sm) {
             Image(systemName: icon)
                 .font(.system(size: 30, weight: .regular))
                 .foregroundStyle(RoutineColors.primaryText)
+                .overlay(alignment: .bottomTrailing) {
+                    if let successBadgeIcon {
+                        Image(systemName: successBadgeIcon)
+                            .font(.system(size: 10, weight: .bold))
+                            .padding(3)
+                            .background(RoutineColors.background, in: Circle())
+                            .offset(x: 4, y: 3)
+                    }
+                }
+                .frame(width: 36, height: 36)
                 .accessibilityHidden(true)
 
             Text(title)

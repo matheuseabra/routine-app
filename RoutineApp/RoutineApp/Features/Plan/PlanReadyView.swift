@@ -18,9 +18,10 @@ struct PlanReadyView: View {
         ) {
             VStack(alignment: .leading, spacing: 0) {
                 RoutineFunnelContextHeader(
-                    icon: "checkmark.seal",
+                    icon: "doc.text",
                     title: context.readyTitle,
-                    subtitle: context.readySubtitle
+                    subtitle: context.readySubtitle,
+                    successBadgeIcon: "checkmark"
                 )
                 .padding(.bottom, RoutineSpacing.md)
 
@@ -69,8 +70,10 @@ struct PlanReadyView: View {
     private var progressChart: some View {
         VStack(alignment: .leading, spacing: RoutineSpacing.xs) {
             Text("Your progress over time")
-                .font(RoutineTypography.funnelSubtitle)
+                .font(RoutineTypography.funnelSubtitleMedium)
                 .foregroundStyle(RoutineColors.primaryText)
+                .frame(maxWidth: .infinity)
+                .multilineTextAlignment(.center)
 
             Text("Progress")
                 .font(RoutineTypography.chartLabel)

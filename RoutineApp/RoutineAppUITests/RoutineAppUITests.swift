@@ -37,9 +37,19 @@ final class RoutineAppUITests: XCTestCase {
         XCTAssertEqual(yearlyPlan.value as? String, "Selected")
         XCTAssertEqual(weeklyPlan.value as? String, "Not selected")
         XCTAssertTrue(yearlyPlan.label.localizedCaseInsensitiveContains("Best value"))
+        XCTAssertTrue(yearlyPlan.label.contains("/year"))
+        XCTAssertTrue(weeklyPlan.label.contains("/week"))
         let paywallTitle = app.staticTexts["Build stronger consistency with your personal plan."]
         XCTAssertEqual(paywallTitle.frame.midX, app.frame.midX, accuracy: 3)
         XCTAssertLessThan(app.staticTexts["Your personal plan"].frame.midX, app.frame.midX)
+        XCTAssertTrue(app.staticTexts["No commitment. Cancel anytime."].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["paywall-terms-link"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["paywall-privacy-link"].exists)
+        let restore = app.buttons["Restore"]
+        XCTAssertTrue(restore.exists)
+        XCTAssertEqual(restore.identifier, "paywall-restore-button")
+        XCTAssertGreaterThan(restore.frame.minY, weeklyPlan.frame.maxY)
+        XCTAssertLessThan(restore.frame.maxY, app.frame.maxY)
 
         weeklyPlan.tap()
         XCTAssertEqual(weeklyPlan.value as? String, "Selected")
@@ -55,6 +65,8 @@ final class RoutineAppUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["Your plan is ready."].frame.midX, app.frame.midX, accuracy: 3)
         XCTAssertLessThan(app.staticTexts["Your starting routine"].frame.midX, app.frame.midX)
         XCTAssertTrue(app.staticTexts["Day"].exists)
+        let chartHeading = app.staticTexts["Your progress over time"]
+        XCTAssertEqual(chartHeading.frame.midX, app.frame.midX, accuracy: 3)
         XCTAssertTrue(app.staticTexts["Progress"].exists)
         XCTAssertTrue(app.staticTexts["Without Routine"].exists)
         XCTAssertTrue(app.staticTexts["With Routine"].exists)

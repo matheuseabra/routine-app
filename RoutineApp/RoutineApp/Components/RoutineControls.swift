@@ -24,14 +24,15 @@ struct RoutinePrimaryButton: View {
                 .foregroundStyle(isEnabled ? RoutineColors.inverseText : RoutineColors.primaryText)
                 .background {
                     if visualStyle == .funnel {
-                        Capsule().fill(isEnabled ? RoutineColors.primaryText : RoutineColors.track)
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(isEnabled ? RoutineColors.primaryText : RoutineColors.track)
                     } else {
                         RoundedRectangle(cornerRadius: 12).fill(isEnabled ? RoutineColors.primaryText : RoutineColors.track)
                     }
                 }
         }
         .buttonStyle(.plain)
-        .contentShape(Capsule())
+        .contentShape(RoundedRectangle(cornerRadius: visualStyle == .funnel ? 10 : 12, style: .continuous))
         .disabled(!isEnabled)
         .sensoryFeedback(.impact(weight: .medium), trigger: hapticTrigger)
         .accessibilityLabel(title)

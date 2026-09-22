@@ -12,6 +12,7 @@ enum RoutineTypography {
     static let funnelBody = Font.custom(regular, size: 17, relativeTo: .body)
     static let funnelBodyMedium = Font.custom(medium, size: 17, relativeTo: .body)
     static let funnelSubtitle = Font.custom(regular, size: 16, relativeTo: .subheadline)
+    static let funnelSubtitleMedium = Font.custom(medium, size: 16, relativeTo: .subheadline)
     static let funnelCaption = Font.custom(regular, size: 13, relativeTo: .caption)
     static let funnelButton = Font.custom(medium, size: 17, relativeTo: .body)
     static let compactTitle = Font.custom(bold, size: 24, relativeTo: .title2)

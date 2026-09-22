@@ -9,7 +9,7 @@ This is a screen-by-screen extraction of the supplied 3840 × 2160 reference boa
 - The reference typography is intentionally enlarged slightly: bold headlines, 23–24 pt funnel titles, 16 pt subtitles, 17 pt body/option text, and 13 pt muted metadata. Long titles wrap naturally.
 - Quiz choice cards use 10–12 pt corners, a soft shadow, a leading semantic icon, and no per-option subtitles. Unselected cards have no visible border; a selected card gets a solid primary-color outline and a soft neutral fill.
 - Quiz screens have a top-left back chevron and a thin progress bar, without the numeric “n/5” counter. Every choice question requires a selection before Continue or a forward swipe can advance; the name field is also required.
-- Primary actions are black, about 48 pt high, nearly full-width, and capsule-shaped. The status bar remains system-rendered. Do not show a page-progress breadcrumb on the welcome screen.
+- Primary actions are black, about 48 pt high, nearly full-width, and use a 10 pt rounded-square corner radius; secondary buttons use 12 pt corners. The status bar remains system-rendered. Do not show a page-progress breadcrumb on the welcome screen.
 
 ## Reference screens and implementation mapping
 
@@ -81,18 +81,17 @@ This is a screen-by-screen extraction of the supplied 3840 × 2160 reference boa
 
 ### 9. Plan ready
 
-- Center the whole content group horizontally and vertically, including a contextual completion icon, personalized title “{name}, your plan is ready.”, supporting copy “Built around your goal to build stronger consistency.”, routine card, and progress chart. Keep routine-card copy left aligned.
+- Center the whole content group horizontally and vertically, including a document-with-check completion icon, personalized title “{name}, your plan is ready.”, supporting copy “Built around your goal to build stronger consistency.”, routine card, and progress chart. Keep routine-card copy left aligned.
 - White routine card titled “Your starting routine” with three icon rows and durations: “Morning reset” — 2 min; “Focus block” — 10 min; “Evening review” — 3 min.
-- “Your progress over time” label followed by two upward lines: a slower dashed “Without Routine” series and a faster solid “With Routine” series. Label the x-axis “Day” with weekday ticks and the y-axis “Progress” with visible score ticks. Put a compact two-item legend below the chart, containing only “Without Routine” and “With Routine”.
+- Center the semibold “Your progress over time” label above two upward lines: a slower dashed “Without Routine” series and a faster solid “With Routine” series. Label the x-axis “Day” with weekday ticks and the y-axis “Progress” with visible score ticks. Put a compact two-item legend below the chart, containing only “Without Routine” and “With Routine”.
 - Bottom CTA: “Continue”.
 
 ### 10. Paywall
 
-- Center the Routine brand row, headline, supporting copy, pricing choices, CTA, and reassurance as one vertically centered page group. Center the headline “Build stronger consistency with your personal plan.” and supporting copy “Unlock the full Routine experience and create lasting change.”
+- Center the Routine brand row, headline, supporting copy, and benefit list together in the flexible upper area. Center the headline “Build stronger consistency with your personal plan.” and supporting copy “Unlock the full Routine experience and create lasting change.” Keep benefit copy left aligned inside its centered column.
 - Keep the three benefit rows left aligned within a centered column, with light outline icons: “Your personal plan” / “Tailored to your goals and routine.”; “Progress insights” / “See your progress over time.”; “Smart reminders” / “Stay on track, automatically.”
-- Two bordered radio-choice rows, Yearly first and selected, then Weekly. Keep the radio and cadence label on the left and the localized price on the right; show “Best value” with Yearly. No chevrons.
-- Include the CTA “Start my free trial” and the small reassurance “No commitment. Cancel anytime.” in the centered page group.
-- Keep pricing and purchase behavior connected to live subscription products; demo prices must not enable a purchase when the provider is unconfigured. Retain a usable restore-purchases path without letting it displace the reference hierarchy.
+- Anchor the two bordered radio-choice rows and CTA at the bottom, followed by “No commitment. Cancel anytime.” and Terms · Privacy · Restore links. Keep the radio and cadence label left, localized semibold price right, with one-line “/year” or “/week” suffix; show “Best value” with Yearly. No chevrons.
+- Keep pricing and purchase behavior connected to live subscription products; demo prices must not enable a purchase when the provider is unconfigured. Retain the restore action in the bottom footer alongside the legal links.
 
 ## Flow and auth boundary
 
