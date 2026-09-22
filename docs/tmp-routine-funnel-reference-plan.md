@@ -88,9 +88,9 @@ This is a screen-by-screen extraction of the supplied 3840 × 2160 reference boa
 
 ### 10. Paywall
 
-- Center the Routine brand row, headline, supporting copy, and benefit list together in the flexible upper area. Center the headline “Build stronger consistency with your personal plan.” and supporting copy “Unlock the full Routine experience and create lasting change.” Keep benefit copy left aligned inside its centered column.
+- Center the Routine brand row, headline, supporting copy, and benefit list together in the flexible upper area, with a generous gap between the subtitle and list so the upper group feels balanced. Use medium-weight brand text to visually match the small circle mark. Center the headline “Build stronger consistency with your personal plan.” and supporting copy “Unlock the full Routine experience and create lasting change.” Keep benefit copy left aligned inside its centered column.
 - Keep the three benefit rows left aligned within a centered column, with light outline icons: “Your personal plan” / “Tailored to your goals and routine.”; “Progress insights” / “See your progress over time.”; “Smart reminders” / “Stay on track, automatically.”
-- Anchor the two bordered radio-choice rows and CTA at the bottom, followed by “No commitment. Cancel anytime.” and Terms · Privacy · Restore links. Keep the radio and cadence label left, localized semibold price right, with one-line “/year” or “/week” suffix; show “Best value” with Yearly. No chevrons.
+- Anchor the two bordered radio-choice rows and CTA at the bottom, followed by “No commitment. Cancel anytime.” and Terms · Privacy · Restore links, with light vertical breathing room around the reassurance. Keep the radio and cadence label left, localized semibold price right, with one-line “/year” or “/week” suffix; place the “Best value” pill centered over the card’s top border at the right, directly above the price. No chevrons.
 - Keep pricing and purchase behavior connected to live subscription products; demo prices must not enable a purchase when the provider is unconfigured. Retain the restore action in the bottom footer alongside the legal links.
 
 ## Flow and auth boundary

@@ -63,7 +63,7 @@ struct RoutineFunnelBrandHeader: View {
         HStack(spacing: RoutineSpacing.xs) {
             RoutineLogo(size: .small)
             Text(AppConfig.displayName)
-                .font(RoutineTypography.funnelBody)
+                .font(RoutineTypography.appName)
                 .foregroundStyle(RoutineColors.primaryText)
         }
         .accessibilityElement(children: .combine)

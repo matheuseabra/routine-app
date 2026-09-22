@@ -38,7 +38,7 @@ struct PaywallView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
-                    .padding(.bottom, RoutineSpacing.md)
+                    .padding(.bottom, RoutineSpacing.xl)
 
                 benefits
                     .frame(maxWidth: 320)
@@ -70,7 +70,7 @@ struct PaywallView: View {
                 Text("No commitment. Cancel anytime.")
                     .font(RoutineTypography.funnelCaption)
                     .foregroundStyle(RoutineColors.tertiaryText)
-                    .padding(.bottom, RoutineSpacing.xxs)
+                    .padding(.vertical, RoutineSpacing.xs)
 
                 legalLinks
             }
@@ -179,19 +179,9 @@ struct PaywallView: View {
             HStack(spacing: RoutineSpacing.sm) {
                 RoutineRadioButton(isSelected: isSelected)
 
-                VStack(alignment: .leading, spacing: RoutineSpacing.xxs) {
-                    Text(cadenceName)
-                        .font(RoutineTypography.funnelBodyMedium)
-                        .foregroundStyle(RoutineColors.primaryText)
-                    if isYearly {
-                        Text("Best value")
-                            .font(.system(size: 9, weight: .medium))
-                            .foregroundStyle(RoutineColors.inverseText)
-                            .padding(.horizontal, RoutineSpacing.xs)
-                            .padding(.vertical, RoutineSpacing.xxs)
-                            .background(RoutineColors.primaryText, in: Capsule())
-                    }
-                }
+                Text(cadenceName)
+                    .font(RoutineTypography.funnelBodyMedium)
+                    .foregroundStyle(RoutineColors.primaryText)
 
                 Spacer(minLength: RoutineSpacing.sm)
 
@@ -210,6 +200,17 @@ struct PaywallView: View {
             .overlay {
                 RoundedRectangle(cornerRadius: 11)
                     .stroke(isSelected ? RoutineColors.primaryText : RoutineColors.border, lineWidth: isSelected ? 1.2 : 0.8)
+            }
+            .overlay(alignment: .topTrailing) {
+                if isYearly {
+                    Text("Best value")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundStyle(RoutineColors.inverseText)
+                        .padding(.horizontal, RoutineSpacing.xs)
+                        .padding(.vertical, RoutineSpacing.xxs)
+                        .background(RoutineColors.primaryText, in: Capsule())
+                        .offset(x: -RoutineSpacing.md, y: -7)
+                }
             }
             .contentShape(RoundedRectangle(cornerRadius: 11))
         }
