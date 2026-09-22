@@ -67,7 +67,7 @@ struct RoutineFunnelBrandHeader: View {
                 .foregroundStyle(RoutineColors.primaryText)
         }
         .accessibilityElement(children: .combine)
-        .frame(height: 30, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 30, alignment: .center)
     }
 }
 

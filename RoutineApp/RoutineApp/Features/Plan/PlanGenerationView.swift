@@ -3,7 +3,7 @@ import SwiftUI
 struct PlanGenerationView: View {
     let context: RoutinePlanContext
     let onComplete: () -> Void
-    @State private var progress = 67.0
+    @State private var progress = 57.0
 
     init(name: String, answers: [String?], onComplete: @escaping () -> Void) {
         context = RoutinePlanContext(name: name, answers: answers)
@@ -43,7 +43,13 @@ struct PlanGenerationView: View {
     }
 
     private func animatePlanProgress() async {
-        for percentage in 68...100 {
+        do {
+            try await Task.sleep(for: .milliseconds(1_500))
+        } catch {
+            return
+        }
+
+        for percentage in 58...100 {
             guard !Task.isCancelled else { return }
             progress = Double(percentage)
             do {

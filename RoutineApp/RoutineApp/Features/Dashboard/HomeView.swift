@@ -12,8 +12,6 @@ struct HomeView: View {
                 header
                     .padding(.top, RoutineSpacing.lg)
                     .padding(.bottom, RoutineSpacing.xl)
-                RoutineSectionHeader(title: "Today's plan")
-                    .padding(.bottom, RoutineSpacing.sm)
                 if tasks.isEmpty {
                     emptyState
                 } else {
@@ -21,7 +19,7 @@ struct HomeView: View {
                 }
             }
             .padding(.horizontal, RoutineSpacing.lg)
-            .padding(.bottom, RoutineSpacing.lg)
+            .padding(.bottom, RoutineSpacing.huge)
         }
         .scrollIndicators(.hidden)
         .background(RoutineColors.background)
@@ -30,7 +28,7 @@ struct HomeView: View {
     private var header: some View {
         RoutinePageHeader(
             title: "Today",
-            subtitle: "A simple plan for your day."
+            subtitle: "Keep your routine moving."
         ) {
             Button {
                 insightsHapticTrigger += 1

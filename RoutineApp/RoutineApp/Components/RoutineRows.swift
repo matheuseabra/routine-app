@@ -24,11 +24,10 @@ struct RoutinePricingCard: View {
             .frame(maxWidth: .infinity)
             .frame(height: 62)
             .foregroundStyle(RoutineColors.primaryText)
-            .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
-            .overlay {
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(isSelected ? RoutineColors.primaryText : RoutineColors.border, lineWidth: isSelected ? 1.5 : 1)
-            }
+            .background(
+                isSelected ? RoutineColors.funnelSelection : RoutineColors.surface,
+                in: RoundedRectangle(cornerRadius: 16)
+            )
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.selection, trigger: hapticTrigger)

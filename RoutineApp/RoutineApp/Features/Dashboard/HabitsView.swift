@@ -8,7 +8,7 @@ struct HabitsView: View {
             VStack(alignment: .leading, spacing: 0) {
                 RoutinePageHeader(
                     title: "Habits",
-                    subtitle: "Build a rhythm that makes good days easier."
+                    subtitle: "Build habits that fit your real life."
                 )
                 .padding(.top, RoutineSpacing.lg)
                 .padding(.bottom, RoutineSpacing.xl)

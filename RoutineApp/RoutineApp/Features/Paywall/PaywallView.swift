@@ -44,6 +44,8 @@ struct PaywallView: View {
                     .frame(maxWidth: 320)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.bottom, RoutineSpacing.md)
+
+                testimonial
             }
             .frame(maxWidth: .infinity)
         } bottom: {
@@ -101,6 +103,30 @@ struct PaywallView: View {
             benefitRow(icon: "chart.bar", title: "Progress insights", subtitle: "See your progress over time.")
             benefitRow(icon: "bell", title: "Smart reminders", subtitle: "Stay on track, automatically.")
         }
+    }
+
+    private var testimonial: some View {
+        HStack(alignment: .top, spacing: RoutineSpacing.sm) {
+            Image(systemName: "quote.opening")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(RoutineColors.tertiaryText)
+                .padding(.top, 2)
+
+            VStack(alignment: .leading, spacing: RoutineSpacing.xs) {
+                Text("Small, repeatable steps make consistency easier to build.")
+                    .font(RoutineTypography.funnelCaption)
+                    .foregroundStyle(RoutineColors.primaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("THE ROUTINE APPROACH")
+                    .font(.system(size: 10, weight: .medium))
+                    .tracking(0.8)
+                    .foregroundStyle(RoutineColors.tertiaryText)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(RoutineSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
     }
 
     private func benefitRow(icon: String, title: String, subtitle: String) -> some View {

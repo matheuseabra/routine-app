@@ -55,7 +55,7 @@ struct RoutineNavigationBar: View {
                             .frame(width: 23, height: 23)
                             .frame(width: 52, height: 52)
                             .background(RoutineColors.primaryText, in: Circle())
-                            .offset(y: -16)
+                            .offset(y: -38)
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.plain)

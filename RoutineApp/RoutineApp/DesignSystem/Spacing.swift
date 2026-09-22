@@ -9,6 +9,7 @@ enum RoutineSpacing {
     static let xl: CGFloat = 32
     static let xxl: CGFloat = 40
     static let huge: CGFloat = 48
+    static let buttonCornerRadius: CGFloat = 10
 }
 
 enum RoutineIconMetrics {

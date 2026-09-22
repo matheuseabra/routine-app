@@ -68,10 +68,6 @@ struct PlanView: View {
         .padding(.vertical, RoutineSpacing.sm)
         .frame(maxWidth: .infinity, minHeight: 76, alignment: .leading)
         .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 12))
-        .overlay {
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(RoutineColors.border.opacity(0.55), lineWidth: 0.7)
-        }
     }
 }
 

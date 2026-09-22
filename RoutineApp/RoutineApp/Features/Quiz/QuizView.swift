@@ -194,12 +194,6 @@ struct QuizView: View {
             .frame(maxWidth: .infinity, minHeight: 54, alignment: .leading)
             .padding(.horizontal, RoutineSpacing.md)
             .background(isSelected ? RoutineColors.funnelSelection : RoutineColors.surface, in: RoundedRectangle(cornerRadius: 11))
-            .overlay {
-                if isSelected {
-                    RoundedRectangle(cornerRadius: 11)
-                        .stroke(RoutineColors.primaryText, lineWidth: 1.4)
-                }
-            }
             .shadow(color: RoutineColors.primaryText.opacity(0.07), radius: 4, x: 0, y: 2)
             .contentShape(RoundedRectangle(cornerRadius: 11))
         }

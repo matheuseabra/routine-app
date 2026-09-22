@@ -29,7 +29,7 @@ struct ProfileView: View {
                 recentHistoryCard
             }
             .padding(.horizontal, RoutineSpacing.lg)
-            .padding(.bottom, RoutineSpacing.lg)
+            .padding(.bottom, RoutineSpacing.huge)
         }
         .scrollIndicators(.hidden)
         .background(RoutineColors.background)
