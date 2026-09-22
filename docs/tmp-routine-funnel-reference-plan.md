@@ -4,7 +4,7 @@ This is a screen-by-screen extraction of the supplied 3840 × 2160 reference boa
 
 ## Shared visual rules
 
-- Use a 24 pt horizontal content inset and a pinned bottom action with consistent safe-area spacing. The welcome hero and personalized guidance content are centered; other funnel copy stays left aligned.
+- Use a 24 pt horizontal content inset and a pinned bottom action with consistent safe-area spacing. Center the welcome hero on both axes. On plan screens, center only the contextual icon, headline, and subtitle as a compact header; keep card text left aligned.
 - Use a white / very-light-gray page background, black primary text and CTA, medium-gray explanatory text, pale-gray tracks and selected fills, and fine neutral borders. Keep icons simple and monochrome; avoid decorative icon discs, gradients, and heavy shadows.
 - The reference typography is intentionally enlarged slightly: bold headlines, 23–24 pt funnel titles, 16 pt subtitles, 17 pt body/option text, and 13 pt muted metadata. Long titles wrap naturally.
 - Quiz choice cards use 10–12 pt corners, a soft shadow, a leading semantic icon, and no per-option subtitles. Unselected cards have no visible border; a selected card gets a solid primary-color outline and a soft neutral fill.
@@ -66,17 +66,14 @@ This is a screen-by-screen extraction of the supplied 3840 × 2160 reference boa
 
 ### 7. Personalized starting guidance
 
-- Small Routine brand row at the top.
-- Personalized two-line title: “{name}, here’s where to start.”
-- Supporting copy combines the selected goal and obstacle into a short diagnosis.
-- Center the title, diagnosis, and text within three white cards. Each card has a simple leading icon without a circular background and a short explanation: “Start smaller” / “Tiny steps create real progress.”; “Focus on repeatable actions” / “Routines beat motivation.”; “Build momentum first” / “Progress fuels consistency.” Remove trailing chevrons.
+- Center a contextual target icon, personalized title “{name}, here’s where to start.”, and a diagnosis from the selected goal and obstacle.
+- Keep card content left aligned. Each of three white cards has a simple leading icon without a circular background and a short explanation: “Start smaller” / “Tiny steps create real progress.”; “Focus on repeatable actions” / “Routines beat motivation.”; “Build momentum first” / “Progress fuels consistency.” Remove trailing chevrons.
 - Bottom CTA: “See my plan”.
 - This is guidance/personalization, not a social sign-in screen; the supplied reference contains no Apple/Google/email authentication controls.
 
 ### 8. Plan generation
 
-- Small Routine brand row at the top.
-- Title: “Creating your personal plan...” and support copy: “We’ll tailor it around your goals, time, and routine.”
+- Centered contextual sparkle icon, title “Creating your personal plan...”, and support copy “We’ll tailor it around your goals, time, and routine.” Do not repeat the Routine logo/name lockup on plan screens.
 - Centered circular progress ring starts at “67%”, animates upward through the percentages to 100%, then advances to the result. Keep the percentage crisp while the ring animates.
 - Four compact progress rows: completed “Analyzing your goal”, “Understanding your routine”, “Finding your starting point”; current “Building your plan”.
 - Three small answer chips near the bottom, reflecting goal, time, and consistency.
@@ -84,11 +81,9 @@ This is a screen-by-screen extraction of the supplied 3840 × 2160 reference boa
 
 ### 9. Plan ready
 
-- Small Routine brand row at the top.
-- Personalized title: “{name}, your plan is ready.”
-- Supporting copy: “Built around your goal to build stronger consistency.”
+- Centered contextual completion icon, personalized title “{name}, your plan is ready.”, and supporting copy “Built around your goal to build stronger consistency.”
 - White routine card titled “Your starting routine” with three icon rows and durations: “Morning reset” — 2 min; “Focus block” — 10 min; “Evening review” — 3 min.
-- “Your progress over time” label followed by two upward lines without axes or day labels: a slower dashed “Without Routine” series and a faster solid “With Routine” series. Put a compact two-item legend directly below the chart, containing only “Without Routine” and “With Routine”.
+- “Your progress over time” label followed by two upward lines: a slower dashed “Without Routine” series and a faster solid “With Routine” series. Label the x-axis “Day” with weekday ticks and the y-axis “Progress” with visible score ticks. Put a compact two-item legend below the chart, containing only “Without Routine” and “With Routine”.
 - Bottom CTA: “Continue”.
 
 ### 10. Paywall
@@ -103,7 +98,7 @@ This is a screen-by-screen extraction of the supplied 3840 × 2160 reference boa
 
 ## Flow and auth boundary
 
-The reference flow is exactly: Welcome → quiz steps 1–5 → personalized guidance → generation → plan ready → paywall. The app’s optional Apple/Google provider screen is not represented in the image. Keep its provider behavior and unavailable-provider error boundary, but do not insert it into the default reference flow. If the existing auth feature flag is enabled, retain a consistent optional account step without changing the ten default reference screens.
+The reference flow is exactly: Welcome → quiz steps 1–5 → personalized guidance → generation → plan ready → paywall. The app’s optional Apple/Google provider screen is not represented in the image. If enabled, center the “Save your progress” auth content and use a contextual sync icon instead of the brand lockup. Preserve provider behavior and the unavailable-provider error boundary. Keep the Routine logo/name lockup for the final paywall step only, without changing the ten default reference screens.
 
 ## Acceptance checks
 

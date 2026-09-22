@@ -42,6 +42,8 @@ final class RoutineAppUITests: XCTestCase {
         app.launch()
 
         XCTAssertTrue(app.staticTexts["Your plan is ready."].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Day"].exists)
+        XCTAssertTrue(app.staticTexts["Progress"].exists)
         XCTAssertTrue(app.staticTexts["Without Routine"].exists)
         XCTAssertTrue(app.staticTexts["With Routine"].exists)
         app.buttons["Continue"].tap()

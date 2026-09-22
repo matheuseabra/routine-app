@@ -70,3 +70,34 @@ struct RoutineFunnelBrandHeader: View {
         .frame(height: 30, alignment: .leading)
     }
 }
+
+struct RoutineFunnelContextHeader: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+
+    var body: some View {
+        VStack(spacing: RoutineSpacing.sm) {
+            Image(systemName: icon)
+                .font(.system(size: 30, weight: .regular))
+                .foregroundStyle(RoutineColors.primaryText)
+                .accessibilityHidden(true)
+
+            Text(title)
+                .font(RoutineTypography.funnelTitle)
+                .foregroundStyle(RoutineColors.primaryText)
+                .fixedSize(horizontal: false, vertical: true)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .accessibilityLabel(title.replacingOccurrences(of: "\n", with: " "))
+
+            Text(subtitle)
+                .font(RoutineTypography.funnelSubtitle)
+                .foregroundStyle(RoutineColors.funnelSecondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}

@@ -8,22 +8,16 @@ struct AuthenticationView: View {
     let onContinue: () -> Void
 
     var body: some View {
-        RoutineScreenLayout(contentAlignment: .topLeading, minimumBottomSafeArea: 32) {
-            VStack(alignment: .leading, spacing: 0) {
-                RoutineFunnelBrandHeader()
-                    .padding(.top, RoutineSpacing.md)
-                    .padding(.bottom, RoutineSpacing.xxl)
+        RoutineScreenLayout(contentAlignment: .center, minimumBottomSafeArea: 32) {
+            VStack(spacing: 0) {
+                Spacer(minLength: RoutineSpacing.lg)
 
-                Text("Save your progress.")
-                    .font(RoutineTypography.funnelTitle)
-                    .foregroundStyle(RoutineColors.primaryText)
-                    .padding(.bottom, RoutineSpacing.xs)
-
-                Text("Create an account to sync your data across all your devices.")
-                    .font(RoutineTypography.funnelSubtitle)
-                    .foregroundStyle(RoutineColors.funnelSecondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.bottom, RoutineSpacing.xl)
+                RoutineFunnelContextHeader(
+                    icon: "icloud.and.arrow.up",
+                    title: "Save your progress.",
+                    subtitle: "Create an account to sync your data across all your devices."
+                )
+                .padding(.bottom, RoutineSpacing.xl)
 
                 VStack(spacing: RoutineSpacing.sm) {
                     RoutineSecondaryButton(
@@ -48,10 +42,14 @@ struct AuthenticationView: View {
                     Text(errorMessage)
                         .font(RoutineTypography.funnelCaption)
                         .foregroundStyle(RoutineColors.funnelSecondaryText)
-                        .multilineTextAlignment(.leading)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
                         .padding(.top, RoutineSpacing.md)
                 }
+
+                Spacer(minLength: RoutineSpacing.lg)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         } bottom: {
             footer
                 .font(RoutineTypography.funnelCaption)

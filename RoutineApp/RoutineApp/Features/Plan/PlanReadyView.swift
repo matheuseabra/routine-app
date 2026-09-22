@@ -11,23 +11,19 @@ struct PlanReadyView: View {
     }
 
     var body: some View {
-        RoutineScreenLayout(contentAlignment: .topLeading, minimumBottomSafeArea: 32) {
+        RoutineScreenLayout(
+            scrolls: true,
+            contentAlignment: .topLeading,
+            minimumBottomSafeArea: 32
+        ) {
             VStack(alignment: .leading, spacing: 0) {
-                RoutineFunnelBrandHeader()
-                    .padding(.top, RoutineSpacing.xxl)
-                    .padding(.bottom, RoutineSpacing.lg)
-
-                Text(context.readyTitle)
-                    .font(RoutineTypography.funnelTitle)
-                    .foregroundStyle(RoutineColors.primaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.bottom, RoutineSpacing.md)
-
-                Text(context.readySubtitle)
-                    .font(RoutineTypography.funnelSubtitle)
-                    .foregroundStyle(RoutineColors.funnelSecondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.bottom, RoutineSpacing.lg)
+                RoutineFunnelContextHeader(
+                    icon: "checkmark.seal",
+                    title: context.readyTitle,
+                    subtitle: context.readySubtitle
+                )
+                .padding(.top, RoutineSpacing.sm)
+                .padding(.bottom, RoutineSpacing.sm)
 
                 startingRoutine
                     .padding(.bottom, RoutineSpacing.md)
@@ -48,7 +44,8 @@ struct PlanReadyView: View {
             routineRow(icon: "scope", title: "Focus block", duration: "10 min")
             routineRow(icon: "moon", title: "Evening review", duration: "3 min")
         }
-        .padding(RoutineSpacing.md)
+        .padding(.horizontal, RoutineSpacing.md)
+        .padding(.vertical, RoutineSpacing.sm)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 12))
     }
@@ -67,7 +64,7 @@ struct PlanReadyView: View {
                 .font(RoutineTypography.funnelSubtitle)
                 .foregroundStyle(RoutineColors.secondaryText)
         }
-        .frame(height: 34)
+        .frame(height: 30)
     }
 
     private var progressChart: some View {
@@ -75,6 +72,10 @@ struct PlanReadyView: View {
             Text("Your progress over time")
                 .font(RoutineTypography.funnelSubtitle)
                 .foregroundStyle(RoutineColors.primaryText)
+
+            Text("Progress")
+                .font(RoutineTypography.chartLabel)
+                .foregroundStyle(RoutineColors.funnelSecondaryText)
 
             Chart {
                 ForEach(progressDays, id: \.self) { day in
@@ -97,14 +98,40 @@ struct PlanReadyView: View {
                     .interpolationMethod(.catmullRom)
                 }
             }
-            .chartXAxis(.hidden)
-            .chartYAxis(.hidden)
+            .chartXAxis {
+                AxisMarks(values: progressDays) { value in
+                    AxisTick()
+                    AxisValueLabel {
+                        if let day = value.as(Int.self), weekdayLabels.indices.contains(day) {
+                            Text(weekdayLabels[day])
+                                .font(RoutineTypography.chartLabel)
+                        }
+                    }
+                }
+            }
+            .chartYAxis {
+                AxisMarks(position: .leading, values: progressAxisValues) { value in
+                    AxisGridLine()
+                        .foregroundStyle(RoutineColors.border.opacity(0.7))
+                    AxisTick()
+                    AxisValueLabel {
+                        if let progress = value.as(Double.self) {
+                            Text("\(Int(progress))")
+                                .font(RoutineTypography.chartLabel)
+                        }
+                    }
+                }
+            }
             .chartYScale(domain: 0...7)
-            .chartXScale(domain: 0...6)
+            .chartXScale(domain: -0.75...6.75)
             .chartPlotStyle { plot in
                 plot.clipped()
             }
-            .frame(height: 96)
+            .frame(height: 104)
+
+            Text("Day")
+                .font(RoutineTypography.chartLabel)
+                .foregroundStyle(RoutineColors.funnelSecondaryText)
 
             HStack(spacing: RoutineSpacing.lg) {
                 progressLegendItem("Without Routine", color: RoutineColors.tertiaryText)
@@ -127,6 +154,8 @@ struct PlanReadyView: View {
     }
 
     private let progressDays = Array(0...6)
+    private let weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    private let progressAxisValues: [Double] = [0, 2, 4, 6]
     private let withoutRoutineValues: [Double] = [1.0, 1.2, 1.4, 1.7, 2.0, 2.3, 2.6]
     private let withRoutineValues: [Double] = [1.1, 1.7, 2.5, 3.5, 4.6, 5.7, 6.7]
 }

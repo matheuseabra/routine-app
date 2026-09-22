@@ -11,23 +11,19 @@ struct PlanGenerationView: View {
     }
 
     var body: some View {
-        RoutineScreenLayout(contentAlignment: .topLeading, minimumBottomSafeArea: 32) {
+        RoutineScreenLayout(
+            scrolls: true,
+            contentAlignment: .topLeading,
+            minimumBottomSafeArea: 32
+        ) {
             VStack(alignment: .leading, spacing: 0) {
-                RoutineFunnelBrandHeader()
-                    .padding(.top, RoutineSpacing.huge)
-                    .padding(.bottom, RoutineSpacing.md)
-
-                Text("Creating your personal plan...")
-                    .font(RoutineTypography.funnelTitle)
-                    .foregroundStyle(RoutineColors.primaryText)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.85)
-                    .padding(.bottom, RoutineSpacing.md)
-
-                Text("We’ll tailor it around your goals, time, and routine.")
-                    .font(RoutineTypography.funnelSubtitle)
-                    .foregroundStyle(RoutineColors.funnelSecondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
+                RoutineFunnelContextHeader(
+                    icon: "sparkles",
+                    title: "Creating your personal plan...",
+                    subtitle: "We’ll tailor it around your goals, time, and routine."
+                )
+                .padding(.top, RoutineSpacing.huge)
+                .padding(.bottom, RoutineSpacing.md)
 
                 Color.clear.frame(height: 54)
                 progressRing
