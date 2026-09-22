@@ -15,9 +15,10 @@
 
 - [ ] Replace placeholder marketing copy
 - [ ] Replace example Terms / Privacy / Support URLs
-- [ ] Add the RevenueCat public Apple SDK key
+- [ ] Set the Debug RevenueCat SDK key for Test Store testing (`REVENUECAT_API_KEY`)
+- [ ] Set the Release public Apple SDK key (`appl_`) as `REVENUECAT_APP_STORE_API_KEY`
 - [ ] Configure RevenueCat products and current Offering
-- [ ] Verify the configured RevenueCat entitlement ID
+- [ ] Attach products to the configured entitlement ID (defaults to `premium`)
 - [ ] Upload the App Store In-App Purchase Key to RevenueCat
 - [ ] Verify restore purchases
 - [ ] If authentication is enabled, replace the Debug mock / Release unavailable provider with the desired production provider
@@ -29,7 +30,7 @@
 - [ ] Run `./scripts/verify.sh`
 - [ ] Test first launch, returning-user paywall routing, and active-subscriber direct launch
 - [ ] Test empty/loading/error states
-- [ ] Test purchase cancellation and failed purchase
+- [ ] Test valid purchase, cancellation, failed purchase, and restore
 - [ ] Test VoiceOver labels and Dynamic Type
 - [ ] Review all user-facing strings for localization
 - [ ] Remove demo data and unsupported claims
