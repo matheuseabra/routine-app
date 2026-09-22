@@ -5,7 +5,8 @@ name=""
 bundle_id=""
 team_id=""
 revenuecat_key=""
-revenuecat_entitlement="pro"
+revenuecat_app_store_key=""
+revenuecat_entitlement="premium"
 auth_enabled="NO"
 
 usage() {
@@ -13,7 +14,7 @@ usage() {
 Configure a local Routine starter clone.
 
 Usage:
-  ./scripts/bootstrap.sh --name "My App" --bundle-id com.example.myapp [--team-id TEAMID] [--enable-auth] [--revenuecat-key KEY] [--revenuecat-entitlement pro]
+  ./scripts/bootstrap.sh --name "My App" --bundle-id com.example.myapp [--team-id TEAMID] [--enable-auth] [--revenuecat-key TEST_KEY] [--revenuecat-app-store-key APPLE_KEY] [--revenuecat-entitlement premium]
 
 Writes Config/Local.xcconfig. This file is ignored by Git.
 EOF
@@ -26,6 +27,7 @@ while [[ $# -gt 0 ]]; do
     --team-id) team_id="${2:-}"; shift 2 ;;
     --enable-auth) auth_enabled="YES"; shift ;;
     --revenuecat-key) revenuecat_key="${2:-}"; shift 2 ;;
+    --revenuecat-app-store-key) revenuecat_app_store_key="${2:-}"; shift 2 ;;
     --revenuecat-entitlement) revenuecat_entitlement="${2:-}"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown argument: $1" >&2; usage; exit 1 ;;
@@ -47,6 +49,7 @@ APP_UI_TEST_BUNDLE_ID = $bundle_id.uitests
 DEVELOPMENT_TEAM_ID = $team_id
 AUTH_ENABLED = $auth_enabled
 REVENUECAT_API_KEY = $revenuecat_key
+REVENUECAT_APP_STORE_API_KEY = $revenuecat_app_store_key
 REVENUECAT_ENTITLEMENT_ID = $revenuecat_entitlement
 EOF
 

@@ -42,11 +42,12 @@ Enable real subscriptions when you are ready:
 ./scripts/bootstrap.sh \
   --name "My App" \
   --bundle-id com.example.myapp \
-  --revenuecat-key appl_your_public_sdk_key \
-  --revenuecat-entitlement pro
+  --revenuecat-key test_your_test_store_sdk_key \
+  --revenuecat-app-store-key appl_your_public_sdk_key \
+  --revenuecat-entitlement premium
 ```
 
-Without a RevenueCat key, the starter shows demo pricing but purchase/restore calls remain disabled.
+`REVENUECAT_API_KEY` is used by Debug builds, including RevenueCat Test Store `test_` keys. Release builds read `REVENUECAT_APP_STORE_API_KEY`, which must be the public Apple SDK key (`appl_`). The Debug Test Store setting does not flow into the Release app configuration, and Release ignores a `test_` key if one is supplied by mistake. RevenueCat secret `sk_` keys must stay on a server. Without a key for the active build configuration, the starter shows demo pricing but purchase/restore calls remain disabled.
 
 ### Authentication
 

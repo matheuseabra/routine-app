@@ -188,9 +188,9 @@ struct PaywallView: View {
 
         Task {
             do {
-                let purchased = try await services.subscriptions.purchase(planID: selectedPlanID)
+                let outcome = try await services.subscriptions.purchase(planID: selectedPlanID)
                 isPurchasing = false
-                if purchased {
+                if outcome == .purchased {
                     services.analytics.track("subscription_purchased", properties: ["product_id": selectedPlanID])
                     onContinue()
                 }
@@ -225,7 +225,8 @@ struct PaywallView: View {
     private var purchaseButtonTitle: String {
         if isPurchasing { return "Processing..." }
         if isLoadingPlans { return "Loading plans..." }
-        return "Start my free trial"
+        let selectedPlanHasTrial = plans.first(where: { $0.id == selectedPlanID })?.hasTrial == true
+        return selectedPlanHasTrial ? "Start my free trial" : "Subscribe now"
     }
 }
 
