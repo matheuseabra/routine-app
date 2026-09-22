@@ -9,6 +9,8 @@ enum RoutineScreen: String, CaseIterable, Hashable {
     case planGeneration
     case planReady
     case authentication
+    case trialExplainer
+    case reminder
     case paywall
     case main
 }
@@ -48,8 +50,10 @@ final class AppRouter {
         case .quiz: screen = .plan
         case .plan: screen = .planGeneration
         case .planGeneration: screen = .planReady
-        case .planReady: screen = authEnabled ? .authentication : .paywall
-        case .authentication: screen = .paywall
+        case .planReady: screen = authEnabled ? .authentication : .trialExplainer
+        case .authentication: screen = .trialExplainer
+        case .trialExplainer: screen = .reminder
+        case .reminder: screen = .paywall
         case .paywall: screen = .main
         case .main: break
         }
@@ -64,7 +68,9 @@ final class AppRouter {
         case .planGeneration: screen = .plan
         case .planReady: screen = .plan
         case .authentication: screen = .planReady
-        case .paywall: screen = authEnabled ? .authentication : .planReady
+        case .trialExplainer: screen = authEnabled ? .authentication : .planReady
+        case .reminder: screen = .trialExplainer
+        case .paywall: screen = .reminder
         case .main: screen = .paywall
         }
     }
@@ -86,11 +92,13 @@ struct RoutineRootView: View {
 
     init(arguments: [String] = ProcessInfo.processInfo.arguments) {
         let appState = AppState()
-        _appState = State(initialValue: appState)
-        _router = State(initialValue: AppRouter(
+        let router = AppRouter(
             arguments: arguments,
             hasCompletedOnboarding: appState.hasCompletedOnboarding
-        ))
+        )
+        if router.name.isEmpty { router.name = appState.userName }
+        _appState = State(initialValue: appState)
+        _router = State(initialValue: router)
     }
 
     var body: some View {
@@ -119,10 +127,14 @@ struct RoutineRootView: View {
                         PlanReadyView(name: router.name, answers: router.quizAnswers, onContinue: advanceScreen)
                     case .authentication:
                         AuthenticationView(onContinue: advanceScreen)
+                    case .trialExplainer:
+                        PaywallTrialReminderView(onContinue: advanceScreen)
+                    case .reminder:
+                        ReminderView(onContinue: advanceScreen)
                     case .paywall:
                         PaywallView(onContinue: advanceScreen)
                     case .main:
-                        MainAppView()
+                        MainAppView(userName: appState.userName.isEmpty ? router.name : appState.userName)
                     }
                 }
                 .id(router.screen)
@@ -148,7 +160,7 @@ struct RoutineRootView: View {
             .onEnded { value in
                 guard router.screen != .main, router.screen != .launch,
                       router.screen != .onboarding, router.screen != .quiz,
-                      router.screen != .planGeneration,
+                      router.screen != .planGeneration, router.screen != .reminder,
                       abs(value.translation.width) > abs(value.translation.height),
                       abs(value.translation.width) > 50 else { return }
                 swipeHaptic += 1
@@ -167,7 +179,7 @@ struct RoutineRootView: View {
             router.advance(authEnabled: AppConfig.authenticationEnabled)
 
             if previousScreen == .paywall, router.screen == .main {
-                appState.completeOnboarding()
+                appState.completeOnboarding(userName: router.name)
             }
         }
     }

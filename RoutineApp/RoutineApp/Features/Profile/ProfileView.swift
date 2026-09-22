@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ProfileView: View {
+    let userName: String
     let tasks: [RoutineTask]
     let checkIns: [RoutineCheckIn]
     let onOpenHabits: () -> Void
@@ -8,7 +9,8 @@ struct ProfileView: View {
     @State private var isSettingsPresented = false
     @State private var settingsHapticTrigger = 0
 
-    init(tasks: [RoutineTask] = [], checkIns: [RoutineCheckIn] = [], onOpenHabits: @escaping () -> Void = {}) {
+    init(userName: String = "", tasks: [RoutineTask] = [], checkIns: [RoutineCheckIn] = [], onOpenHabits: @escaping () -> Void = {}) {
+        self.userName = userName
         self.tasks = tasks
         self.checkIns = checkIns
         self.onOpenHabits = onOpenHabits
@@ -21,6 +23,10 @@ struct ProfileView: View {
                     .padding(.top, RoutineSpacing.lg)
                     .padding(.bottom, RoutineSpacing.xl)
                 profileCard
+                RoutineSectionHeader(title: "Your activity")
+                    .padding(.top, RoutineSpacing.xxl)
+                    .padding(.bottom, RoutineSpacing.sm)
+                activityCard
                 RoutineSectionHeader(title: "Recent history")
                     .padding(.top, RoutineSpacing.xxl)
                     .padding(.bottom, RoutineSpacing.sm)
@@ -43,10 +49,7 @@ struct ProfileView: View {
     }
 
     private var header: some View {
-        RoutinePageHeader(
-            title: "Profile",
-            subtitle: "Your progress and preferences in one place."
-        ) {
+        RoutinePageHeader(title: "Profile") {
             Button {
                 settingsHapticTrigger += 1
                 isSettingsPresented = true
@@ -73,29 +76,25 @@ struct ProfileView: View {
                     }
                     .accessibilityHidden(true)
 
-                VStack(alignment: .leading, spacing: RoutineSpacing.xs) {
-                    Text("Your routine")
-                        .font(RoutineTypography.compactTitle)
-                    Text("A record of the steps you’ve taken.")
-                        .routineSubtitleStyle()
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            Divider()
-                .overlay(RoutineColors.border)
-                .padding(.vertical, RoutineSpacing.md)
-
-            HStack(spacing: 0) {
-                profileStat(value: "\(tasks.count)", label: "Tasks")
-                profileStat(value: "\(checkIns.count)", label: "Check-ins")
-                profileStat(value: "\(summary.currentStreak)", label: "Day streak")
+                Text(userName.isEmpty ? "Your routine" : userName)
+                    .font(RoutineTypography.compactTitle)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .padding(RoutineSpacing.lg)
         .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Routine profile")
+        .accessibilityLabel("Profile for \(userName.isEmpty ? "your routine" : userName)")
+    }
+
+    private var activityCard: some View {
+        HStack(spacing: 0) {
+            profileStat(value: "\(tasks.count)", label: "Tasks")
+            profileStat(value: "\(checkIns.count)", label: "Check-ins")
+            profileStat(value: "\(summary.currentStreak)", label: "Day streak")
+        }
+        .padding(.vertical, RoutineSpacing.lg)
+        .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
     }
 
     private var recentHistoryCard: some View {

@@ -8,45 +8,40 @@ struct AddTaskSheet: View {
     let onAdd: (String) -> Void
 
     var body: some View {
-        HStack(alignment: .center, spacing: RoutineSpacing.sm) {
-            HStack(spacing: RoutineSpacing.sm) {
-                RoutineIcon(.plus, weight: .regular)
-                    .frame(width: 20, height: 20)
-                    .accessibilityHidden(true)
-                TextField("Task name", text: $taskTitle)
-                    .focused($isTaskFieldFocused)
-                    .font(RoutineTypography.body)
-                    .textFieldStyle(.plain)
-                    .textInputAutocapitalization(.sentences)
-                    .submitLabel(.done)
-                    .background(Color.clear)
-                    .accessibilityLabel("Task name")
+        VStack(alignment: .leading, spacing: RoutineSpacing.sm) {
+            TextField("Task name", text: $taskTitle)
+                .focused($isTaskFieldFocused)
+                .font(RoutineTypography.body)
+                .textFieldStyle(.plain)
+                .textInputAutocapitalization(.sentences)
+                .submitLabel(.done)
+                .frame(height: 44)
+                .accessibilityLabel("Task name")
+                .onSubmit(addTask)
+
+            HStack {
+                Spacer()
+                Button {
+                    hapticTrigger += 1
+                    addTask()
+                } label: {
+                    RoutineIcon(.arrowUp, weight: .bold, color: RoutineColors.inverseText)
+                        .frame(width: 16, height: 16)
+                        .frame(width: 40, height: 40)
+                        .background(RoutineColors.primaryText, in: Circle())
+                        .opacity(isTaskTitleEmpty ? 0.4 : 1)
+                }
+                .buttonStyle(.plain)
+                .disabled(isTaskTitleEmpty)
+                .sensoryFeedback(.impact(weight: .medium), trigger: hapticTrigger)
+                .accessibilityLabel("Add task")
             }
-            .background(Color.clear)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .frame(height: 52)
-            .contentShape(Rectangle())
-            .onSubmit(addTask)
-            Button {
-                hapticTrigger += 1
-                addTask()
-            } label: {
-                RoutineIcon(.check, weight: .bold, color: RoutineColors.inverseText)
-                    .frame(width: 20, height: 20)
-                    .frame(width: 48, height: 48)
-                    .background(RoutineColors.primaryText, in: Capsule())
-                    .opacity(isTaskTitleEmpty ? 0.4 : 1)
-            }
-            .buttonStyle(.plain)
-            .disabled(isTaskTitleEmpty)
-            .sensoryFeedback(.impact(weight: .medium), trigger: hapticTrigger)
-            .accessibilityLabel("Add task")
         }
         .padding(.horizontal, RoutineSpacing.lg)
-        .padding(.vertical, RoutineSpacing.sm)
-        .frame(maxWidth: .infinity, alignment: .top)
+        .padding(.bottom, RoutineSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.clear.ignoresSafeArea())
-        .presentationDetents([.height(96)])
+        .presentationDetents([.height(132)])
         .presentationDragIndicator(.visible)
         .defaultFocus($isTaskFieldFocused, true)
         .task {

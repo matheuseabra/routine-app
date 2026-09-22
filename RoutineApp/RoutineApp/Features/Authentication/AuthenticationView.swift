@@ -14,8 +14,7 @@ struct AuthenticationView: View {
 
                 RoutineFunnelContextHeader(
                     icon: "icloud.and.arrow.up",
-                    title: "Save your progress.",
-                    subtitle: "Create an account to sync your data across all your devices."
+                    title: "Save your progress."
                 )
                 .padding(.bottom, RoutineSpacing.xl)
 

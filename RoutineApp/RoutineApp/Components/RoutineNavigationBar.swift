@@ -11,17 +11,12 @@ struct RoutineNavItem: View {
             hapticTrigger += 1
             action()
         } label: {
-            VStack(spacing: RoutineSpacing.xxs) {
-                RoutineIcon(
-                    tab.icon,
-                    weight: .bold,
-                    color: isSelected ? RoutineColors.primaryText : RoutineColors.tertiaryText
-                )
-                    .frame(width: 21, height: 21)
-                Text(tab.rawValue)
-                    .font(RoutineTypography.smallRegular)
-                    .foregroundStyle(isSelected ? RoutineColors.primaryText : RoutineColors.tertiaryText)
-            }
+            RoutineIcon(
+                tab.icon,
+                weight: .bold,
+                color: isSelected ? RoutineColors.primaryText : RoutineColors.tertiaryText
+            )
+            .frame(width: 21, height: 21)
             .frame(maxWidth: .infinity)
             .frame(minHeight: 56)
             .contentShape(Rectangle())

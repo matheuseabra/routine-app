@@ -6,6 +6,7 @@ import Observation
 final class AppState {
     private enum Keys {
         static let hasCompletedOnboarding = "routine.hasCompletedOnboarding"
+        static let userName = "routine.userName"
     }
 
     private let defaults: UserDefaults
@@ -16,12 +17,21 @@ final class AppState {
         }
     }
 
+    private(set) var userName: String {
+        didSet { defaults.set(userName, forKey: Keys.userName) }
+    }
+
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         hasCompletedOnboarding = defaults.bool(forKey: Keys.hasCompletedOnboarding)
+        userName = defaults.string(forKey: Keys.userName) ?? ""
     }
 
-    func completeOnboarding() {
+    func completeOnboarding(userName: String? = nil) {
+        if let userName {
+            let trimmedName = userName.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmedName.isEmpty { self.userName = trimmedName }
+        }
         hasCompletedOnboarding = true
     }
 

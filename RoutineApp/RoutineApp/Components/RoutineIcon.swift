@@ -1,6 +1,7 @@
 import SwiftUI
 
 enum RoutineIconName: Hashable {
+    case arrowUp
     case arrowLeft
     case arrowsClockwise
     case bell
@@ -37,6 +38,7 @@ enum RoutineIconName: Hashable {
 
     var systemName: String {
         switch self {
+        case .arrowUp: "arrow.up"
         case .arrowLeft: "arrow.left"
         case .arrowsClockwise: "arrow.clockwise"
         case .bell: "bell"

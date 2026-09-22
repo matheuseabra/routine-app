@@ -2,6 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct MainAppView: View {
+    let userName: String
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \RoutineTask.createdAt) private var tasks: [RoutineTask]
     @Query(sort: \RoutineCheckIn.completedAt, order: .reverse) private var checkIns: [RoutineCheckIn]
@@ -9,7 +10,8 @@ struct MainAppView: View {
     @State private var selectedTab: AppTab
     @State private var isAddTaskPresented = false
 
-    init(arguments: [String] = ProcessInfo.processInfo.arguments) {
+    init(userName: String = "", arguments: [String] = ProcessInfo.processInfo.arguments) {
+        self.userName = userName
         if let tabIndex = arguments.firstIndex(of: "-tab"),
            arguments.indices.contains(tabIndex + 1),
            let requestedTab = AppTab(rawValue: arguments[tabIndex + 1].capitalized) {
@@ -27,7 +29,7 @@ struct MainAppView: View {
                     isAddTaskPresented = true
                 }
             case .profile:
-                ProfileView(tasks: tasks, checkIns: checkIns, onOpenHabits: { selectedTab = .habits })
+                ProfileView(userName: userName, tasks: tasks, checkIns: checkIns, onOpenHabits: { selectedTab = .habits })
             case .habits:
                 HabitsView(tasks: tasks, onToggleTask: toggleTask) { isAddTaskPresented = true }
             case .insights:

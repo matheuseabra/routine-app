@@ -30,14 +30,6 @@ struct PaywallView: View {
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
                     .accessibilityLabel("Build stronger consistency with your personal plan.")
-                    .padding(.bottom, RoutineSpacing.xxs)
-
-                Text("Unlock the full Routine experience and\ncreate lasting change.")
-                    .font(RoutineTypography.funnelSubtitle)
-                    .foregroundStyle(RoutineColors.funnelSecondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
                     .padding(.bottom, RoutineSpacing.xl)
 
                 benefits
@@ -106,23 +98,23 @@ struct PaywallView: View {
     }
 
     private var testimonial: some View {
-        HStack(alignment: .top, spacing: RoutineSpacing.sm) {
-            Image(systemName: "quote.opening")
-                .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(RoutineColors.tertiaryText)
-                .padding(.top, 2)
+        VStack(alignment: .leading, spacing: RoutineSpacing.md) {
+            Text("“I’ve tried complicated plans before. Routine helped me start small and stay consistent, one day at a time.”")
+                .font(RoutineTypography.funnelCaption)
+                .foregroundStyle(RoutineColors.primaryText)
+                .fixedSize(horizontal: false, vertical: true)
 
-            VStack(alignment: .leading, spacing: RoutineSpacing.xs) {
-                Text("Small, repeatable steps make consistency easier to build.")
-                    .font(RoutineTypography.funnelCaption)
+            HStack(spacing: RoutineSpacing.sm) {
+                Image("routine-user")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 38, height: 38)
+                    .clipShape(Circle())
+                    .accessibilityHidden(true)
+                Text("Matheus Seabra")
+                    .font(RoutineTypography.funnelBodyMedium)
                     .foregroundStyle(RoutineColors.primaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text("THE ROUTINE APPROACH")
-                    .font(.system(size: 10, weight: .medium))
-                    .tracking(0.8)
-                    .foregroundStyle(RoutineColors.tertiaryText)
             }
-            Spacer(minLength: 0)
         }
         .padding(RoutineSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -132,9 +124,10 @@ struct PaywallView: View {
     private func benefitRow(icon: String, title: String, subtitle: String) -> some View {
         HStack(spacing: RoutineSpacing.md) {
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .regular))
-                .foregroundStyle(RoutineColors.funnelSecondaryText)
-                .frame(width: 24, height: 30)
+                .font(.system(size: 14, weight: .regular))
+                .foregroundStyle(RoutineColors.inverseText)
+                .frame(width: 34, height: 34)
+                .background(RoutineColors.primaryText, in: Circle())
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)

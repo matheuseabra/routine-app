@@ -2,16 +2,13 @@ import SwiftUI
 
 struct RoutinePageHeader<Trailing: View>: View {
     let title: String
-    let subtitle: String
     @ViewBuilder let trailing: Trailing
 
     init(
         title: String,
-        subtitle: String,
         @ViewBuilder trailing: () -> Trailing
     ) {
         self.title = title
-        self.subtitle = subtitle
         self.trailing = trailing()
     }
 
@@ -20,9 +17,6 @@ struct RoutinePageHeader<Trailing: View>: View {
             VStack(alignment: .leading, spacing: RoutineSpacing.xxs) {
                 Text(title)
                     .routineTitleStyle()
-                Text(subtitle)
-                    .routineSubtitleStyle()
-                    .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: RoutineSpacing.sm)
             trailing
@@ -32,8 +26,8 @@ struct RoutinePageHeader<Trailing: View>: View {
 }
 
 extension RoutinePageHeader where Trailing == EmptyView {
-    init(title: String, subtitle: String) {
-        self.init(title: title, subtitle: subtitle) {
+    init(title: String) {
+        self.init(title: title) {
             EmptyView()
         }
     }

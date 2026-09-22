@@ -32,24 +32,6 @@ struct RoutinePlanContext {
         }
     }
 
-    var diagnosis: String {
-        "You want to \(goalPhrase),\nbut \(barrierPhrase).\nHere are a few key insights to help."
-    }
-
-    var readySubtitle: String {
-        "Built around your goal to \(goalPhrase)."
-    }
-
-    private var barrierPhrase: String {
-        switch answer(at: 1, fallback: "I struggle with consistency") {
-        case "I lose motivation": "you lose motivation"
-        case "I don’t know where to start": "you’re not sure where to start"
-        case "I don’t have enough time": "time is hard to find"
-        case "I try to do too much at once": "you take on too much at once"
-        default: "you struggle to keep your momentum"
-        }
-    }
-
     private func answer(at index: Int, fallback: String) -> String {
         guard answers.indices.contains(index), let answer = answers[index], !answer.isEmpty else {
             return fallback
@@ -74,7 +56,6 @@ struct RoutineFunnelBrandHeader: View {
 struct RoutineFunnelContextHeader: View {
     let icon: String
     let title: String
-    let subtitle: String
     var successBadgeIcon: String? = nil
 
     var body: some View {
@@ -101,13 +82,6 @@ struct RoutineFunnelContextHeader: View {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
                 .accessibilityLabel(title.replacingOccurrences(of: "\n", with: " "))
-
-            Text(subtitle)
-                .font(RoutineTypography.funnelSubtitle)
-                .foregroundStyle(RoutineColors.funnelSecondaryText)
-                .fixedSize(horizontal: false, vertical: true)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity)
     }

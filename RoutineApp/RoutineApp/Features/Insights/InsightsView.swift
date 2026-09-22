@@ -28,10 +28,7 @@ struct InsightsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                RoutinePageHeader(
-                    title: "Insights",
-                    subtitle: "A clear view of the progress you’re making."
-                )
+                RoutinePageHeader(title: "Insights")
                 .padding(.top, RoutineSpacing.lg)
                 .padding(.bottom, RoutineSpacing.xl)
 

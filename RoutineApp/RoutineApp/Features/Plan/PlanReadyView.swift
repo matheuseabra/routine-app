@@ -20,7 +20,6 @@ struct PlanReadyView: View {
                 RoutineFunnelContextHeader(
                     icon: "doc.text",
                     title: context.readyTitle,
-                    subtitle: context.readySubtitle,
                     successBadgeIcon: "checkmark"
                 )
                 .padding(.bottom, RoutineSpacing.md)

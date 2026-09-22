@@ -8,7 +8,7 @@ struct SettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                RoutinePageHeader(title: "Settings", subtitle: "Manage your Routine experience.")
+                RoutinePageHeader(title: "Settings")
                     .padding(.top, RoutineSpacing.xl)
                     .padding(.bottom, RoutineSpacing.lg)
 

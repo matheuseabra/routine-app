@@ -8,12 +8,7 @@ struct HabitsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                RoutinePageHeader(
-                    title: "Habits",
-                    subtitle: tasks.isEmpty
-                        ? "A steady routine begins with one task."
-                        : "The small steps you chose for yourself."
-                )
+                RoutinePageHeader(title: "Habits")
                 .padding(.top, RoutineSpacing.lg)
                 .padding(.bottom, RoutineSpacing.xl)
 

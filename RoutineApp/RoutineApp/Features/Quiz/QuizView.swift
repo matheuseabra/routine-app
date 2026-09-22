@@ -28,7 +28,6 @@ struct QuizView: View {
     private let questions = [
         QuizQuestion(
             prompt: "What would you most like to improve?",
-            subtitle: "Choose the outcome that matters most to you right now.",
             options: [
                 QuizOption(title: "Stay more consistent", icon: "repeat"),
                 QuizOption(title: "Get more done", icon: "checkmark.circle"),
@@ -39,7 +38,6 @@ struct QuizView: View {
         ),
         QuizQuestion(
             prompt: "What usually gets in the way?",
-            subtitle: "We’ll use this to make your plan easier to stick with.",
             options: [
                 QuizOption(title: "I struggle with consistency", icon: "arrow.clockwise"),
                 QuizOption(title: "I lose motivation", icon: "flame"),
@@ -50,7 +48,6 @@ struct QuizView: View {
         ),
         QuizQuestion(
             prompt: "How consistent do you feel right now?",
-            subtitle: "Your starting point helps us shape the\nright plan.",
             options: [
                 QuizOption(title: "Just starting", icon: "leaf"),
                 QuizOption(title: "Starting again", icon: "arrow.counterclockwise"),
@@ -60,7 +57,6 @@ struct QuizView: View {
         ),
         QuizQuestion(
             prompt: "How much time can you realistically commit?",
-            subtitle: "Consistency matters more than intensity.",
             options: [
                 QuizOption(title: "5 minutes a day", icon: "timer"),
                 QuizOption(title: "10–15 minutes", icon: "clock"),
@@ -149,16 +145,6 @@ struct QuizView: View {
                 .foregroundStyle(RoutineColors.primaryText)
                 .fixedSize(horizontal: false, vertical: true)
 
-            if let subtitle = currentQuestion.subtitle {
-                Text(subtitle)
-                    .font(RoutineTypography.funnelSubtitle)
-                    .foregroundStyle(RoutineColors.funnelSecondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityLabel(subtitle.replacingOccurrences(of: "\n", with: " "))
-                    .padding(.bottom, questionIndex == 2 ? RoutineSpacing.md + RoutineSpacing.xxs : RoutineSpacing.lg)
-            } else {
-                Color.clear.frame(height: RoutineSpacing.md)
-            }
         }
         .padding(.bottom, RoutineSpacing.xs)
     }
@@ -193,8 +179,13 @@ struct QuizView: View {
             }
             .frame(maxWidth: .infinity, minHeight: 54, alignment: .leading)
             .padding(.horizontal, RoutineSpacing.md)
-            .background(isSelected ? RoutineColors.funnelSelection : RoutineColors.surface, in: RoundedRectangle(cornerRadius: 11))
-            .shadow(color: RoutineColors.primaryText.opacity(0.07), radius: 4, x: 0, y: 2)
+            .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 11))
+            .overlay {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 11)
+                        .stroke(RoutineColors.primaryText, lineWidth: 1)
+                }
+            }
             .contentShape(RoundedRectangle(cornerRadius: 11))
         }
         .buttonStyle(.plain)
@@ -265,12 +256,10 @@ struct QuizView: View {
 
 private struct QuizQuestion {
     let prompt: String
-    let subtitle: String?
     let options: [QuizOption]
 
-    init(prompt: String, subtitle: String? = nil, options: [QuizOption] = []) {
+    init(prompt: String, options: [QuizOption] = []) {
         self.prompt = prompt
-        self.subtitle = subtitle
         self.options = options
     }
 }

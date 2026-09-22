@@ -5,7 +5,8 @@ struct HomeView: View {
     let tasks: [RoutineTask]
     let onToggleTask: (RoutineTask) -> Void
     let onAddTask: () -> Void
-    @State private var insightsHapticTrigger = 0
+    @State private var searchHapticTrigger = 0
+    @State private var isSearchPresented = false
 
     var body: some View {
         ScrollView {
@@ -18,9 +19,11 @@ struct HomeView: View {
                 } else {
                     progressCard
                         .padding(.bottom, RoutineSpacing.xl)
-                    RoutineSectionHeader(title: "Your tasks")
-                        .padding(.bottom, RoutineSpacing.sm)
-                    taskList
+                    if !activeTasks.isEmpty {
+                        RoutineSectionHeader(title: "Your tasks")
+                            .padding(.bottom, RoutineSpacing.sm)
+                        taskList
+                    }
                 }
             }
             .padding(.horizontal, RoutineSpacing.lg)
@@ -28,26 +31,29 @@ struct HomeView: View {
         }
         .scrollIndicators(.hidden)
         .background(RoutineColors.background)
+        .sheet(isPresented: $isSearchPresented) {
+            TaskSearchSheet(tasks: tasks)
+                .presentationBackground(RoutineColors.surface)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
     }
 
     private var header: some View {
         RoutinePageHeader(
-            title: "Today",
-            subtitle: "Keep your routine moving."
+            title: "Today"
         ) {
             Button {
-                insightsHapticTrigger += 1
-                withAnimation(.easeInOut(duration: 0.18)) {
-                    selectedTab = .insights
-                }
+                searchHapticTrigger += 1
+                isSearchPresented = true
             } label: {
-                RoutineIcon(.chartLineUp)
+                RoutineIcon(.magnifyingGlass)
                     .frame(width: 21, height: 21)
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(.plain)
-            .sensoryFeedback(.selection, trigger: insightsHapticTrigger)
-            .accessibilityLabel("Insights")
+            .sensoryFeedback(.selection, trigger: searchHapticTrigger)
+            .accessibilityLabel("Search tasks")
         }
     }
 
@@ -83,21 +89,65 @@ struct HomeView: View {
         }
     }
 
+    private var activeTasks: [RoutineTask] {
+        tasks.filter { !$0.isCompleted }
+    }
+
     private var taskList: some View {
         VStack(spacing: 0) {
-            ForEach(Array(tasks.enumerated()), id: \.element.id) { index, task in
+            ForEach(Array(activeTasks.enumerated()), id: \.element.id) { index, task in
                 RoutineTaskRow(task: task) {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        onToggleTask(task)
-                    }
+                    onToggleTask(task)
                 }
-                if index < tasks.count - 1 {
+                if index < activeTasks.count - 1 {
                     Divider().overlay(RoutineColors.border)
                 }
             }
         }
         .padding(.horizontal, RoutineSpacing.md)
         .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+private struct TaskSearchSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let tasks: [RoutineTask]
+    @State private var query = ""
+
+    private var filteredTasks: [RoutineTask] {
+        guard !query.isEmpty else { return tasks }
+        return tasks.filter { $0.title.localizedCaseInsensitiveContains(query) }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List(filteredTasks) { task in
+                HStack(spacing: RoutineSpacing.md) {
+                    RoutineIcon(task.isCompleted ? .check : .clipboardText)
+                        .frame(width: 22, height: 22)
+                    Text(task.title)
+                        .font(RoutineTypography.body)
+                        .foregroundStyle(RoutineColors.primaryText)
+                }
+                .listRowBackground(RoutineColors.surface)
+            }
+            .overlay {
+                if filteredTasks.isEmpty {
+                    ContentUnavailableView.search(text: query)
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .background(RoutineColors.surface)
+            .searchable(text: $query, prompt: "Search tasks")
+            .navigationTitle("Search tasks")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .tint(RoutineColors.primaryText)
     }
 }
 

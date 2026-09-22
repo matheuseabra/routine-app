@@ -150,11 +150,29 @@ struct RoutineTaskRow: View {
     let task: RoutineTask
     let action: () -> Void
     @State private var hapticTrigger = 0
+    @State private var isCompleting = false
 
     var body: some View {
         Button {
             hapticTrigger += 1
-            action()
+            guard !task.isCompleted else {
+                action()
+                return
+            }
+
+            isCompleting = true
+            Task {
+                do {
+                    try await Task.sleep(for: .milliseconds(350))
+                } catch {
+                    isCompleting = false
+                    return
+                }
+                withAnimation(.easeOut(duration: 0.3)) {
+                    action()
+                    isCompleting = false
+                }
+            }
         } label: {
             HStack(spacing: RoutineSpacing.sm) {
                 ZStack {
@@ -178,8 +196,10 @@ struct RoutineTaskRow: View {
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.impact(weight: .light), trigger: hapticTrigger)
+        .disabled(isCompleting)
+        .transition(.opacity)
         .accessibilityLabel(task.title)
-        .accessibilityValue(task.isCompleted ? "Completed" : "Not completed")
+        .accessibilityValue(isCompleting ? "Completing" : (task.isCompleted ? "Completed" : "Not completed"))
     }
 }
 

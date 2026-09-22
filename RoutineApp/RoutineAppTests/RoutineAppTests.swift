@@ -24,19 +24,27 @@ struct RoutineAppTests {
         router.advance(authEnabled: false)
         #expect(router.screen == .planReady)
         router.advance(authEnabled: false)
+        #expect(router.screen == .trialExplainer)
+        router.advance(authEnabled: false)
+        #expect(router.screen == .reminder)
+        router.advance(authEnabled: false)
         #expect(router.screen == .paywall)
     }
 
     @Test func routerSkipsAuthenticationWhenDisabled() {
         let router = AppRouter(arguments: ["RoutineApp", "-screen", "planReady"])
         router.advance(authEnabled: false)
-        #expect(router.screen == .paywall)
+        #expect(router.screen == .trialExplainer)
     }
 
     @Test func routerIncludesAuthenticationWhenEnabled() {
         let router = AppRouter(arguments: ["RoutineApp", "-screen", "planReady"])
         router.advance(authEnabled: true)
         #expect(router.screen == .authentication)
+        router.advance(authEnabled: true)
+        #expect(router.screen == .trialExplainer)
+        router.advance(authEnabled: true)
+        #expect(router.screen == .reminder)
         router.advance(authEnabled: true)
         #expect(router.screen == .paywall)
     }
@@ -74,9 +82,10 @@ struct RoutineAppTests {
         #expect(restoredState.hasCompletedOnboarding)
     }
 
-    @Test func routerDoesNotExposeTheRemovedTrialScreens() {
+    @Test func routerExposesTheCurrentPrePaywallScreens() {
         #expect(RoutineScreen(rawValue: "paywall2") == nil)
-        #expect(RoutineScreen(rawValue: "reminder") == nil)
+        #expect(RoutineScreen(rawValue: "trialExplainer") == .trialExplainer)
+        #expect(RoutineScreen(rawValue: "reminder") == .reminder)
     }
 
     @Test func quizStartsWithReferenceSelectionsForConsistencyAndTime() {

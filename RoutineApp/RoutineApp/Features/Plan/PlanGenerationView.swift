@@ -19,8 +19,7 @@ struct PlanGenerationView: View {
             VStack(alignment: .center, spacing: 0) {
                 RoutineFunnelContextHeader(
                     icon: "sparkles",
-                    title: "Creating your personal plan...",
-                    subtitle: "We’ll tailor it around your goals, time, and routine."
+                    title: "Creating your personal plan..."
                 )
                 .padding(.bottom, RoutineSpacing.xl)
 
@@ -43,12 +42,6 @@ struct PlanGenerationView: View {
     }
 
     private func animatePlanProgress() async {
-        do {
-            try await Task.sleep(for: .milliseconds(1_500))
-        } catch {
-            return
-        }
-
         for percentage in 58...100 {
             guard !Task.isCancelled else { return }
             progress = Double(percentage)
