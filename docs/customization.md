@@ -27,10 +27,12 @@ Keeping the internal target stable makes upgrades and template diffs easier.
 Service protocols ship with mock/no-op implementations where appropriate.
 
 Subscriptions use RevenueCat by default:
-- add the app-specific public Apple SDK key as `REVENUECAT_API_KEY`
-- set `REVENUECAT_ENTITLEMENT_ID` (defaults to `pro`)
+- set `REVENUECAT_API_KEY` to a Test Store `test_` SDK key for Debug purchase testing
+- set `REVENUECAT_APP_STORE_API_KEY` to the public Apple SDK key (`appl_`) for Release builds
+- keep RevenueCat secret `sk_` keys on a server; they are not app SDK keys
+- set `REVENUECAT_ENTITLEMENT_ID` (defaults to `premium`)
 - configure products, packages, and the current Offering in the RevenueCat dashboard
-- the paywall reads RevenueCat Packages and checks entitlement activation after purchase/restore
+- attach purchased products to the same entitlement ID configured above; the paywall validates that exact entitlement after purchase/restore
 
 Authentication is disabled by default. Add `--enable-auth` during bootstrap (or set `AUTH_ENABLED = YES`) only when the auth step is desired. Debug builds use `MockAuthProvider`; Release builds use `UnavailableAuthProvider` until a production provider is injected.
 

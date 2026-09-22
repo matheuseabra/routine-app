@@ -26,13 +26,28 @@ enum AppConfig {
             return nil
         }
 
-        let trimmed = key.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmed.isEmpty ? nil : trimmed
+        #if DEBUG
+        return RevenueCatSDKKeyPolicy.clientKey(from: key, allowTestStore: true)
+        #else
+        return RevenueCatSDKKeyPolicy.clientKey(from: key, allowTestStore: false)
+        #endif
     }
 
     static var revenueCatEntitlementID: String {
         let configured = Bundle.main.object(forInfoDictionaryKey: "REVENUECAT_ENTITLEMENT_ID") as? String
         let trimmed = configured?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        return trimmed.isEmpty ? "pro" : trimmed
+        return trimmed.isEmpty ? "premium" : trimmed
+    }
+}
+
+enum RevenueCatSDKKeyPolicy {
+    static func clientKey(from rawKey: String?, allowTestStore: Bool) -> String? {
+        guard let rawKey else { return nil }
+
+        let key = rawKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !key.isEmpty, !key.hasPrefix("sk_") else { return nil }
+        guard allowTestStore || !key.hasPrefix("test_") else { return nil }
+
+        return key
     }
 }

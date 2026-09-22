@@ -31,12 +31,12 @@ fi
 
 bundle_id="$(read_setting APP_BUNDLE_ID)"
 team_id="$(read_setting DEVELOPMENT_TEAM_ID)"
-revenuecat_key="$(read_setting REVENUECAT_API_KEY)"
+revenuecat_app_store_key="$(read_setting REVENUECAT_APP_STORE_API_KEY)"
 
 [[ -n "$bundle_id" ]] || fail "APP_BUNDLE_ID is missing."
 [[ "$bundle_id" != com.example.* ]] || fail "APP_BUNDLE_ID still uses com.example.*."
 [[ -n "$team_id" && "$team_id" != "YOUR_TEAM_ID" ]] || fail "DEVELOPMENT_TEAM_ID is not configured."
-[[ -n "$revenuecat_key" && "$revenuecat_key" != *"your_public"* ]] || fail "REVENUECAT_API_KEY is not configured."
+[[ "$revenuecat_app_store_key" == appl_* && "$revenuecat_app_store_key" != *"your_public"* ]] || fail "REVENUECAT_APP_STORE_API_KEY must be configured with the public Apple SDK key (appl_...)."
 
 if grep -q "https://example.com" "$app_config"; then
   fail "Terms, Privacy, or Support URLs still point to example.com."

@@ -105,6 +105,65 @@ struct RoutineAppTests {
         }
     }
 
+    @Test func completedPurchaseWithConfiguredEntitlementIsSuccessful() throws {
+        let outcome = try PurchaseOutcomeResolver.resolve(
+            userCancelled: false,
+            expectedEntitlementID: "premium",
+            activeEntitlementIDs: ["premium"]
+        )
+
+        #expect(outcome == .purchased)
+    }
+
+    @Test func cancelledPurchaseHasNeutralOutcome() throws {
+        let outcome = try PurchaseOutcomeResolver.resolve(
+            userCancelled: true,
+            expectedEntitlementID: "premium",
+            activeEntitlementIDs: []
+        )
+
+        #expect(outcome == .cancelled)
+    }
+
+    @Test func failedPurchasePropagatesRevenueCatError() throws {
+        struct PurchaseFailure: Error, Equatable {}
+        let expectedError = PurchaseFailure()
+
+        do {
+            _ = try PurchaseOutcomeResolver.resolve(
+                userCancelled: false,
+                purchaseError: expectedError,
+                expectedEntitlementID: "premium",
+                activeEntitlementIDs: []
+            )
+            Issue.record("RevenueCat purchase errors must be surfaced to the paywall.")
+        } catch let error as PurchaseFailure {
+            #expect(error == expectedError)
+        } catch {
+            Issue.record("Unexpected purchase error type.")
+        }
+    }
+
+    @Test func completedPurchaseWithWrongEntitlementReportsConfigurationMismatch() throws {
+        do {
+            _ = try PurchaseOutcomeResolver.resolve(
+                userCancelled: false,
+                expectedEntitlementID: "premium",
+                activeEntitlementIDs: ["pro"]
+            )
+            Issue.record("A completed purchase without the configured entitlement must fail explicitly.")
+        } catch let error as SubscriptionError {
+            #expect(error == .entitlementNotActivated(expected: "premium", active: ["pro"]))
+        }
+    }
+
+    @Test func releaseBuildRejectsTestStoreAndSecretSDKKeys() {
+        #expect(RevenueCatSDKKeyPolicy.clientKey(from: "test_example", allowTestStore: false) == nil)
+        #expect(RevenueCatSDKKeyPolicy.clientKey(from: "test_example", allowTestStore: true) == "test_example")
+        #expect(RevenueCatSDKKeyPolicy.clientKey(from: "sk_example", allowTestStore: true) == nil)
+        #expect(RevenueCatSDKKeyPolicy.clientKey(from: "appl_example", allowTestStore: false) == "appl_example")
+    }
+
     @Test func insightSummaryCountsCheckInsAndActiveDays() {
         let calendar = Calendar(identifier: .gregorian)
         let today = calendar.startOfDay(for: .now)
