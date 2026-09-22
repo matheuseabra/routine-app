@@ -13,16 +13,22 @@ struct PaywallView: View {
     let onContinue: () -> Void
 
     var body: some View {
-        RoutineScreenLayout(contentAlignment: .topLeading, minimumBottomSafeArea: 32) {
-            VStack(alignment: .leading, spacing: 0) {
+        RoutineScreenLayout(
+            scrolls: true,
+            contentAlignment: .center,
+            minimumBottomSafeArea: 32
+        ) {
+            VStack(alignment: .center, spacing: 0) {
                 RoutineFunnelBrandHeader()
-                    .padding(.top, RoutineSpacing.xxl)
                     .padding(.bottom, RoutineSpacing.md)
+                    .frame(maxWidth: .infinity)
 
                 Text("Build stronger consistency\nwith your personal plan.")
                     .font(RoutineTypography.funnelTitle)
                     .foregroundStyle(RoutineColors.primaryText)
                     .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
                     .accessibilityLabel("Build stronger consistency with your personal plan.")
                     .padding(.bottom, RoutineSpacing.xxs)
 
@@ -30,20 +36,24 @@ struct PaywallView: View {
                     .font(RoutineTypography.funnelSubtitle)
                     .foregroundStyle(RoutineColors.funnelSecondaryText)
                     .fixedSize(horizontal: false, vertical: true)
-                    .padding(.bottom, RoutineSpacing.lg)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, RoutineSpacing.md)
 
                 benefits
-            }
-        } bottom: {
-            VStack(spacing: 0) {
+                    .frame(maxWidth: 320)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.bottom, RoutineSpacing.md)
+
                 pricingCards
-                    .padding(.bottom, RoutineSpacing.xl)
+                    .padding(.bottom, RoutineSpacing.md)
 
                 if let errorMessage {
                     Text(errorMessage)
                         .font(RoutineTypography.funnelCaption)
                         .foregroundStyle(RoutineColors.funnelSecondaryText)
                         .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
                         .padding(.bottom, RoutineSpacing.sm)
                 }
 
@@ -65,7 +75,9 @@ struct PaywallView: View {
                         .disabled(!isSubscriptionReady || isPurchasing)
                     }
             }
-            .padding(.top, RoutineSpacing.md)
+            .frame(maxWidth: .infinity)
+        } bottom: {
+            EmptyView()
         }
         .task {
             defer { isLoadingPlans = false }
@@ -127,26 +139,29 @@ struct PaywallView: View {
     }
 
     private func planRank(_ plan: SubscriptionPlan) -> Int {
-        if plan.period.localizedCaseInsensitiveContains("week") { return 0 }
-        if plan.period.localizedCaseInsensitiveContains("year") { return 1 }
+        if isYearlyPlan(plan) { return 0 }
+        if isWeeklyPlan(plan) { return 1 }
         return 2
     }
 
     private func planRow(_ plan: SubscriptionPlan) -> some View {
         let isSelected = selectedPlanID == plan.id
-        let isYearly = planRank(plan) == 1
-        let cadenceName = planRank(plan) == 0 ? "Weekly" : (isYearly ? "Yearly" : plan.displayName)
+        let isYearly = isYearlyPlan(plan)
+        let isWeekly = isWeeklyPlan(plan)
+        let cadenceName = isYearly ? "Yearly" : (isWeekly ? "Weekly" : plan.displayName)
+        let billingInterval = isYearly ? "per year" : (isWeekly ? "per week" : "per \(plan.period)")
         return Button {
             withAnimation(.easeInOut(duration: 0.2)) {
                 selectedPlanID = plan.id
             }
         } label: {
-            VStack(alignment: .leading, spacing: 1) {
-                HStack(spacing: RoutineSpacing.xs) {
-                    Text("\(plan.displayPrice)/\(plan.period)")
-                        .font(RoutineTypography.funnelBody)
+            HStack(spacing: RoutineSpacing.sm) {
+                RoutineRadioButton(isSelected: isSelected)
+
+                VStack(alignment: .leading, spacing: RoutineSpacing.xxs) {
+                    Text(cadenceName)
+                        .font(RoutineTypography.funnelBodyMedium)
                         .foregroundStyle(RoutineColors.primaryText)
-                    Spacer(minLength: RoutineSpacing.xs)
                     if isYearly {
                         Text("Best value")
                             .font(.system(size: 9, weight: .medium))
@@ -155,16 +170,22 @@ struct PaywallView: View {
                             .padding(.vertical, RoutineSpacing.xxs)
                             .background(RoutineColors.primaryText, in: Capsule())
                     }
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 11, weight: .regular))
-                        .foregroundStyle(RoutineColors.tertiaryText)
                 }
-                Text("\(cadenceName) plan")
-                    .font(RoutineTypography.funnelCaption)
-                    .foregroundStyle(RoutineColors.funnelSecondaryText)
+
+                Spacer(minLength: RoutineSpacing.sm)
+
+                VStack(alignment: .trailing, spacing: RoutineSpacing.xxs) {
+                    Text(plan.displayPrice)
+                        .font(RoutineTypography.funnelBodyMedium)
+                        .foregroundStyle(RoutineColors.primaryText)
+                    Text(billingInterval)
+                        .font(RoutineTypography.funnelCaption)
+                        .foregroundStyle(RoutineColors.funnelSecondaryText)
+                }
+                .multilineTextAlignment(.trailing)
             }
             .padding(.horizontal, RoutineSpacing.md)
-            .frame(maxWidth: .infinity, minHeight: 60, alignment: .leading)
+            .frame(maxWidth: .infinity, minHeight: 60, alignment: .center)
             .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 11))
             .overlay {
                 RoundedRectangle(cornerRadius: 11)
@@ -177,8 +198,18 @@ struct PaywallView: View {
         .accessibilityValue(isSelected ? "Selected" : "Not selected")
     }
 
+    private func isYearlyPlan(_ plan: SubscriptionPlan) -> Bool {
+        let cadence = "\(plan.displayName) \(plan.period)"
+        return cadence.localizedCaseInsensitiveContains("year")
+            || cadence.localizedCaseInsensitiveContains("annual")
+    }
+
+    private func isWeeklyPlan(_ plan: SubscriptionPlan) -> Bool {
+        "\(plan.displayName) \(plan.period)".localizedCaseInsensitiveContains("week")
+    }
+
     private func preferredPlan(in plans: [SubscriptionPlan]) -> SubscriptionPlan? {
-        plans.first { planRank($0) == 1 || $0.displayName.localizedCaseInsensitiveContains("year") }
+        plans.first { isYearlyPlan($0) }
     }
 
     private func purchaseSelectedPlan() {

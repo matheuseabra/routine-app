@@ -30,9 +30,19 @@ final class RoutineAppUITests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["Build stronger consistency with your personal plan."].waitForExistence(timeout: 3))
         let yearlyPlan = app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", "Yearly")).firstMatch
+        let weeklyPlan = app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", "Weekly")).firstMatch
         XCTAssertTrue(yearlyPlan.waitForExistence(timeout: 3))
+        XCTAssertTrue(weeklyPlan.waitForExistence(timeout: 3))
+        XCTAssertLessThan(yearlyPlan.frame.minY, weeklyPlan.frame.minY)
         XCTAssertEqual(yearlyPlan.value as? String, "Selected")
+        XCTAssertEqual(weeklyPlan.value as? String, "Not selected")
         XCTAssertTrue(yearlyPlan.label.localizedCaseInsensitiveContains("Best value"))
+        let paywallTitle = app.staticTexts["Build stronger consistency with your personal plan."]
+        XCTAssertEqual(paywallTitle.frame.midX, app.frame.midX, accuracy: 3)
+        XCTAssertLessThan(app.staticTexts["Your personal plan"].frame.midX, app.frame.midX)
+
+        weeklyPlan.tap()
+        XCTAssertEqual(weeklyPlan.value as? String, "Selected")
     }
 
     @MainActor
@@ -42,6 +52,8 @@ final class RoutineAppUITests: XCTestCase {
         app.launch()
 
         XCTAssertTrue(app.staticTexts["Your plan is ready."].waitForExistence(timeout: 3))
+        XCTAssertEqual(app.staticTexts["Your plan is ready."].frame.midX, app.frame.midX, accuracy: 3)
+        XCTAssertLessThan(app.staticTexts["Your starting routine"].frame.midX, app.frame.midX)
         XCTAssertTrue(app.staticTexts["Day"].exists)
         XCTAssertTrue(app.staticTexts["Progress"].exists)
         XCTAssertTrue(app.staticTexts["Without Routine"].exists)
@@ -54,6 +66,19 @@ final class RoutineAppUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Build stronger consistency with your personal plan."].waitForExistence(timeout: 2))
         XCTAssertFalse(app.staticTexts["Your trial timeline."].exists)
         XCTAssertFalse(app.staticTexts["Never miss a moment."].exists)
+    }
+
+    @MainActor
+    func testPlanGuidanceHeaderIsCenteredAndCardCopyIsLeftAligned() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-screen", "plan", "-demo-name", "Matheus"]
+        app.launch()
+
+        let title = app.staticTexts["Matheus, here’s where to start."]
+        let firstCardTitle = app.staticTexts["Start smaller"]
+        XCTAssertTrue(title.waitForExistence(timeout: 3))
+        XCTAssertEqual(title.frame.midX, app.frame.midX, accuracy: 3)
+        XCTAssertLessThan(firstCardTitle.frame.midX, app.frame.midX)
     }
 
     @MainActor
@@ -132,6 +157,10 @@ final class RoutineAppUITests: XCTestCase {
         app.launch()
 
         XCTAssertTrue(app.staticTexts["Build better habits that actually stick."].waitForExistence(timeout: 3))
+        let progressDots = app.descendants(matching: .any).matching(
+            NSPredicate(format: "label == %@", "Page 1 of 5")
+        ).firstMatch
+        XCTAssertFalse(progressDots.exists)
         app.buttons["Get started"].tap()
         XCTAssertTrue(app.staticTexts["What would you most like to improve?"].waitForExistence(timeout: 2))
     }
@@ -169,6 +198,7 @@ final class RoutineAppUITests: XCTestCase {
         app.launch()
 
         XCTAssertTrue(app.staticTexts["Creating your personal plan..."].waitForExistence(timeout: 3))
+        XCTAssertEqual(app.staticTexts["Creating your personal plan..."].frame.midX, app.frame.midX, accuracy: 3)
         XCTAssertTrue(app.staticTexts["Your plan is ready."].waitForExistence(timeout: 6))
     }
 

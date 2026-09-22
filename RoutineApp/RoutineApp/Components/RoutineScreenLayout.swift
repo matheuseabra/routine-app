@@ -14,13 +14,20 @@ struct RoutineScreenLayout<Content: View, Bottom: View>: View {
             RoutineColors.background.ignoresSafeArea()
             VStack(spacing: 0) {
                 if scrolls || dynamicTypeSize.isAccessibilitySize {
-                    ScrollView {
-                        content
-                            .frame(maxWidth: .infinity)
-                            .frame(minHeight: dynamicTypeSize.isAccessibilitySize ? 620 : 0)
-                            .padding(.horizontal, RoutineSpacing.lg)
+                    GeometryReader { geometry in
+                        ScrollView {
+                            content
+                                .frame(maxWidth: .infinity)
+                                .frame(
+                                    minHeight: dynamicTypeSize.isAccessibilitySize
+                                        ? max(620, geometry.size.height)
+                                        : geometry.size.height,
+                                    alignment: contentAlignment
+                                )
+                                .padding(.horizontal, RoutineSpacing.lg)
+                        }
+                        .scrollIndicators(.hidden)
                     }
-                    .scrollIndicators(.hidden)
                 } else {
                     content
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: contentAlignment)

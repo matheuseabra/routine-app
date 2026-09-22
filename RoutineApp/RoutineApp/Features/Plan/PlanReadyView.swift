@@ -13,7 +13,7 @@ struct PlanReadyView: View {
     var body: some View {
         RoutineScreenLayout(
             scrolls: true,
-            contentAlignment: .topLeading,
+            contentAlignment: .center,
             minimumBottomSafeArea: 32
         ) {
             VStack(alignment: .leading, spacing: 0) {
@@ -22,8 +22,7 @@ struct PlanReadyView: View {
                     title: context.readyTitle,
                     subtitle: context.readySubtitle
                 )
-                .padding(.top, RoutineSpacing.sm)
-                .padding(.bottom, RoutineSpacing.sm)
+                .padding(.bottom, RoutineSpacing.md)
 
                 startingRoutine
                     .padding(.bottom, RoutineSpacing.md)

@@ -4,19 +4,10 @@ struct OnboardingView: View {
     let onContinue: () -> Void
 
     var body: some View {
-        RoutineScreenLayout(minimumBottomSafeArea: 32) {
-            ZStack {
-                VStack(spacing: RoutineSpacing.xxl) {
-                    brandLockup
-                    introduction
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-
-                VStack {
-                    Spacer()
-                    welcomeProgress
-                        .padding(.bottom, RoutineSpacing.xl)
-                }
+        RoutineScreenLayout(contentAlignment: .center, minimumBottomSafeArea: 32) {
+            VStack(spacing: RoutineSpacing.xxl) {
+                brandLockup
+                introduction
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } bottom: {
@@ -55,16 +46,6 @@ struct OnboardingView: View {
         .padding(.horizontal, RoutineSpacing.lg)
     }
 
-    private var welcomeProgress: some View {
-        HStack(spacing: RoutineSpacing.sm) {
-            ForEach(0..<5, id: \.self) { index in
-                Circle()
-                    .fill(index == 0 ? RoutineColors.primaryText : RoutineColors.tertiaryText.opacity(0.45))
-                    .frame(width: 7, height: 7)
-            }
-        }
-        .accessibilityLabel("Page 1 of 5")
-    }
 }
 
 #Preview("Onboarding") {

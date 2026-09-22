@@ -4,12 +4,12 @@ This is a screen-by-screen extraction of the supplied 3840 × 2160 reference boa
 
 ## Shared visual rules
 
-- Use a 24 pt horizontal content inset and a pinned bottom action with consistent safe-area spacing. Center the welcome hero on both axes. On plan screens, center only the contextual icon, headline, and subtitle as a compact header; keep card text left aligned.
+- Use a 24 pt horizontal content inset and consistent safe-area spacing. Center the welcome hero on both axes without a page-progress breadcrumb. Center plan-screen content blocks in the available viewport; keep text inside cards and benefit lists left aligned.
 - Use a white / very-light-gray page background, black primary text and CTA, medium-gray explanatory text, pale-gray tracks and selected fills, and fine neutral borders. Keep icons simple and monochrome; avoid decorative icon discs, gradients, and heavy shadows.
 - The reference typography is intentionally enlarged slightly: bold headlines, 23–24 pt funnel titles, 16 pt subtitles, 17 pt body/option text, and 13 pt muted metadata. Long titles wrap naturally.
 - Quiz choice cards use 10–12 pt corners, a soft shadow, a leading semantic icon, and no per-option subtitles. Unselected cards have no visible border; a selected card gets a solid primary-color outline and a soft neutral fill.
 - Quiz screens have a top-left back chevron and a thin progress bar, without the numeric “n/5” counter. Every choice question requires a selection before Continue or a forward swipe can advance; the name field is also required.
-- Primary actions are black, about 48 pt high, nearly full-width, and capsule-shaped. The status bar remains system-rendered. Keep the welcome screen’s five small progress dots.
+- Primary actions are black, about 48 pt high, nearly full-width, and capsule-shaped. The status bar remains system-rendered. Do not show a page-progress breadcrumb on the welcome screen.
 
 ## Reference screens and implementation mapping
 
@@ -18,7 +18,7 @@ This is a screen-by-screen extraction of the supplied 3840 × 2160 reference boa
 - Brand mark: thin outlined circle over the “Routine” wordmark. Center the hero content horizontally and vertically in the usable screen area.
 - Headline: “Build better habits that actually stick.”
 - Supporting copy: “A simple plan built around your goals, your routine, and your real life.”
-- Five small page dots near the lower third; the first is dark.
+- No page-progress breadcrumb or dots.
 - Bottom CTA: “Get started”.
 - Implementation: `OnboardingView`; collapse the existing multi-slide introduction to this single screen.
 
@@ -66,14 +66,14 @@ This is a screen-by-screen extraction of the supplied 3840 × 2160 reference boa
 
 ### 7. Personalized starting guidance
 
-- Center a contextual target icon, personalized title “{name}, here’s where to start.”, and a diagnosis from the selected goal and obstacle.
+- Center the whole content group horizontally and vertically: contextual target icon, personalized title “{name}, here’s where to start.”, diagnosis, and insight cards.
 - Keep card content left aligned. Each of three white cards has a simple leading icon without a circular background and a short explanation: “Start smaller” / “Tiny steps create real progress.”; “Focus on repeatable actions” / “Routines beat motivation.”; “Build momentum first” / “Progress fuels consistency.” Remove trailing chevrons.
 - Bottom CTA: “See my plan”.
 - This is guidance/personalization, not a social sign-in screen; the supplied reference contains no Apple/Google/email authentication controls.
 
 ### 8. Plan generation
 
-- Centered contextual sparkle icon, title “Creating your personal plan...”, and support copy “We’ll tailor it around your goals, time, and routine.” Do not repeat the Routine logo/name lockup on plan screens.
+- Center the whole content group horizontally and vertically, led by a contextual sparkle icon, title “Creating your personal plan...”, and support copy “We’ll tailor it around your goals, time, and routine.” Keep progress rows readable as a left-aligned group. Do not repeat the Routine logo/name lockup on plan screens.
 - Centered circular progress ring starts at “67%”, animates upward through the percentages to 100%, then advances to the result. Keep the percentage crisp while the ring animates.
 - Four compact progress rows: completed “Analyzing your goal”, “Understanding your routine”, “Finding your starting point”; current “Building your plan”.
 - Three small answer chips near the bottom, reflecting goal, time, and consistency.
@@ -81,19 +81,17 @@ This is a screen-by-screen extraction of the supplied 3840 × 2160 reference boa
 
 ### 9. Plan ready
 
-- Centered contextual completion icon, personalized title “{name}, your plan is ready.”, and supporting copy “Built around your goal to build stronger consistency.”
+- Center the whole content group horizontally and vertically, including a contextual completion icon, personalized title “{name}, your plan is ready.”, supporting copy “Built around your goal to build stronger consistency.”, routine card, and progress chart. Keep routine-card copy left aligned.
 - White routine card titled “Your starting routine” with three icon rows and durations: “Morning reset” — 2 min; “Focus block” — 10 min; “Evening review” — 3 min.
 - “Your progress over time” label followed by two upward lines: a slower dashed “Without Routine” series and a faster solid “With Routine” series. Label the x-axis “Day” with weekday ticks and the y-axis “Progress” with visible score ticks. Put a compact two-item legend below the chart, containing only “Without Routine” and “With Routine”.
 - Bottom CTA: “Continue”.
 
 ### 10. Paywall
 
-- Small Routine brand row at the top.
-- Two-line title: “Build stronger consistency with your personal plan.”
-- Supporting copy: “Unlock the full Routine experience and create lasting change.”
-- Three simple benefit rows with light outline icons: “Your personal plan” / “Tailored to your goals and routine.”; “Progress insights” / “See your progress over time.”; “Smart reminders” / “Stay on track, automatically.”
-- Two bordered pricing rows. Each puts price above a muted cadence label on the left and a chevron on the right. Weekly: “$9.99/week” / “Weekly plan”. Yearly: “$59.99/year” / “Yearly plan”, with a small “Best value” badge. Yearly is selected in the reference.
-- Bottom CTA: “Start my free trial”, then the small reassurance “No commitment. Cancel anytime.”
+- Center the Routine brand row, headline, supporting copy, pricing choices, CTA, and reassurance as one vertically centered page group. Center the headline “Build stronger consistency with your personal plan.” and supporting copy “Unlock the full Routine experience and create lasting change.”
+- Keep the three benefit rows left aligned within a centered column, with light outline icons: “Your personal plan” / “Tailored to your goals and routine.”; “Progress insights” / “See your progress over time.”; “Smart reminders” / “Stay on track, automatically.”
+- Two bordered radio-choice rows, Yearly first and selected, then Weekly. Keep the radio and cadence label on the left and the localized price on the right; show “Best value” with Yearly. No chevrons.
+- Include the CTA “Start my free trial” and the small reassurance “No commitment. Cancel anytime.” in the centered page group.
 - Keep pricing and purchase behavior connected to live subscription products; demo prices must not enable a purchase when the provider is unconfigured. Retain a usable restore-purchases path without letting it displace the reference hierarchy.
 
 ## Flow and auth boundary
