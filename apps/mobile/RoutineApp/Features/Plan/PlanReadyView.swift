@@ -24,9 +24,18 @@ struct PlanReadyView: View {
                 )
                 .padding(.bottom, RoutineSpacing.md)
 
+                Text("A simple starting point, shaped around your goals.")
+                    .font(RoutineTypography.funnelSubtitle)
+                    .foregroundStyle(RoutineColors.funnelSecondaryText)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, RoutineSpacing.lg)
+
                 startingRoutine
                     .padding(.bottom, RoutineSpacing.md)
-                progressChart
+                RoutineCard {
+                    progressChart
+                }
             }
         } bottom: {
             RoutinePrimaryButton(title: "Continue", action: onContinue, visualStyle: .funnel)
@@ -34,36 +43,34 @@ struct PlanReadyView: View {
     }
 
     private var startingRoutine: some View {
-        VStack(alignment: .leading, spacing: RoutineSpacing.xs) {
-            Text("Your starting routine")
-                .font(RoutineTypography.funnelSubtitle)
-                .foregroundStyle(RoutineColors.primaryText)
-                .padding(.bottom, RoutineSpacing.xxs)
-            routineRow(icon: "sun.max", title: "Morning reset", duration: "2 min")
-            routineRow(icon: "scope", title: "Focus block", duration: "10 min")
-            routineRow(icon: "moon", title: "Evening review", duration: "3 min")
+        VStack(spacing: RoutineSpacing.md) {
+            answerRow(icon: "target", label: "Goal", answer: context.goalAnswer)
+            answerRow(icon: "exclamationmark.circle", label: "Challenge", answer: context.challengeAnswer)
+            answerRow(icon: "chart.line.uptrend.xyaxis", label: "Starting", answer: context.consistencyAnswer)
+            answerRow(icon: "clock", label: "Time", answer: context.timeAnswer)
         }
         .padding(.horizontal, RoutineSpacing.md)
-        .padding(.vertical, RoutineSpacing.sm)
+        .padding(.vertical, RoutineSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 12))
     }
 
-    private func routineRow(icon: String, title: String, duration: String) -> some View {
-        HStack(spacing: RoutineSpacing.sm) {
+    private func answerRow(icon: String, label: String, answer: String) -> some View {
+        HStack(alignment: .center, spacing: RoutineSpacing.sm) {
             Image(systemName: icon)
-                .font(.system(size: 15, weight: .regular))
-                .foregroundStyle(RoutineColors.funnelSecondaryText)
-                .frame(width: 16)
-            Text(title)
-                .font(RoutineTypography.funnelBody)
-                .foregroundStyle(RoutineColors.primaryText)
-            Spacer()
-            Text(duration)
-                .font(RoutineTypography.funnelSubtitle)
+                .font(.system(size: 17, weight: .regular))
                 .foregroundStyle(RoutineColors.secondaryText)
+                .frame(width: 20)
+            Text(label)
+                .font(RoutineTypography.funnelSubtitleMedium)
+                .foregroundStyle(RoutineColors.funnelSecondaryText)
+            Text(answer)
+                .font(RoutineTypography.funnelSubtitleMedium)
+                .foregroundStyle(RoutineColors.primaryText)
+                .multilineTextAlignment(.trailing)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .frame(height: 30)
     }
 
     private var progressChart: some View {

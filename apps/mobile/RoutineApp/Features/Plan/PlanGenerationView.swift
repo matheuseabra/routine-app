@@ -1,12 +1,10 @@
 import SwiftUI
 
 struct PlanGenerationView: View {
-    let context: RoutinePlanContext
     let onComplete: () -> Void
-    @State private var progress = 57.0
+    @State private var progress = 0.0
 
-    init(name: String, answers: [String?], onComplete: @escaping () -> Void) {
-        context = RoutinePlanContext(name: name, answers: answers)
+    init(onComplete: @escaping () -> Void) {
         self.onComplete = onComplete
     }
 
@@ -28,9 +26,6 @@ struct PlanGenerationView: View {
                     .padding(.bottom, RoutineSpacing.xl)
                 progressSteps
                     .padding(.bottom, RoutineSpacing.xl)
-                answerChips
-                    .frame(maxWidth: .infinity)
-                    .padding(.bottom, RoutineSpacing.xs)
             }
             .frame(maxWidth: .infinity)
         } bottom: {
@@ -42,11 +37,19 @@ struct PlanGenerationView: View {
     }
 
     private func animatePlanProgress() async {
-        for percentage in 58...100 {
+        do {
+            try await Task.sleep(for: .milliseconds(220))
+        } catch {
+            return
+        }
+        for percentage in 1...100 {
             guard !Task.isCancelled else { return }
-            progress = Double(percentage)
+            let stepDuration = progressStepDuration(for: percentage)
+            withAnimation(.linear(duration: Double(stepDuration) / 1_000)) {
+                progress = Double(percentage)
+            }
             do {
-                try await Task.sleep(for: .milliseconds(85))
+                try await Task.sleep(for: .milliseconds(stepDuration))
             } catch {
                 return
             }
@@ -60,6 +63,14 @@ struct PlanGenerationView: View {
         onComplete()
     }
 
+    private func progressStepDuration(for percentage: Int) -> Int {
+        switch percentage {
+        case ...45: 35
+        case 46..<60: 80 - percentage
+        default: 20
+        }
+    }
+
     private var progressRing: some View {
         ZStack {
             Circle()
@@ -68,7 +79,6 @@ struct PlanGenerationView: View {
                 .trim(from: 0, to: progress / 100)
                 .stroke(RoutineColors.primaryText, style: StrokeStyle(lineWidth: 6, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .animation(.linear(duration: 0.085), value: progress)
             Text("\(Int(progress))%")
                 .font(RoutineTypography.funnelHeadline)
                 .foregroundStyle(RoutineColors.primaryText)
@@ -83,9 +93,9 @@ struct PlanGenerationView: View {
 
     private var progressSteps: some View {
         VStack(alignment: .leading, spacing: RoutineSpacing.xs) {
-            progressRow("Analyzing your goal", complete: true)
-            progressRow("Understanding your routine", complete: true)
-            progressRow("Finding your starting point", complete: true)
+            progressRow("Analyzing your goal", complete: progress >= 25)
+            progressRow("Understanding your routine", complete: progress >= 50)
+            progressRow("Finding your starting point", complete: progress >= 75)
             progressRow("Building your plan", complete: progress == 100)
         }
         .frame(maxWidth: 280, alignment: .leading)
@@ -110,30 +120,8 @@ struct PlanGenerationView: View {
         }
     }
 
-    private var answerChips: some View {
-        VStack(spacing: RoutineSpacing.xs) {
-            HStack(spacing: RoutineSpacing.xs) {
-                chip(context.goalAnswer)
-                chip(context.timeAnswer)
-            }
-            chip(context.consistencyAnswer)
-        }
-    }
-
-    private func chip(_ title: String) -> some View {
-        Text(title)
-            .font(RoutineTypography.funnelCaption)
-            .foregroundStyle(RoutineColors.secondaryText)
-            .padding(.horizontal, RoutineSpacing.sm)
-            .padding(.vertical, RoutineSpacing.xs)
-            .background(RoutineColors.funnelSelection, in: Capsule())
-    }
 }
 
 #Preview("Plan generation") {
-    PlanGenerationView(
-        name: "Matheus",
-        answers: ["Stay more consistent", "I struggle with consistency", "Starting again", "10–15 minutes", nil],
-        onComplete: {}
-    )
+    PlanGenerationView(onComplete: {})
 }

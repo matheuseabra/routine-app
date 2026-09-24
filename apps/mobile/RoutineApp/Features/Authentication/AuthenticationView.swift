@@ -16,7 +16,14 @@ struct AuthenticationView: View {
                     icon: "icloud.and.arrow.up",
                     title: "Save your progress."
                 )
-                .padding(.bottom, RoutineSpacing.xl)
+                .padding(.bottom, RoutineSpacing.sm)
+
+                Text("Keep your routine and progress in sync across devices.")
+                    .font(RoutineTypography.funnelSubtitle)
+                    .foregroundStyle(RoutineColors.funnelSecondaryText)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, RoutineSpacing.lg)
+                    .padding(.bottom, RoutineSpacing.xl)
 
                 VStack(spacing: RoutineSpacing.sm) {
                     RoutineSecondaryButton(

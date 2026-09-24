@@ -56,7 +56,7 @@ extension View {
     func routineTitleStyle() -> some View {
         font(RoutineTypography.screenTitle)
             .foregroundStyle(RoutineColors.primaryText)
-            .tracking(-0.5)
+            .tracking(-0.8)
     }
 
     func routineSubtitleStyle() -> some View {

@@ -1,23 +1,29 @@
 import SwiftUI
 
 struct PaywallTrialReminderView: View {
+    let userName: String
     let onContinue: () -> Void
+
+    init(userName: String = "", onContinue: @escaping () -> Void) {
+        self.userName = userName.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.onContinue = onContinue
+    }
 
     private let steps = [
         RoutineTimelineStep(
             icon: .calendarCheck,
-            title: "Today: Instant access",
-            subtitle: "With free 7-day trial"
+            title: "Choose a plan",
+            subtitle: "Pick the billing period that works for you."
         ),
         RoutineTimelineStep(
-            icon: .bell,
-            title: "Day 5: Trial reminder",
-            subtitle: "We notify you about your trial end via email"
+            icon: .clock,
+            title: "Review the price",
+            subtitle: "See the amount before you confirm."
         ),
         RoutineTimelineStep(
             icon: .check,
-            title: "Day 7: Full membership",
-            subtitle: "Your account is charged, cancel anytime in the 24h before"
+            title: "Stay in control",
+            subtitle: "Manage or cancel in your App Store account."
         )
     ]
 
@@ -25,20 +31,33 @@ struct PaywallTrialReminderView: View {
         RoutineScreenLayout(contentAlignment: .center) {
             VStack(spacing: 0) {
                 RoutineHeroIcon(.clock)
-                    .padding(.top, RoutineSpacing.lg)
-                    .padding(.bottom, RoutineSpacing.md)
-                Text("Your 7-day free trial.")
-                    .routineTitleStyle()
-                    .multilineTextAlignment(.center)
-                    .padding(.bottom, RoutineSpacing.xs)
-                RoutineTimeline(steps: steps)
                     .padding(.top, RoutineSpacing.xl)
+                    .padding(.bottom, RoutineSpacing.lg)
+                Text(headline)
+                    .font(RoutineTypography.funnelTitle)
+                    .foregroundStyle(RoutineColors.primaryText)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.9)
                     .padding(.bottom, RoutineSpacing.md)
+                Text("Review your options and price before you subscribe.")
+                    .routineSubtitleStyle()
+                    .multilineTextAlignment(.center)
+                    .padding(.bottom, RoutineSpacing.md)
+                RoutineTimeline(steps: steps)
+                    .padding(.top, RoutineSpacing.xxl)
+                    .padding(.bottom, RoutineSpacing.lg)
             }
             .padding(.top, RoutineSpacing.lg)
         } bottom: {
             RoutinePrimaryButton(title: "Continue", action: onContinue)
         }
+    }
+
+    private var headline: String {
+        userName.isEmpty
+            ? "Choose what fits you."
+            : "\(userName), choose what fits."
     }
 }
 

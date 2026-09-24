@@ -23,11 +23,14 @@ struct ReminderView: View {
                     .routineTitleStyle()
                     .multilineTextAlignment(.center)
                     .padding(.bottom, RoutineSpacing.md)
+                Text("Get a gentle reminder to help you follow through each day.")
+                    .routineSubtitleStyle()
+                    .multilineTextAlignment(.center)
                 Spacer()
             }
         } bottom: {
             VStack(spacing: RoutineSpacing.sm) {
-                RoutinePrimaryButton(title: "Enable reminders") {
+                RoutinePrimaryButton(title: "Allow notifications") {
                     Task {
                         _ = await permissionService.requestAuthorization()
                         onContinue()

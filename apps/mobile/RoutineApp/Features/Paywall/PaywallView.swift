@@ -9,8 +9,10 @@ struct PaywallView: View {
     @State private var isLoadingPlans = true
     @State private var isSubscriptionReady = false
     @State private var errorMessage: String?
+    @State private var planSelectionHapticTrigger = 0
 
     let onContinue: () -> Void
+    var onClose: (() -> Void)? = nil
 
     var body: some View {
         RoutineScreenLayout(
@@ -19,25 +21,35 @@ struct PaywallView: View {
             minimumBottomSafeArea: 32
         ) {
             VStack(alignment: .center, spacing: 0) {
-                RoutineFunnelBrandHeader()
+                RoutineFunnelBrandHeader(name: "Routine+")
                     .padding(.bottom, RoutineSpacing.md)
                     .frame(maxWidth: .infinity)
+                    .overlay(alignment: .topTrailing) {
+                        if let onClose {
+                            Button(action: onClose) {
+                                RoutineIcon(.x)
+                                    .frame(width: 44, height: 44)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Close")
+                        }
+                    }
 
-                Text("Build stronger consistency\nwith your personal plan.")
+                Text("Make progress,\none day at a time.")
                     .font(RoutineTypography.funnelTitle)
                     .foregroundStyle(RoutineColors.primaryText)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
-                    .accessibilityLabel("Build stronger consistency with your personal plan.")
-                    .padding(.bottom, RoutineSpacing.xl)
-
-                benefits
-                    .frame(maxWidth: 320)
-                    .frame(maxWidth: .infinity, alignment: .center)
+                    .accessibilityLabel("Make progress, one day at a time.")
                     .padding(.bottom, RoutineSpacing.md)
 
+                benefits
+                    .frame(maxWidth: 340)
+                    .frame(maxWidth: .infinity, alignment: .center)
+
                 testimonial
+                    .padding(.top, RoutineSpacing.lg)
             }
             .frame(maxWidth: .infinity)
         } bottom: {
@@ -61,7 +73,7 @@ struct PaywallView: View {
                 .disabled(isPurchasing || isLoadingPlans || selectedPlanID == nil || !isSubscriptionReady)
                 .accessibilityHint(isSubscriptionReady ? "Starts the selected subscription." : "Live purchases are unavailable in this build.")
 
-                Text("No commitment. Cancel anytime.")
+                Text("Cancel anytime in the App Store.")
                     .font(RoutineTypography.funnelCaption)
                     .foregroundStyle(RoutineColors.tertiaryText)
                     .padding(.vertical, RoutineSpacing.xs)
@@ -90,16 +102,16 @@ struct PaywallView: View {
     }
 
     private var benefits: some View {
-        VStack(alignment: .leading, spacing: RoutineSpacing.sm) {
-            benefitRow(icon: "person", title: "Your personal plan", subtitle: "Tailored to your goals and routine.")
-            benefitRow(icon: "chart.bar", title: "Progress insights", subtitle: "See your progress over time.")
-            benefitRow(icon: "bell", title: "Smart reminders", subtitle: "Stay on track, automatically.")
+        VStack(alignment: .leading, spacing: RoutineSpacing.md) {
+            benefitRow(icon: "checkmark", title: "Today: Instant access", subtitle: "With free 7-day trial")
+            benefitRow(icon: "bell", title: "Day 5: Trial reminder", subtitle: "We notify you about your trial end via email")
+            benefitRow(icon: "star", title: "Day 7: Full membership", subtitle: "Your account is charged; cancel anytime in the 24 hours before renewal.")
         }
     }
 
     private var testimonial: some View {
-        VStack(alignment: .leading, spacing: RoutineSpacing.md) {
-            Text("“I’ve tried complicated plans before. Routine helped me start small and stay consistent, one day at a time.”")
+        VStack(alignment: .leading, spacing: RoutineSpacing.sm) {
+            Text("“Routine helped me start small and stay consistent, one day at a time.”")
                 .font(RoutineTypography.funnelCaption)
                 .foregroundStyle(RoutineColors.primaryText)
                 .fixedSize(horizontal: false, vertical: true)
@@ -108,37 +120,38 @@ struct PaywallView: View {
                 Image("routine-user")
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 38, height: 38)
+                    .frame(width: 32, height: 32)
                     .clipShape(Circle())
                     .accessibilityHidden(true)
-                Text("Matheus Seabra")
-                    .font(RoutineTypography.funnelBodyMedium)
-                    .foregroundStyle(RoutineColors.primaryText)
+
+                Text("Alex")
+                    .font(RoutineTypography.funnelCaption.weight(.semibold))
+                    .foregroundStyle(RoutineColors.funnelSecondaryText)
             }
         }
         .padding(RoutineSpacing.md)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
+        .frame(maxWidth: 340, alignment: .leading)
+        .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 12))
     }
 
     private func benefitRow(icon: String, title: String, subtitle: String) -> some View {
         HStack(spacing: RoutineSpacing.md) {
             Image(systemName: icon)
-                .font(.system(size: 14, weight: .regular))
-                .foregroundStyle(RoutineColors.inverseText)
-                .frame(width: 34, height: 34)
-                .background(RoutineColors.primaryText, in: Circle())
+                .font(.system(size: 17, weight: .medium))
+                .foregroundStyle(RoutineColors.primaryText)
+                .frame(width: 40, height: 40)
+                .background(RoutineColors.track, in: Circle())
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: RoutineSpacing.xxs) {
                 Text(title)
-                    .font(RoutineTypography.funnelBody)
+                    .font(RoutineTypography.funnelBodyMedium)
                     .foregroundStyle(RoutineColors.primaryText)
                 Text(subtitle)
                     .font(RoutineTypography.funnelCaption)
                     .foregroundStyle(RoutineColors.funnelSecondaryText)
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
     }
 
     private var pricingCards: some View {
@@ -191,6 +204,8 @@ struct PaywallView: View {
         let cadenceName = isYearly ? "Yearly" : (isWeekly ? "Weekly" : plan.displayName)
         let billingInterval = isYearly ? "/year" : (isWeekly ? "/week" : "/\(plan.period)")
         return Button {
+            guard selectedPlanID != plan.id else { return }
+            planSelectionHapticTrigger += 1
             withAnimation(.easeInOut(duration: 0.2)) {
                 selectedPlanID = plan.id
             }
@@ -223,7 +238,7 @@ struct PaywallView: View {
             .overlay(alignment: .topTrailing) {
                 if isYearly {
                     Text("Best value")
-                        .font(.system(size: 9, weight: .medium))
+                        .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(RoutineColors.inverseText)
                         .padding(.horizontal, RoutineSpacing.xs)
                         .padding(.vertical, RoutineSpacing.xxs)
@@ -234,6 +249,7 @@ struct PaywallView: View {
             .contentShape(RoundedRectangle(cornerRadius: 11))
         }
         .buttonStyle(.plain)
+        .sensoryFeedback(.selection, trigger: planSelectionHapticTrigger)
         .accessibilityLabel("\(cadenceName), \(plan.displayPrice)\(billingInterval)\(isYearly ? ", Best value" : "")")
         .accessibilityValue(isSelected ? "Selected" : "Not selected")
     }
@@ -297,7 +313,7 @@ struct PaywallView: View {
         if isPurchasing { return "Processing..." }
         if isLoadingPlans { return "Loading plans..." }
         let selectedPlanHasTrial = plans.first(where: { $0.id == selectedPlanID })?.hasTrial == true
-        return selectedPlanHasTrial ? "Start my free trial" : "Subscribe now"
+        return selectedPlanHasTrial ? "Start your free trial" : "Continue with Routine"
     }
 }
 

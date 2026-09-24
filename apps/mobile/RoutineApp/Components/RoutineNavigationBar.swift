@@ -5,20 +5,20 @@ struct RoutineNavItem: View {
     let isSelected: Bool
     let action: () -> Void
     @State private var hapticTrigger = 0
-
     var body: some View {
         Button {
+            guard !isSelected else { return }
             hapticTrigger += 1
             action()
         } label: {
             RoutineIcon(
                 tab.icon,
-                weight: .bold,
-                color: isSelected ? RoutineColors.primaryText : RoutineColors.tertiaryText
+                weight: isSelected ? .bold : .regular,
+                color: isSelected ? RoutineColors.primaryText : RoutineColors.secondaryText
             )
-            .frame(width: 21, height: 21)
+            .frame(width: 22, height: 22)
             .frame(maxWidth: .infinity)
-            .frame(minHeight: 56)
+            .frame(height: 50)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -40,41 +40,41 @@ struct RoutineNavigationBar: View {
     }
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 0) {
+        HStack(alignment: .center, spacing: 0) {
             ForEach(AppTab.allCases) { tab in
                 if tab == .add {
-                    Button {
-                        hapticTrigger += 1
-                        onAdd()
-                    } label: {
-                        RoutineIcon(.plus, weight: .bold, color: RoutineColors.inverseText)
-                            .frame(width: 23, height: 23)
-                            .frame(width: 52, height: 52)
-                            .background(RoutineColors.primaryText, in: Circle())
-                            .offset(y: -38)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.plain)
-                    .sensoryFeedback(.impact(weight: .medium), trigger: hapticTrigger)
-                    .accessibilityLabel("Add")
+                    Color.clear
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .accessibilityHidden(true)
                 } else {
                     RoutineNavItem(tab: tab, isSelected: selectedTab == tab) {
                         if reduceMotion {
                             selectedTab = tab
                         } else {
-                            withAnimation(.easeInOut(duration: 0.18)) { selectedTab = tab }
+                            withAnimation(.easeInOut(duration: 0.14)) { selectedTab = tab }
                         }
                     }
                 }
             }
         }
         .padding(.horizontal, RoutineSpacing.xs)
-        .padding(.top, RoutineSpacing.xs)
-        .background(RoutineColors.surface)
+        .background(RoutineColors.background)
         .overlay(alignment: .top) {
-            Rectangle()
-                .fill(RoutineColors.border)
-                .frame(height: 1)
+            Button {
+                hapticTrigger += 1
+                onAdd()
+            } label: {
+                RoutineIcon(.plus, weight: .bold, color: RoutineColors.inverseText)
+                    .frame(width: 24, height: 24)
+                    .frame(width: 54, height: 54)
+                    .background(RoutineColors.primaryText, in: Circle())
+                    .contentShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .sensoryFeedback(.impact(weight: .medium), trigger: hapticTrigger)
+            .accessibilityLabel("Add task")
+            .offset(y: -27)
         }
     }
 

@@ -16,13 +16,13 @@ private struct InsightPoint: Identifiable {
 
 struct InsightsView: View {
     let checkIns: [RoutineCheckIn]
-    let onOpenHabits: () -> Void
+    let onOpenDashboard: () -> Void
     @State private var selectedRange: InsightRange = .week
     @State private var rangeHapticTrigger = 0
 
-    init(checkIns: [RoutineCheckIn] = [], onOpenHabits: @escaping () -> Void = {}) {
+    init(checkIns: [RoutineCheckIn] = [], onOpenDashboard: @escaping () -> Void = {}) {
         self.checkIns = checkIns
-        self.onOpenHabits = onOpenHabits
+        self.onOpenDashboard = onOpenDashboard
     }
 
     var body: some View {
@@ -37,11 +37,11 @@ struct InsightsView: View {
                         icon: .chartLineUp,
                         title: "Your progress starts with a check-in",
                         message: "Complete a task to see your activity and consistency here.",
-                        actionTitle: "View your habits",
-                        action: onOpenHabits
+                        actionTitle: "View your dashboard",
+                        action: onOpenDashboard
                     )
                 } else {
-                    RoutineSectionHeader(title: "Overview")
+                    RoutineSectionHeader(title: "Your activity")
                         .padding(.bottom, RoutineSpacing.sm)
                     rangePicker
                         .padding(.bottom, RoutineSpacing.lg)
@@ -57,13 +57,16 @@ struct InsightsView: View {
         .background(RoutineColors.background)
     }
 
-    private var filteredCheckIns: [RoutineCheckIn] {
-        let start = Calendar.current.date(
+    private var rangeStart: Date {
+        Calendar.current.date(
             byAdding: .day,
             value: -(selectedRange.dayCount - 1),
             to: Calendar.current.startOfDay(for: .now)
         ) ?? .distantPast
-        return checkIns.filter { $0.completedAt >= start }
+    }
+
+    private var filteredCheckIns: [RoutineCheckIn] {
+        checkIns.filter { $0.completedAt >= rangeStart }
     }
 
     private var summary: InsightSummary {
@@ -100,7 +103,7 @@ struct InsightsView: View {
     private var metrics: some View {
         HStack(spacing: RoutineSpacing.sm) {
             metric(value: "\(summary.currentStreak)", label: "day streak")
-            metric(value: "\(rangeConsistency)%", label: "consistency")
+            metric(value: "\(activeDayCount)", label: "days active")
             metric(value: "\(filteredCheckIns.count)", label: "tasks done")
         }
     }
@@ -123,9 +126,9 @@ struct InsightsView: View {
         RoutineCard {
             VStack(alignment: .leading, spacing: RoutineSpacing.md) {
                 VStack(alignment: .leading, spacing: RoutineSpacing.xxs) {
-                    Text("Completion trend")
+                    Text("Daily progress")
                         .font(RoutineTypography.timelineTitle)
-                    Text("Check-ins over the selected period")
+                    Text("Tasks completed each day")
                         .font(RoutineTypography.small)
                         .foregroundStyle(RoutineColors.secondaryText)
                 }
@@ -144,6 +147,15 @@ struct InsightsView: View {
                             .font(RoutineTypography.chartLabel)
                     }
                 }
+                .chartYAxis {
+                    AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { _ in
+                        AxisGridLine()
+                        AxisValueLabel()
+                            .font(RoutineTypography.chartLabel)
+                    }
+                }
+                .chartXScale(domain: chartDateRange)
+                .chartYScale(domain: 0...max(3, points.map(\.value).max() ?? 0))
                 .frame(height: 180)
             }
         }
@@ -155,14 +167,21 @@ struct InsightsView: View {
             calendar.startOfDay(for: $0.completedAt)
         }
 
-        return grouped
-            .map { InsightPoint(id: $0.key, date: $0.key, value: Double($0.value.count)) }
-            .sorted { $0.date < $1.date }
+        return (0..<selectedRange.dayCount).compactMap { offset in
+            guard let day = calendar.date(byAdding: .day, value: offset, to: rangeStart) else { return nil }
+            return InsightPoint(id: day, date: day, value: Double(grouped[day]?.count ?? 0))
+        }
     }
 
-    private var rangeConsistency: Int {
-        let activeDays = Set(filteredCheckIns.map { Calendar.current.startOfDay(for: $0.completedAt) }).count
-        return Int((Double(activeDays) / Double(selectedRange.dayCount) * 100).rounded())
+    private var activeDayCount: Int {
+        Set(filteredCheckIns.map { Calendar.current.startOfDay(for: $0.completedAt) }).count
+    }
+
+    private var chartDateRange: ClosedRange<Date> {
+        let calendar = Calendar.current
+        let lower = calendar.date(byAdding: .day, value: -1, to: rangeStart) ?? rangeStart
+        let upper = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: .now)) ?? .now
+        return lower...upper
     }
 }
 

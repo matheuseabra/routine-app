@@ -1,4 +1,3 @@
-import CoreText
 import SwiftData
 import SwiftUI
 
@@ -8,7 +7,6 @@ struct RoutineApp: App {
     private let modelContainer: ModelContainer
 
     init() {
-        Self.registerFonts()
         RevenueCatBootstrap.configureIfNeeded()
 
         let isDemoMode = ProcessInfo.processInfo.arguments.contains("-demo-data")
@@ -34,10 +32,4 @@ struct RoutineApp: App {
         .modelContainer(modelContainer)
     }
 
-    private static func registerFonts() {
-        ["Geist-Regular", "Geist-Medium", "Geist-Bold"].forEach { fontName in
-            guard let fontURL = Bundle.main.url(forResource: fontName, withExtension: "ttf") else { return }
-            CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, nil)
-        }
-    }
 }

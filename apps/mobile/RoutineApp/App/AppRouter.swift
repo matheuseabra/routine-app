@@ -5,7 +5,6 @@ enum RoutineScreen: String, CaseIterable, Hashable {
     case launch
     case onboarding
     case quiz
-    case plan
     case planGeneration
     case planReady
     case authentication
@@ -19,7 +18,7 @@ enum RoutineScreen: String, CaseIterable, Hashable {
 final class AppRouter {
     var screen: RoutineScreen
     var name = ""
-    var quizAnswers: [String?] = [nil, nil, "Starting again", "10–15 minutes", nil]
+    var quizAnswers = Array<String?>(repeating: nil, count: 5)
 
     let usesScreenOverride: Bool
 
@@ -47,8 +46,7 @@ final class AppRouter {
         switch screen {
         case .launch: screen = .onboarding
         case .onboarding: screen = .quiz
-        case .quiz: screen = .plan
-        case .plan: screen = .planGeneration
+        case .quiz: screen = .planGeneration
         case .planGeneration: screen = .planReady
         case .planReady: screen = authEnabled ? .authentication : .trialExplainer
         case .authentication: screen = .trialExplainer
@@ -64,9 +62,8 @@ final class AppRouter {
         case .launch: break
         case .onboarding: screen = .launch
         case .quiz: screen = .onboarding
-        case .plan: screen = .quiz
-        case .planGeneration: screen = .plan
-        case .planReady: screen = .plan
+        case .planGeneration: screen = .quiz
+        case .planReady: screen = .quiz
         case .authentication: screen = .planReady
         case .trialExplainer: screen = authEnabled ? .authentication : .planReady
         case .reminder: screen = .trialExplainer
@@ -78,6 +75,12 @@ final class AppRouter {
     func resolveReturningSession(hasActiveEntitlement: Bool) {
         guard !usesScreenOverride else { return }
         screen = hasActiveEntitlement ? .main : .paywall
+    }
+
+    func resetOnboarding() {
+        screen = .launch
+        name = ""
+        quizAnswers = Array(repeating: nil, count: 5)
     }
 }
 
@@ -119,16 +122,14 @@ struct RoutineRootView: View {
                             onBack: goBackScreen,
                             onContinue: advanceScreen
                         )
-                    case .plan:
-                        PlanView(name: router.name, answers: router.quizAnswers, onContinue: advanceScreen)
                     case .planGeneration:
-                        PlanGenerationView(name: router.name, answers: router.quizAnswers, onComplete: advanceScreen)
+                        PlanGenerationView(onComplete: advanceScreen)
                     case .planReady:
                         PlanReadyView(name: router.name, answers: router.quizAnswers, onContinue: advanceScreen)
                     case .authentication:
                         AuthenticationView(onContinue: advanceScreen)
                     case .trialExplainer:
-                        PaywallTrialReminderView(onContinue: advanceScreen)
+                        PaywallTrialReminderView(userName: router.name, onContinue: advanceScreen)
                     case .reminder:
                         ReminderView(onContinue: advanceScreen)
                     case .paywall:
@@ -147,6 +148,8 @@ struct RoutineRootView: View {
             .toolbar(.hidden, for: .navigationBar)
         }
         .tint(RoutineColors.primaryText)
+        .environment(appState)
+        .environment(router)
         .contentShape(Rectangle())
         .highPriorityGesture(rootSwipeGesture)
         .sensoryFeedback(.impact(weight: .light), trigger: swipeHaptic)

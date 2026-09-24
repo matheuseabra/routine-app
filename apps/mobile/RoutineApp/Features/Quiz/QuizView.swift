@@ -27,7 +27,8 @@ struct QuizView: View {
 
     private let questions = [
         QuizQuestion(
-            prompt: "What would you most like to improve?",
+            prompt: "What would you like to improve first?",
+            subtitle: "Pick one focus for your routine.",
             options: [
                 QuizOption(title: "Stay more consistent", icon: "repeat"),
                 QuizOption(title: "Get more done", icon: "checkmark.circle"),
@@ -38,6 +39,7 @@ struct QuizView: View {
         ),
         QuizQuestion(
             prompt: "What usually gets in the way?",
+            subtitle: "Choose the challenge you face most often.",
             options: [
                 QuizOption(title: "I struggle with consistency", icon: "arrow.clockwise"),
                 QuizOption(title: "I lose motivation", icon: "flame"),
@@ -48,6 +50,7 @@ struct QuizView: View {
         ),
         QuizQuestion(
             prompt: "How consistent do you feel right now?",
+            subtitle: "We’ll start at a pace that fits you.",
             options: [
                 QuizOption(title: "Just starting", icon: "leaf"),
                 QuizOption(title: "Starting again", icon: "arrow.counterclockwise"),
@@ -57,6 +60,7 @@ struct QuizView: View {
         ),
         QuizQuestion(
             prompt: "How much time can you realistically commit?",
+            subtitle: "A few minutes can be enough.",
             options: [
                 QuizOption(title: "5 minutes a day", icon: "timer"),
                 QuizOption(title: "10–15 minutes", icon: "clock"),
@@ -64,7 +68,11 @@ struct QuizView: View {
                 QuizOption(title: "My schedule changes often", icon: "calendar.badge.clock")
             ]
         ),
-        QuizQuestion(prompt: "What should we call you?", options: [])
+        QuizQuestion(
+            prompt: "What should we call you?",
+            subtitle: "We’ll use it to welcome you to your routine.",
+            options: []
+        )
     ]
 
     var body: some View {
@@ -139,18 +147,21 @@ struct QuizView: View {
     }
 
     private var questionHeading: some View {
-        VStack(alignment: .leading, spacing: RoutineSpacing.md) {
+        VStack(alignment: .leading, spacing: RoutineSpacing.sm) {
             Text(currentQuestion.prompt)
                 .font(RoutineTypography.funnelTitle)
                 .foregroundStyle(RoutineColors.primaryText)
                 .fixedSize(horizontal: false, vertical: true)
-
+            Text(currentQuestion.subtitle)
+                .font(RoutineTypography.funnelSubtitle)
+                .foregroundStyle(RoutineColors.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.bottom, RoutineSpacing.xs)
+        .padding(.bottom, RoutineSpacing.lg)
     }
 
     private var optionList: some View {
-        VStack(spacing: RoutineSpacing.xs) {
+        VStack(spacing: RoutineSpacing.sm) {
             ForEach(currentQuestion.options) { option in
                 optionButton(option)
             }
@@ -183,7 +194,7 @@ struct QuizView: View {
             .overlay {
                 if isSelected {
                     RoundedRectangle(cornerRadius: 11)
-                        .stroke(RoutineColors.primaryText, lineWidth: 1)
+                        .stroke(RoutineColors.primaryText, lineWidth: 2)
                 }
             }
             .contentShape(RoundedRectangle(cornerRadius: 11))
@@ -195,11 +206,8 @@ struct QuizView: View {
     }
 
     private var nameQuestion: some View {
-        VStack(alignment: .leading, spacing: RoutineSpacing.lg) {
-            Text(currentQuestion.prompt)
-                .font(RoutineTypography.funnelTitle)
-                .foregroundStyle(RoutineColors.primaryText)
-
+        VStack(alignment: .leading, spacing: 0) {
+            questionHeading
             TextField("Your name", text: $name)
                 .font(RoutineTypography.funnelBody)
                 .textInputAutocapitalization(.words)
@@ -207,10 +215,6 @@ struct QuizView: View {
                 .padding(.horizontal, RoutineSpacing.md)
                 .frame(height: 52)
                 .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 11))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 11)
-                        .stroke(RoutineColors.border.opacity(0.85), lineWidth: 0.8)
-                }
                 .onSubmit(continueTapped)
                 .accessibilityLabel("Your name")
         }
@@ -256,10 +260,12 @@ struct QuizView: View {
 
 private struct QuizQuestion {
     let prompt: String
+    let subtitle: String
     let options: [QuizOption]
 
-    init(prompt: String, options: [QuizOption] = []) {
+    init(prompt: String, subtitle: String, options: [QuizOption] = []) {
         self.prompt = prompt
+        self.subtitle = subtitle
         self.options = options
     }
 }

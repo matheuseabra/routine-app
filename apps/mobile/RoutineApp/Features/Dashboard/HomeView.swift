@@ -1,105 +1,92 @@
 import SwiftUI
 
 struct HomeView: View {
-    @Binding var selectedTab: AppTab
     let tasks: [RoutineTask]
     let onToggleTask: (RoutineTask) -> Void
-    let onAddTask: () -> Void
+    let onEditTask: (RoutineTask) -> Void
+    let onDeleteTask: (RoutineTask) -> Void
+    @Binding var isSearchPresented: Bool
     @State private var searchHapticTrigger = 0
-    @State private var isSearchPresented = false
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                header
-                    .padding(.top, RoutineSpacing.lg)
-                    .padding(.bottom, RoutineSpacing.xl)
-                if tasks.isEmpty {
-                    emptyState
-                } else {
-                    progressCard
-                        .padding(.bottom, RoutineSpacing.xl)
-                    if !activeTasks.isEmpty {
-                        RoutineSectionHeader(title: "Your tasks")
-                            .padding(.bottom, RoutineSpacing.sm)
-                        taskList
-                    }
+        VStack(spacing: 0) {
+            header
+                .padding(.horizontal, RoutineSpacing.lg)
+                .padding(.top, RoutineSpacing.lg)
+                .padding(.bottom, tasks.isEmpty ? 0 : RoutineSpacing.xl)
+
+            if tasks.isEmpty {
+                emptyState
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    taskList
+                    .padding(.horizontal, RoutineSpacing.lg)
+                    .padding(.bottom, RoutineSpacing.huge)
                 }
+                .scrollIndicators(.hidden)
             }
-            .padding(.horizontal, RoutineSpacing.lg)
-            .padding(.bottom, RoutineSpacing.huge)
         }
-        .scrollIndicators(.hidden)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(RoutineColors.background)
         .sheet(isPresented: $isSearchPresented) {
             TaskSearchSheet(tasks: tasks)
                 .presentationBackground(RoutineColors.surface)
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
         }
     }
 
     private var header: some View {
-        RoutinePageHeader(
-            title: "Today"
-        ) {
-            Button {
-                searchHapticTrigger += 1
-                isSearchPresented = true
-            } label: {
-                RoutineIcon(.magnifyingGlass)
-                    .frame(width: 21, height: 21)
-                    .frame(width: 44, height: 44)
+        VStack(alignment: .leading, spacing: RoutineSpacing.md) {
+            HStack {
+                RoutineLogo(size: .small)
+                Spacer()
+                Button {
+                    searchHapticTrigger += 1
+                    isSearchPresented = true
+                } label: {
+                    RoutineIcon(.magnifyingGlass)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .sensoryFeedback(.selection, trigger: searchHapticTrigger)
+                .accessibilityLabel("Search tasks")
             }
-            .buttonStyle(.plain)
-            .sensoryFeedback(.selection, trigger: searchHapticTrigger)
-            .accessibilityLabel("Search tasks")
+
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var emptyState: some View {
-        RoutineEmptyState(
-            icon: .clipboardText,
-            title: "Start with one small step",
-            message: "Add a task you can complete today. You can build from there.",
-            actionTitle: "Add your first task",
-            action: onAddTask
-        )
-    }
+        VStack(alignment: .center, spacing: RoutineSpacing.md) {
+            RoutineIcon(.clipboardText, color: RoutineColors.secondaryText, pointSize: 34)
+                .frame(width: 44, height: 44)
+                .accessibilityHidden(true)
 
-    private var progressCard: some View {
-        let completed = tasks.filter(\.isCompleted).count
-        return RoutineCard {
-            VStack(alignment: .leading, spacing: RoutineSpacing.sm) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text(completed == tasks.count ? "All done for now" : "One step at a time")
-                        .font(RoutineTypography.timelineTitle)
-                    Spacer()
-                    Text("\(completed) of \(tasks.count)")
-                        .font(RoutineTypography.small)
-                        .foregroundStyle(RoutineColors.secondaryText)
-                }
-                RoutineProgressBar(progress: Double(completed) / Double(tasks.count))
-                Text(completed == tasks.count
-                     ? "You followed through. Add another task whenever you’re ready."
-                     : "Your next task is \(tasks.first(where: { !$0.isCompleted })?.title ?? "ready when you are").")
-                    .font(RoutineTypography.smallRegular)
-                    .foregroundStyle(RoutineColors.secondaryText)
-            }
+            Text("Start with one small step")
+                .font(RoutineTypography.bodyMedium)
+                .foregroundStyle(RoutineColors.primaryText)
+                .multilineTextAlignment(.center)
+
+            Text("Small steps make a routine easier to keep.")
+                .font(RoutineTypography.secondary)
+                .foregroundStyle(RoutineColors.secondaryText)
+                .multilineTextAlignment(.center)
         }
-    }
-
-    private var activeTasks: [RoutineTask] {
-        tasks.filter { !$0.isCompleted }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var taskList: some View {
         VStack(spacing: 0) {
-            ForEach(Array(activeTasks.enumerated()), id: \.element.id) { index, task in
-                RoutineTaskRow(task: task) {
-                    onToggleTask(task)
-                }
-                if index < activeTasks.count - 1 {
+            ForEach(Array(tasks.enumerated()), id: \.element.id) { index, task in
+                RoutineTaskRow(
+                    task: task,
+                    onEdit: { onEditTask(task) },
+                    onDelete: { onDeleteTask(task) }
+                ) { onToggleTask(task) }
+                if index < tasks.count - 1 {
                     Divider().overlay(RoutineColors.border)
                 }
             }
@@ -115,8 +102,12 @@ private struct TaskSearchSheet: View {
     @State private var query = ""
 
     private var filteredTasks: [RoutineTask] {
-        guard !query.isEmpty else { return tasks }
+        guard hasQuery else { return [] }
         return tasks.filter { $0.title.localizedCaseInsensitiveContains(query) }
+    }
+
+    private var hasQuery: Bool {
+        !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     var body: some View {
@@ -132,7 +123,13 @@ private struct TaskSearchSheet: View {
                 .listRowBackground(RoutineColors.surface)
             }
             .overlay {
-                if filteredTasks.isEmpty {
+                if !hasQuery {
+                    ContentUnavailableView(
+                        "Find a task",
+                        systemImage: "magnifyingglass",
+                        description: Text("Type a task name to find it.")
+                    )
+                } else if filteredTasks.isEmpty {
                     ContentUnavailableView.search(text: query)
                 }
             }
@@ -152,11 +149,12 @@ private struct TaskSearchSheet: View {
 }
 
 #Preview("Home") {
-    @Previewable @State var tab: AppTab = .home
+    @Previewable @State var isSearchPresented = false
     HomeView(
-        selectedTab: $tab,
         tasks: [RoutineTask(title: "Morning walk")],
         onToggleTask: { _ in },
-        onAddTask: {}
+        onEditTask: { _ in },
+        onDeleteTask: { _ in },
+        isSearchPresented: $isSearchPresented
     )
 }

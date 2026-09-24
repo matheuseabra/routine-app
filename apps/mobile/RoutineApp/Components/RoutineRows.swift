@@ -69,8 +69,8 @@ struct RoutineTimeline: View {
                         .frame(width: 32, height: 32)
                         if index < steps.count - 1 {
                             Rectangle()
-                                .fill(RoutineColors.border)
-                                .frame(width: 1, height: 48)
+                                .fill(RoutineColors.primaryText)
+                                .frame(width: 2, height: 48)
                         }
                     }
                     VStack(alignment: .leading, spacing: RoutineSpacing.xxs) {
@@ -97,109 +97,75 @@ struct RoutineTimeline: View {
     }
 }
 
-struct RoutineNumberedTimelineStep: Identifiable {
-    let id: String
-    let title: String
-    let subtitle: String
-
-    init(title: String, subtitle: String) {
-        self.id = title
-        self.title = title
-        self.subtitle = subtitle
-    }
-}
-
-struct RoutineNumberedTimeline: View {
-    let steps: [RoutineNumberedTimelineStep]
-
-    var body: some View {
-        VStack(spacing: 0) {
-            ForEach(Array(steps.enumerated()), id: \.element.id) { index, step in
-                HStack(alignment: .top, spacing: RoutineSpacing.md) {
-                    VStack(spacing: 0) {
-                        Text("\(index + 1)")
-                            .font(RoutineTypography.timelineIndex)
-                            .foregroundStyle(RoutineColors.inverseText)
-                            .frame(width: 32, height: 32)
-                            .background(RoutineColors.primaryText, in: Circle())
-                        if index < steps.count - 1 {
-                            Rectangle()
-                                .fill(RoutineColors.border)
-                                .frame(width: 1, height: 48)
-                        }
-                    }
-                    VStack(alignment: .leading, spacing: RoutineSpacing.xxs) {
-                        Text(step.title)
-                            .font(RoutineTypography.timelineTitle)
-                        Text(step.subtitle)
-                            .font(RoutineTypography.small)
-                            .foregroundStyle(RoutineColors.secondaryText)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(.top, 5)
-                    .padding(.bottom, index < steps.count - 1 ? RoutineSpacing.md : 0)
-                    Spacer(minLength: 0)
-                }
-            }
-        }
-        .accessibilityElement(children: .combine)
-    }
-}
-
 struct RoutineTaskRow: View {
     let task: RoutineTask
+    let onEdit: () -> Void
+    let onDelete: () -> Void
     let action: () -> Void
-    @State private var hapticTrigger = 0
     @State private var isCompleting = false
 
     var body: some View {
-        Button {
-            hapticTrigger += 1
-            guard !task.isCompleted else {
-                action()
-                return
-            }
-
-            isCompleting = true
-            Task {
-                do {
-                    try await Task.sleep(for: .milliseconds(350))
-                } catch {
-                    isCompleting = false
+        HStack(spacing: RoutineSpacing.xs) {
+            Button {
+                guard !task.isCompleted else {
+                    action()
                     return
                 }
-                withAnimation(.easeOut(duration: 0.3)) {
-                    action()
-                    isCompleting = false
-                }
-            }
-        } label: {
-            HStack(spacing: RoutineSpacing.sm) {
-                ZStack {
-                    Circle()
-                        .fill(task.isCompleted ? RoutineColors.primaryText : .clear)
-                    Circle()
-                        .stroke(task.isCompleted ? RoutineColors.primaryText : RoutineColors.tertiaryText, lineWidth: 1.3)
-                    if task.isCompleted {
-                        RoutineIcon(.check, color: RoutineColors.inverseText)
-                            .frame(width: 9, height: 9)
+
+                isCompleting = true
+                Task {
+                    do {
+                        try await Task.sleep(for: .milliseconds(350))
+                    } catch {
+                        isCompleting = false
+                        return
+                    }
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        action()
+                        isCompleting = false
                     }
                 }
-                .frame(width: 22, height: 22)
-                Text(task.title)
-                    .font(RoutineTypography.body)
-                    .foregroundStyle(task.isCompleted ? RoutineColors.secondaryText : RoutineColors.primaryText)
-                Spacer()
+            } label: {
+                HStack(spacing: RoutineSpacing.sm) {
+                    ZStack {
+                        Circle()
+                            .fill(task.isCompleted ? RoutineColors.primaryText : .clear)
+                        Circle()
+                            .stroke(task.isCompleted ? RoutineColors.primaryText : RoutineColors.tertiaryText, lineWidth: 1.3)
+                        if task.isCompleted {
+                            RoutineIcon(.check, color: RoutineColors.inverseText)
+                                .frame(width: 9, height: 9)
+                        }
+                    }
+                    .frame(width: 22, height: 22)
+                    Text(task.title)
+                        .font(RoutineTypography.body)
+                        .foregroundStyle(task.isCompleted ? RoutineColors.secondaryText : RoutineColors.primaryText)
+                    Spacer()
+                }
+                .frame(minHeight: 52)
+                .contentShape(Rectangle())
             }
-            .frame(minHeight: 48)
-            .contentShape(Rectangle())
+            .buttonStyle(.plain)
+            .sensoryFeedback(
+                task.isCompleted ? .success : .impact(weight: .light),
+                trigger: task.isCompleted
+            )
+            .disabled(isCompleting)
+            .accessibilityLabel(task.title)
+            .accessibilityValue(isCompleting ? "Completing" : (task.isCompleted ? "Completed" : "Not completed"))
+
+            Menu {
+                Button("Edit", systemImage: "pencil", action: onEdit)
+                Button("Delete", systemImage: "trash", role: .destructive, action: onDelete)
+            } label: {
+                RoutineIcon(.ellipsis, color: RoutineColors.secondaryText)
+                    .frame(width: 36, height: 36)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Actions for \(task.title)")
         }
-        .buttonStyle(.plain)
-        .sensoryFeedback(.impact(weight: .light), trigger: hapticTrigger)
-        .disabled(isCompleting)
         .transition(.opacity)
-        .accessibilityLabel(task.title)
-        .accessibilityValue(isCompleting ? "Completing" : (task.isCompleted ? "Completed" : "Not completed"))
     }
 }
 

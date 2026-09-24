@@ -28,13 +28,20 @@ struct OnboardingView: View {
     }
 
     private var introduction: some View {
-        VStack {
-            Text("Build better habits\nthat actually stick.")
+        VStack(spacing: RoutineSpacing.lg) {
+            Text("Build a routine\nyou can keep.")
                 .font(RoutineTypography.funnelWelcome)
                 .foregroundStyle(RoutineColors.primaryText)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-                .accessibilityLabel("Build better habits that actually stick.")
+                .accessibilityLabel("Build a routine you can keep.")
+
+            Text("Start small, stay focused, and see how far you’ve come.")
+                .font(RoutineTypography.funnelSubtitle)
+                .foregroundStyle(RoutineColors.funnelSecondaryText)
+                .multilineTextAlignment(.center)
+                .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.horizontal, RoutineSpacing.lg)
     }

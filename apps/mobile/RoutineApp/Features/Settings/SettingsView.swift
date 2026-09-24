@@ -2,8 +2,12 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.openURL) private var openURL
+    @Environment(\.dismiss) private var dismiss
     @Environment(AppServices.self) private var services
+    @Environment(AppState.self) private var appState
+    @Environment(AppRouter.self) private var router
     @State private var statusMessage: String?
+    @State private var isResetConfirmationPresented = false
 
     var body: some View {
         ScrollView {
@@ -51,6 +55,18 @@ struct SettingsView: View {
                 .padding(.horizontal, RoutineSpacing.md)
                 .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
 
+                RoutineSectionHeader(title: "Developer")
+                    .padding(.top, RoutineSpacing.xl)
+                    .padding(.bottom, RoutineSpacing.sm)
+
+                VStack(spacing: 0) {
+                    setting(.arrowsClockwise, "Reset onboarding") {
+                        isResetConfirmationPresented = true
+                    }
+                }
+                .padding(.horizontal, RoutineSpacing.md)
+                .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
+
                 if let statusMessage {
                     RoutineCard {
                         VStack(alignment: .leading, spacing: RoutineSpacing.sm) {
@@ -72,6 +88,20 @@ struct SettingsView: View {
         }
         .scrollIndicators(.hidden)
         .background(RoutineColors.background)
+        .confirmationDialog(
+            "Reset onboarding?",
+            isPresented: $isResetConfirmationPresented,
+            titleVisibility: .visible
+        ) {
+            Button("Reset onboarding", role: .destructive) {
+                appState.resetOnboarding()
+                router.resetOnboarding()
+                dismiss()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This clears your saved name and restarts the welcome flow.")
+        }
     }
 
     private var divider: some View {
@@ -97,4 +127,6 @@ struct SettingsView: View {
 #Preview("Settings") {
     SettingsView()
         .environment(AppServices())
+        .environment(AppState())
+        .environment(AppRouter())
 }

@@ -18,9 +18,8 @@ struct RoutineAppTests {
     @Test func routerAdvancesThroughTheProductFlow() {
         let router = AppRouter(arguments: ["RoutineApp", "-screen", "quiz"])
         router.advance(authEnabled: false)
-        #expect(router.screen == .plan)
-        router.advance(authEnabled: false)
         #expect(router.screen == .planGeneration)
+        #expect(RoutineScreen(rawValue: "plan") == nil)
         router.advance(authEnabled: false)
         #expect(router.screen == .planReady)
         router.advance(authEnabled: false)

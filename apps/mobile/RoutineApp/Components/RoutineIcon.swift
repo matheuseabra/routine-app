@@ -35,6 +35,7 @@ enum RoutineIconName: Hashable {
     case gear
     case listChecks
     case personSimpleRun
+    case ellipsis
 
     var systemName: String {
         switch self {
@@ -72,6 +73,7 @@ enum RoutineIconName: Hashable {
         case .gear: "gearshape"
         case .listChecks: "checklist"
         case .personSimpleRun: "figure.run"
+        case .ellipsis: "ellipsis"
         }
     }
 }

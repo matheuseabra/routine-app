@@ -9,15 +9,12 @@ struct RoutinePlanContext {
         self.answers = answers
     }
 
-    var guidanceTitle: String {
-        name.isEmpty ? "Here’s where to\nstart." : "\(name), here’s where to\nstart."
-    }
-
     var readyTitle: String {
         name.isEmpty ? "Your plan is ready." : "\(name), your plan is ready."
     }
 
     var goalAnswer: String { answer(at: 0, fallback: "Stay more consistent") }
+    var challengeAnswer: String { answer(at: 1, fallback: "I struggle with consistency") }
     var timeAnswer: String { answer(at: 3, fallback: "10–15 minutes") }
     var consistencyAnswer: String { answer(at: 2, fallback: "Starting again") }
 
@@ -41,10 +38,12 @@ struct RoutinePlanContext {
 }
 
 struct RoutineFunnelBrandHeader: View {
+    var name: String = AppConfig.displayName
+
     var body: some View {
         HStack(spacing: RoutineSpacing.xs) {
             RoutineLogo(size: .small)
-            Text(AppConfig.displayName)
+            Text(name)
                 .font(RoutineTypography.appName)
                 .foregroundStyle(RoutineColors.primaryText)
         }

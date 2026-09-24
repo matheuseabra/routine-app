@@ -37,5 +37,6 @@ final class AppState {
 
     func resetOnboarding() {
         hasCompletedOnboarding = false
+        userName = ""
     }
 }

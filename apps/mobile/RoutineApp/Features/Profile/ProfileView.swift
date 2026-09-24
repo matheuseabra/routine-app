@@ -4,16 +4,21 @@ struct ProfileView: View {
     let userName: String
     let tasks: [RoutineTask]
     let checkIns: [RoutineCheckIn]
-    let onOpenHabits: () -> Void
+    let onOpenDashboard: () -> Void
 
     @State private var isSettingsPresented = false
     @State private var settingsHapticTrigger = 0
 
-    init(userName: String = "", tasks: [RoutineTask] = [], checkIns: [RoutineCheckIn] = [], onOpenHabits: @escaping () -> Void = {}) {
+    init(
+        userName: String = "",
+        tasks: [RoutineTask] = [],
+        checkIns: [RoutineCheckIn] = [],
+        onOpenDashboard: @escaping () -> Void = {}
+    ) {
         self.userName = userName
         self.tasks = tasks
         self.checkIns = checkIns
-        self.onOpenHabits = onOpenHabits
+        self.onOpenDashboard = onOpenDashboard
     }
 
     var body: some View {
@@ -67,24 +72,32 @@ struct ProfileView: View {
     private var profileCard: some View {
         VStack(spacing: 0) {
             HStack(alignment: .center, spacing: RoutineSpacing.md) {
-                Circle()
-                    .fill(RoutineColors.primaryText.opacity(0.14))
-                    .frame(width: 72, height: 72)
-                    .overlay {
-                        RoutineIcon(.user, weight: .regular, color: RoutineColors.secondaryText)
-                            .frame(width: 38, height: 38)
-                    }
+                Text(String(displayName.prefix(1)).uppercased())
+                    .font(RoutineTypography.compactTitle)
+                    .foregroundStyle(RoutineColors.primaryText)
+                    .frame(width: 60, height: 60)
+                    .background(RoutineColors.track, in: Circle())
                     .accessibilityHidden(true)
 
-                Text(userName.isEmpty ? "Your routine" : userName)
-                    .font(RoutineTypography.compactTitle)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                VStack(alignment: .leading, spacing: RoutineSpacing.xxs) {
+                    Text(displayName)
+                        .font(RoutineTypography.compactTitle)
+                    Text("Your routine")
+                        .font(RoutineTypography.secondary)
+                        .foregroundStyle(RoutineColors.secondaryText)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .padding(RoutineSpacing.lg)
+        .padding(RoutineSpacing.card)
         .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Profile for \(userName.isEmpty ? "your routine" : userName)")
+        .accessibilityLabel("Profile for \(displayName)")
+    }
+
+    private var displayName: String {
+        let trimmedName = userName.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmedName.isEmpty ? "Friend" : trimmedName
     }
 
     private var activityCard: some View {
@@ -104,8 +117,8 @@ struct ProfileView: View {
                     icon: .check,
                     title: "No check-ins yet",
                     message: "Finish a task and your first entry will appear here.",
-                    actionTitle: "View your habits",
-                    action: onOpenHabits
+                    actionTitle: "View your dashboard",
+                    action: onOpenDashboard
                 )
             } else {
                 VStack(spacing: RoutineSpacing.sm) {
@@ -119,7 +132,7 @@ struct ProfileView: View {
                         }
                     }
                 }
-                .padding(RoutineSpacing.md)
+                .padding(RoutineSpacing.card)
                 .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
             }
         }

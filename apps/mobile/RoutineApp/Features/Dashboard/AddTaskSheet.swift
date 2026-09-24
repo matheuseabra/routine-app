@@ -3,9 +3,16 @@ import SwiftUI
 struct AddTaskSheet: View {
     @Environment(\.dismiss) private var dismiss
     @FocusState private var isTaskFieldFocused: Bool
-    @State private var taskTitle = ""
+    @State private var taskTitle: String
     @State private var hapticTrigger = 0
-    let onAdd: (String) -> Void
+    let isEditing: Bool
+    let onSave: (String) -> Void
+
+    init(initialTitle: String = "", isEditing: Bool = false, onSave: @escaping (String) -> Void) {
+        _taskTitle = State(initialValue: initialTitle)
+        self.isEditing = isEditing
+        self.onSave = onSave
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: RoutineSpacing.sm) {
@@ -17,13 +24,12 @@ struct AddTaskSheet: View {
                 .submitLabel(.done)
                 .frame(height: 44)
                 .accessibilityLabel("Task name")
-                .onSubmit(addTask)
+                .onSubmit(saveTask)
 
             HStack {
                 Spacer()
                 Button {
-                    hapticTrigger += 1
-                    addTask()
+                    saveTask()
                 } label: {
                     RoutineIcon(.arrowUp, weight: .bold, color: RoutineColors.inverseText)
                         .frame(width: 16, height: 16)
@@ -33,8 +39,8 @@ struct AddTaskSheet: View {
                 }
                 .buttonStyle(.plain)
                 .disabled(isTaskTitleEmpty)
-                .sensoryFeedback(.impact(weight: .medium), trigger: hapticTrigger)
-                .accessibilityLabel("Add task")
+                .sensoryFeedback(.success, trigger: hapticTrigger)
+                .accessibilityLabel(isEditing ? "Save task" : "Add task")
             }
         }
         .padding(.horizontal, RoutineSpacing.lg)
@@ -53,14 +59,15 @@ struct AddTaskSheet: View {
         taskTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    private func addTask() {
+    private func saveTask() {
         let trimmedTitle = taskTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedTitle.isEmpty else { return }
-        onAdd(trimmedTitle)
+        hapticTrigger += 1
+        onSave(trimmedTitle)
         dismiss()
     }
 }
 
 #Preview("Add task") {
-    AddTaskSheet { _ in }
+    AddTaskSheet(onSave: { _ in })
 }

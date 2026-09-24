@@ -117,7 +117,7 @@ struct RoutineCard<Content: View>: View {
 
     var body: some View {
         content
-            .padding(RoutineSpacing.md)
+            .padding(RoutineSpacing.card)
             .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
     }
 }

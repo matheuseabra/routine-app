@@ -6,7 +6,18 @@ protocol ReminderPermissionRequesting {
 
 struct ReminderPermissionService: ReminderPermissionRequesting {
     func requestAuthorization() async -> Bool {
-        (try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+
+        switch settings.authorizationStatus {
+        case .authorized, .provisional, .ephemeral:
+            return true
+        case .notDetermined:
+            return (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+        case .denied:
+            return false
+        @unknown default:
+            return false
+        }
     }
 }
-
