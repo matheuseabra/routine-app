@@ -1,6 +1,8 @@
 # Architecture
 
-Routine is deliberately a small native SwiftUI starter.
+Routine is a Bun workspace monorepo with a small native SwiftUI app, a Hono API shell, and an Astro web shell.
+
+The iOS app and its Xcode project live in `apps/mobile`. The API and web app live in `apps/api` and `apps/web`; `bun run dev` starts both web workspaces, while `bun run dev:mobile` delegates to the existing Xcode simulator script.
 
 ## Layers
 

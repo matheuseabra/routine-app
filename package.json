@@ -1,0 +1,19 @@
+{
+  "name": "routine-app",
+  "private": true,
+  "packageManager": "bun@1.4.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "bun run --parallel dev:api dev:web",
+    "dev:api": "bun run --filter @routine/api dev",
+    "dev:web": "bun run --filter @routine/web dev",
+    "stop:web": "bun run --filter @routine/web stop",
+    "dev:mobile": "bun run --filter @routine/mobile dev",
+    "build": "bun run --sequential build:api build:web",
+    "build:api": "bun run --filter @routine/api build",
+    "build:web": "bun run --filter @routine/web build",
+    "verify:mobile": "bun run --filter @routine/mobile verify"
+  }
+}

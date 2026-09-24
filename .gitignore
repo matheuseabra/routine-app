@@ -5,6 +5,9 @@
 .build/
 build/
 DerivedData/
+dist/
+node_modules/
+.astro/
 *.xcuserstate
 xcuserdata/
 *.xcscmblueprint
@@ -15,3 +18,4 @@ xcuserdata/
 
 # Local app configuration / signing
 Config/Local.xcconfig
+apps/mobile/Config/Local.xcconfig

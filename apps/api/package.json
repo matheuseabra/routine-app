@@ -1,0 +1,12 @@
+{
+  "name": "@routine/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot src/index.ts",
+    "build": "bun build src/index.ts --target=bun --outdir dist"
+  },
+  "dependencies": {
+    "hono": "^4.13.9"
+  }
+}
