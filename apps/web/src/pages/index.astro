@@ -1,0 +1,173 @@
+---
+const workspaces = [
+  { name: "Mobile", stack: "SwiftUI + Xcode", path: "apps/mobile" },
+  { name: "API", stack: "Bun + Hono", path: "apps/api" },
+  { name: "Web", stack: "Bun + Astro", path: "apps/web" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f7f5" />
+    <title>Routine workspace</title>
+    <style>
+      :root {
+        color: #181816;
+        background: #f7f7f5;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      main {
+        width: min(100% - 40px, 880px);
+        margin: 0 auto;
+        padding: 72px 0 56px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 650;
+        letter-spacing: -0.02em;
+      }
+
+      .mark {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 9px;
+        color: white;
+        background: #181816;
+      }
+
+      .eyebrow {
+        margin: 80px 0 14px;
+        color: #686863;
+        font-size: 11px;
+        font-weight: 650;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 660px;
+        margin: 0;
+        font-size: clamp(42px, 7vw, 68px);
+        font-weight: 600;
+        letter-spacing: -0.065em;
+        line-height: 0.98;
+      }
+
+      .intro {
+        max-width: 500px;
+        margin: 22px 0 0;
+        color: #686863;
+        font-size: 17px;
+        line-height: 1.6;
+      }
+
+      .workspace-list {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 54px;
+      }
+
+      article {
+        min-height: 154px;
+        padding: 20px;
+        border: 1px solid #e3e3df;
+        border-radius: 14px;
+        background: #fff;
+      }
+
+      article h2 {
+        margin: 0 0 22px;
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+      }
+
+      article p {
+        margin: 5px 0;
+        color: #686863;
+        font-size: 13px;
+      }
+
+      article p:last-child {
+        color: #92928c;
+      }
+
+      .api-link {
+        display: inline-flex;
+        margin-top: 28px;
+        color: #181816;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 4px;
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding-top: 36px;
+        }
+
+        .eyebrow {
+          margin-top: 64px;
+        }
+
+        .workspace-list {
+          grid-template-columns: 1fr;
+          margin-top: 36px;
+        }
+
+        article {
+          min-height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <span class="mark" aria-hidden="true">R</span>
+        <span>Routine</span>
+      </header>
+
+      <p class="eyebrow">Product workspace</p>
+      <h1>One workspace.<br />Three apps.</h1>
+      <p class="intro">
+        The native iOS app, API, and web surface now share one repository.
+        Start each workspace from the repository root with Bun.
+      </p>
+
+      <section class="workspace-list" aria-label="Project workspaces">
+        {workspaces.map((workspace) => (
+          <article>
+            <h2>{workspace.name}</h2>
+            <p>{workspace.stack}</p>
+            <p>{workspace.path}</p>
+          </article>
+        ))}
+      </section>
+
+      <a class="api-link" href="http://localhost:3001/healthz">Open API health endpoint</a>
+    </main>
+  </body>
+</html>

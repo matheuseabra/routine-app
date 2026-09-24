@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-project="$repo_root/RoutineApp/RoutineApp.xcodeproj"
+project="$repo_root/apps/mobile/RoutineApp.xcodeproj"
 scheme="${IOS_SCHEME:-RoutineApp}"
 derived_data="${IOS_DERIVED_DATA:-$repo_root/.build/verify}"
 full_ui_tests="${IOS_FULL_UI_TESTS:-0}"

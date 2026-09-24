@@ -9,13 +9,13 @@ The work is intentionally split into small vertical slices. Each milestone shoul
 Non-negotiables:
 
 - [ ] One monorepo containing the iOS app, API, marketing site, shared TypeScript packages, docs, and scripts.
-- [ ] Bun as the JavaScript/TypeScript runtime and package manager.
-- [ ] Bun workspaces as the initial monorepo orchestration layer.
+- [x] Bun as the JavaScript/TypeScript runtime and package manager.
+- [x] Bun workspaces as the initial monorepo orchestration layer.
 - [ ] No Turborepo initially. Add it only when there is measured value from task-graph caching/orchestration.
 - [ ] SwiftUI remains the native iOS UI layer.
 - [ ] SwiftData remains the local-first on-device persistence layer.
 - [ ] RevenueCat remains the subscription/billing abstraction.
-- [ ] Hono + Bun + TypeScript for the API.
+- [x] Hono + Bun + TypeScript for the API.
 - [ ] Drizzle ORM + SQLite for the initial backend data layer.
 - [ ] Drizzle Studio for local database inspection.
 - [ ] Astro + React + TypeScript + Bun + Tailwind CSS + shadcn/ui for the marketing site.
@@ -29,12 +29,13 @@ Non-negotiables:
 ```text
 routine-app/
 ├── apps/
-│   ├── ios/
+│   ├── mobile/
 │   │   ├── RoutineApp.xcodeproj
 │   │   ├── RoutineApp/
 │   │   ├── RoutineAppTests/
 │   │   ├── RoutineAppUITests/
-│   │   └── Config/
+│   │   ├── Config/
+│   │   └── package.json
 │   │
 │   ├── api/
 │   │   ├── src/
@@ -49,13 +50,10 @@ routine-app/
 │   │
 │   └── web/
 │       ├── src/
-│       │   ├── components/
-│       │   ├── layouts/
-│       │   ├── pages/
-│       │   └── styles/
+│       │   └── pages/
 │       ├── astro.config.mjs
 │       ├── package.json
-│       └── tsconfig.json
+│       └── ...
 │
 ├── packages/
 │   └── contracts/
@@ -75,39 +73,36 @@ routine-app/
 
 Notes:
 
-- `apps/ios` lives in the monorepo but is not a Bun workspace.
-- Bun workspaces cover `apps/api`, `apps/web`, and `packages/*`.
+- `apps/mobile` is a Bun workspace for root commands, while Xcode remains its build system and it has no JavaScript dependencies.
+- Bun workspaces currently cover `apps/*`. Add `packages/*` when a shared package is needed.
 - `packages/contracts` is for shared TypeScript request/response validation and DTOs used by API/web.
 - The iOS client keeps explicit Swift `Codable` models initially. Do not add Swift OpenAPI codegen until API drift becomes a demonstrated maintenance problem.
 
 ## Root workspace contract
 
-The root `package.json` should eventually look conceptually like:
+The root `package.json` currently declares the `apps/*` workspaces. Extend the workspace list when shared packages are added.
 
 ```json
 {
   "private": true,
   "workspaces": [
-    "apps/api",
-    "apps/web",
-    "packages/*"
+    "apps/*"
   ]
 }
 ```
 
-Expected root commands:
+Current root commands:
 
 ```bash
 bun install
-bun run dev
-bun run check
-bun run test
-bun run typecheck
-bun run build
-bun run db:studio
+bun run dev             # API + web
+bun run dev:mobile      # existing Xcode simulator script
+bun run stop:web        # stop Astro's background dev server
+bun run build           # API + web
+bun run verify:mobile   # existing iOS verification script
 ```
 
-Use Bun workspace filtering for package-specific tasks rather than adding a task runner immediately.
+Use Bun workspace filtering for package-specific tasks rather than adding a task runner immediately. Add check, test, typecheck, and database commands when those capabilities have implementations.
 
 ### Turborepo adoption gate
 
@@ -126,42 +121,44 @@ If none of those are true, Bun workspaces remain the simpler choice.
 
 Goal: reorganize the existing project into the final repository shape without changing product behavior.
 
-## Slice 1.1 — Move iOS into `apps/ios`
+## Slice 1.1 — Move iOS into `apps/mobile`
 
-- [ ] Move the existing Xcode project and targets under `apps/ios`.
-- [ ] Move iOS-specific `Config/` under `apps/ios/Config/`.
-- [ ] Update `scripts/run-app.sh`, `scripts/verify.sh`, `scripts/preflight.sh`, CI paths, and docs.
-- [ ] Preserve the existing shared Xcode scheme.
-- [ ] Preserve Swift Package Manager resolution.
-- [ ] Ensure all relative resource/font paths still resolve.
-- [ ] Do not change application behavior in this PR.
+- [x] Move the existing Xcode project and targets under `apps/mobile`.
+- [x] Move iOS-specific `Config/` under `apps/mobile/Config/`.
+- [x] Update `scripts/run-app.sh`, `scripts/verify.sh`, `scripts/preflight.sh`, CI paths, and docs.
+- [x] Preserve the existing shared Xcode scheme.
+- [x] Preserve Swift Package Manager resolution.
+- [x] Ensure all relative resource/font paths still resolve.
+- [x] Keep the relocation commit limited to project paths and workspace setup.
 
-## Slice 1.2 — Add Bun workspace root
+## Slice 1.2 — Add Bun workspaces and app shells
 
-- [ ] Add root `package.json` with `private: true`.
-- [ ] Add Bun workspace globs.
-- [ ] Commit `bun.lock`.
-- [ ] Add empty/minimal `apps/api`, `apps/web`, and `packages/contracts` workspace manifests.
-- [ ] Add root commands for `dev`, `check`, `test`, `typecheck`, and `build`.
-- [ ] Add `.env.example` conventions for JS workspaces.
-- [ ] Document environment variable ownership by app.
+- [x] Add root `package.json` with `private: true`.
+- [x] Add Bun workspace globs.
+- [x] Commit `bun.lock`.
+- [x] Add minimal `apps/api` and `apps/web` workspaces using Hono and Astro.
+- [ ] Add `packages/contracts` when the API and web app share a concrete contract.
+- [x] Add root commands for `dev`, `dev:api`, `dev:web`, `dev:mobile`, and `build`.
+- [ ] Add `.env.example` conventions when an app needs environment configuration.
+- [ ] Document environment variable ownership when configuration is introduced.
 
 ## CI changes
 
-- [ ] Keep the existing iOS macOS job.
+- [x] Keep the existing iOS macOS job.
 - [ ] Add a Linux Bun job for install/typecheck/test/build.
-- [ ] Use `bun install --frozen-lockfile` in CI.
+- [x] Use `bun install --frozen-lockfile` in CI.
+- [x] Build the API and web workspaces in CI.
 - [ ] Do not require macOS for API/web checks.
 
 ## Quality gate
 
-- [ ] Fresh clone opens and builds the Xcode project.
+- [x] Fresh clone opens and builds the Xcode project.
 - [ ] Existing iOS unit tests pass.
 - [ ] Existing iOS UI-test target compiles.
-- [ ] `bun install --frozen-lockfile` succeeds.
-- [ ] Root Bun scripts succeed.
+- [x] `bun install --frozen-lockfile` succeeds.
+- [x] Root `bun run dev` starts API and web; `bun run build` builds both.
 - [ ] No product behavior changed.
-- [ ] No Turborepo dependency added.
+- [x] No Turborepo dependency added.
 
 ---
 
@@ -775,19 +772,18 @@ and must be complete before phase 11.
 
 Keep PRs small enough that one concern can be reviewed and reverted independently.
 
-1. **Monorepo: move iOS under apps/ios**
-2. **Monorepo: Bun workspaces + root scripts**
-3. **API: Hono + Drizzle + local SQLite + task CRUD**
-4. **Auth: production Sign in with Apple + API session**
-5. **Sync: tasks local-first SwiftData ↔ API**
-6. **Sync: habits + check-ins**
-7. **Web: Astro marketing one-pager**
-8. **Analytics: PostHog iOS + event taxonomy**
-9. **Analytics: landing acquisition events**
-10. **Billing: RevenueCat webhook + backend entitlement mirror**
-11. **Infra: production API + SQLite topology + backups**
-12. **CI: final path-aware matrix / release checks**
-13. **Release: TestFlight + production acceptance**
+1. **Monorepo: apps/mobile + Bun workspaces and API/web shells**
+2. **API: Hono + Drizzle + local SQLite + task CRUD**
+3. **Auth: production Sign in with Apple + API session**
+4. **Sync: tasks local-first SwiftData ↔ API**
+5. **Sync: habits + check-ins**
+6. **Web: Astro marketing one-pager**
+7. **Analytics: PostHog iOS + event taxonomy**
+8. **Analytics: landing acquisition events**
+9. **Billing: RevenueCat webhook + backend entitlement mirror**
+10. **Infra: production API + SQLite topology + backups**
+11. **CI: final path-aware matrix / release checks**
+12. **Release: TestFlight + production acceptance**
 
 A PR must not start the next architectural dependency until the previous milestone's quality gate is green.
 

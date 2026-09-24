@@ -2,8 +2,8 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-config_file="$repo_root/Config/Local.xcconfig"
-app_config="$repo_root/RoutineApp/RoutineApp/App/AppConfig.swift"
+config_file="$repo_root/apps/mobile/Config/Local.xcconfig"
+app_config="$repo_root/apps/mobile/RoutineApp/App/AppConfig.swift"
 errors=0
 
 fail() {
@@ -24,7 +24,7 @@ read_setting() {
 }
 
 if [[ ! -f "$config_file" ]]; then
-  echo "Release preflight requires Config/Local.xcconfig." >&2
+  echo "Release preflight requires apps/mobile/Config/Local.xcconfig." >&2
   echo "Run ./scripts/bootstrap.sh first." >&2
   exit 1
 fi

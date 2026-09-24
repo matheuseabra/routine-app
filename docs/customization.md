@@ -8,7 +8,7 @@ Run:
 ./scripts/bootstrap.sh --name "Focus" --bundle-id com.example.focus --team-id ABC123XYZ
 ```
 
-This creates `Config/Local.xcconfig`. It is ignored by Git so personal signing configuration is not committed.
+This creates `apps/mobile/Config/Local.xcconfig`. It is ignored by Git so personal signing configuration is not committed.
 
 ## Brand
 

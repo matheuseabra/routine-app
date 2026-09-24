@@ -23,6 +23,8 @@ A production-oriented SwiftUI starter for consumer habit, productivity, and subs
 git clone https://github.com/matheuseabra/routine-app.git
 cd routine-app
 
+bun install
+
 ./scripts/bootstrap.sh \
   --name "My App" \
   --bundle-id com.example.myapp
@@ -30,7 +32,15 @@ cd routine-app
 ./scripts/run-app.sh
 ```
 
-The bootstrap script writes `Config/Local.xcconfig`, which is intentionally ignored by Git. A fresh clone runs without third-party credentials. The internal Xcode target remains `RoutineApp`; only the user-facing identity and bundle identifiers need to change for most starter use cases.
+The bootstrap script writes `apps/mobile/Config/Local.xcconfig`, which is intentionally ignored by Git. A fresh clone runs without third-party credentials. The internal Xcode target remains `RoutineApp`; only the user-facing identity and bundle identifiers need to change for most starter use cases.
+
+## Workspaces
+
+- `apps/mobile` contains the existing SwiftUI app and Xcode project.
+- `apps/api` is a minimal Hono API shell with a `/healthz` endpoint.
+- `apps/web` is a minimal Astro site shell.
+
+Run the API and web shells together with `bun run dev`, or start one with `bun run dev:api` or `bun run dev:web`. Astro keeps its dev server in the background; stop it with `bun run stop:web`. The iOS app remains independently runnable with `./scripts/run-app.sh` or `bun run dev:mobile`. Build the API and web shells with `bun run build`.
 
 ## Optional integrations
 

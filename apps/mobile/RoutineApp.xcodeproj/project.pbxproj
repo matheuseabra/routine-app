@@ -82,7 +82,7 @@
 		371B4090305ACFF300B6A89D = {
 			isa = PBXGroup;
 			children = (
-				D0C0FFEE0000000000000003 /* ../Config */,
+				D0C0FFEE0000000000000003 /* Config */,
 				371B409B305ACFF300B6A89D /* RoutineApp */,
 				371B40AB305ACFF500B6A89D /* RoutineAppTests */,
 				371B40B5305ACFF500B6A89D /* RoutineAppUITests */,
@@ -100,13 +100,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D0C0FFEE0000000000000003 /* ../Config */ = {
+		D0C0FFEE0000000000000003 /* Config */ = {
 			isa = PBXGroup;
 			children = (
 				D0C0FFEE0000000000000001 /* Debug.xcconfig */,
 				D0C0FFEE0000000000000002 /* Release.xcconfig */,
 			);
-			path = ../Config;
+			path = Config;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

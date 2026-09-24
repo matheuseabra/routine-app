@@ -1,0 +1,14 @@
+{
+  "name": "@routine/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "stop": "astro dev stop"
+  },
+  "dependencies": {
+    "astro": "^7.3.4"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@routine/mobile",
+  "private": true,
+  "scripts": {
+    "dev": "../../scripts/run-app.sh",
+    "verify": "../../scripts/verify.sh",
+    "preflight": "../../scripts/preflight.sh"
+  }
+}
