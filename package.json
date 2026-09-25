@@ -14,6 +14,7 @@
     "build": "bun run --sequential build:api build:web",
     "build:api": "bun run --filter @routine/api build",
     "build:web": "bun run --filter @routine/web build",
+    "test:api": "bun run --filter @routine/api test",
     "verify:mobile": "bun run --filter @routine/mobile verify"
   }
 }

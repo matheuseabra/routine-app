@@ -1,10 +1,23 @@
-import { Hono } from "hono";
+import { createApiApp } from "./app";
+import { createAuth } from "./auth";
+import { loadConfig } from "./config";
+import { createDatabase } from "./db";
 
-const app = new Hono();
+const config = loadConfig();
+const database = createDatabase(config.databasePath);
+const auth = createAuth(config, database.db);
+const app = createApiApp({ auth, corsOrigins: config.corsOrigins });
 
-app.get("/healthz", (context) => context.json({ status: "ok" }));
+const server = Bun.serve({
+  hostname: config.host,
+  port: config.port,
+  fetch(request, server) {
+    const clientIp = server.requestIP(request)?.address ?? "unknown";
+    const headers = new Headers(request.headers);
+    headers.delete("x-forwarded-for");
+    headers.set("x-real-ip", clientIp);
+    return app.fetch(new Request(request, { headers }), { clientIp });
+  },
+});
 
-export default {
-  port: Number(Bun.env.PORT ?? 3001),
-  fetch: app.fetch,
-};
+console.info(`Routine API listening at http://${config.host}:${server.port}`);

@@ -19,3 +19,8 @@ xcuserdata/
 # Local app configuration / signing
 Config/Local.xcconfig
 apps/mobile/Config/Local.xcconfig
+
+# Local API configuration and SQLite data
+apps/api/.env*
+!apps/api/.env.example
+apps/api/data/
