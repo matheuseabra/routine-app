@@ -24,3 +24,6 @@ apps/mobile/Config/Local.xcconfig
 apps/api/.env*
 !apps/api/.env.example
 apps/api/data/
+
+# Local App Store Connect CLI credentials
+**/.asc/config.json
