@@ -6,22 +6,53 @@ struct AuthUser: Equatable {
     let displayName: String?
 }
 
+struct AppleIdentity: Encodable {
+    struct Name: Encodable {
+        let firstName: String?
+        let lastName: String?
+    }
+
+    struct Profile: Encodable {
+        let name: Name
+        let email: String?
+    }
+
+    let token: String
+    let nonce: String
+    let profile: Profile
+}
+
+enum AppleSignInNonce {
+    static func make() -> String {
+        "\(UUID().uuidString).\(UUID().uuidString)"
+    }
+}
+
 protocol AuthProviding {
-    func signInWithApple() async throws -> AuthUser
+    func signInWithApple(_ identity: AppleIdentity) async throws -> AuthUser
     func signInWithGoogle() async throws -> AuthUser
     func signOut() async throws
 }
 
 enum AuthProviderError: LocalizedError {
     case notConfigured
+    case providerUnavailable
+    case requestFailed
 
     var errorDescription: String? {
-        "Authentication is enabled, but no production auth provider is configured."
+        switch self {
+        case .notConfigured:
+            "Authentication is enabled, but no API endpoint is configured."
+        case .providerUnavailable:
+            "This sign-in provider is not configured on the API yet."
+        case .requestFailed:
+            "The API could not complete sign in. Please try again."
+        }
     }
 }
 
 struct MockAuthProvider: AuthProviding {
-    func signInWithApple() async throws -> AuthUser {
+    func signInWithApple(_ identity: AppleIdentity) async throws -> AuthUser {
         AuthUser(id: "preview-apple-user", displayName: "Preview User")
     }
 
@@ -33,7 +64,7 @@ struct MockAuthProvider: AuthProviding {
 }
 
 struct UnavailableAuthProvider: AuthProviding {
-    func signInWithApple() async throws -> AuthUser {
+    func signInWithApple(_ identity: AppleIdentity) async throws -> AuthUser {
         throw AuthProviderError.notConfigured
     }
 
@@ -43,6 +74,78 @@ struct UnavailableAuthProvider: AuthProviding {
 
     func signOut() async throws {
         throw AuthProviderError.notConfigured
+    }
+}
+
+struct BetterAuthProvider: AuthProviding {
+    private let baseURL: URL
+    private let session: URLSession
+
+    private var origin: String {
+        var components = URLComponents()
+        components.scheme = baseURL.scheme
+        components.host = baseURL.host
+        components.port = baseURL.port
+        return components.string ?? baseURL.absoluteString
+    }
+
+    init(baseURL: URL, session: URLSession = .shared) {
+        self.baseURL = baseURL
+        self.session = session
+    }
+
+    func signInWithApple(_ identity: AppleIdentity) async throws -> AuthUser {
+        struct Token: Encodable {
+            let token: String
+            let nonce: String
+            let user: AppleIdentity.Profile
+        }
+        struct RequestBody: Encodable {
+            let provider = "apple"
+            let idToken: Token
+        }
+        struct ResponseBody: Decodable {
+            let user: User
+            struct User: Decodable {
+                let id: String
+                let name: String
+            }
+        }
+
+        var request = URLRequest(url: authEndpoint("sign-in/social"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(origin, forHTTPHeaderField: "Origin")
+        request.httpBody = try JSONEncoder().encode(RequestBody(
+            idToken: Token(token: identity.token, nonce: identity.nonce, user: identity.profile)
+        ))
+
+        let (data, response) = try await session.data(for: request)
+        guard let response = response as? HTTPURLResponse, (200..<300).contains(response.statusCode) else {
+            throw AuthProviderError.requestFailed
+        }
+        let result = try JSONDecoder().decode(ResponseBody.self, from: data)
+        return AuthUser(id: result.user.id, displayName: result.user.name.isEmpty ? nil : result.user.name)
+    }
+
+    func signInWithGoogle() async throws -> AuthUser {
+        throw AuthProviderError.providerUnavailable
+    }
+
+    func signOut() async throws {
+        var request = URLRequest(url: authEndpoint("sign-out"))
+        request.httpMethod = "POST"
+        request.setValue(origin, forHTTPHeaderField: "Origin")
+        let (_, response) = try await session.data(for: request)
+        guard let response = response as? HTTPURLResponse, (200..<300).contains(response.statusCode) else {
+            throw AuthProviderError.requestFailed
+        }
+    }
+
+    private func authEndpoint(_ path: String) -> URL {
+        path.split(separator: "/").reduce(baseURL.appendingPathComponent("api").appendingPathComponent("auth")) {
+            $0.appendingPathComponent(String($1))
+        }
     }
 }
 
@@ -77,10 +180,7 @@ final class AppServices {
     }
 
     private static func defaultAuthProvider() -> any AuthProviding {
-        #if DEBUG
-        MockAuthProvider()
-        #else
-        UnavailableAuthProvider()
-        #endif
+        guard let baseURL = AppConfig.apiBaseURL else { return UnavailableAuthProvider() }
+        return BetterAuthProvider(baseURL: baseURL)
     }
 }

@@ -18,6 +18,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>AUTH_ENABLED</key>
 	<string>$(AUTH_ENABLED)</string>
+	<key>ROUTINE_API_BASE_URL</key>
+	<string>$(ROUTINE_API_BASE_URL)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>REVENUECAT_API_KEY</key>

@@ -70,7 +70,9 @@ Authentication is off by default. To expose the auth step during development:
   --enable-auth
 ```
 
-Debug builds use the mock auth provider. Release builds intentionally use an unavailable provider until you connect a real implementation.
+Debug builds use the API at `http://localhost:3001` by default. Start it with `bun run dev:api`; the mobile app sends native Sign in with Apple ID tokens to Better Auth and keeps the resulting session cookie in its URL session. Google sign-in remains unavailable until a native Google provider is implemented.
+
+To allow Apple sign-in, configure all Apple values in `apps/api/.env` (the Service ID, Team ID, Key ID, `.p8` private key, and the native app bundle ID), enable Sign in with Apple for that app ID in the Apple Developer portal, and set `AUTH_ENABLED = YES` in `apps/mobile/Config/Local.xcconfig`. Local Apple authorization also requires a valid Apple Developer team and registered bundle ID. Release builds require an HTTPS `ROUTINE_API_BASE_URL` override in `Local.xcconfig`.
 
 ## Verify
 
