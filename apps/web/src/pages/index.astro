@@ -1,9 +1,9 @@
 ---
 import Brand from "@/components/Brand.astro";
 import Phone from "@/components/Phone.astro";
-import DownloadButton from "@/components/DownloadButton";
+import StoreButtons from "@/components/StoreButtons";
 import FAQ from "@/components/FAQ";
-import { ArrowDown, ArrowUpRight, Check } from "lucide-react";
+import { FiArrowDown, FiArrowUpRight } from "react-icons/fi";
 import home from "@/assets/home.png";
 import habits from "@/assets/habits.png";
 import insights from "@/assets/insights.png";
@@ -14,23 +14,17 @@ const features = [
   {
     title: "A clear place for\nyour everyday.",
     description: "The morning walk. A few pages. A moment to stretch. Keep the things you want to make time for together, in one simple list.",
-    detail: "Add a task. Make it yours. Check it off.",
     image: home, alt: "Routine’s daily task list with three completed tasks and an evening stretch still to do.",
-    caption: "Your day, at a glance.",
   },
   {
     title: "Small steps.\nA rhythm that sticks.",
     description: "You don’t need to do everything at once. See what you’ve done and what’s up next, so it’s easy to keep moving at your own pace.",
-    detail: "A simple check-in for every small win.",
     image: habits, alt: "Routine Habits showing three of four tasks completed and the next habit to work on.",
-    caption: "A little progress is still progress.",
   },
   {
     title: "Your effort,\nin perspective.",
     description: "Look back on your week or zoom out to the month. Check-ins, active days, and streaks help you see the consistency you’re building.",
-    detail: "Less guesswork. More perspective.",
     image: insights, alt: "Routine Insights with a seven-day streak, fourteen completed tasks, and a daily activity chart. Sample data.",
-    caption: "The small things add up.",
   },
 ];
 ---
@@ -56,7 +50,7 @@ const features = [
         <nav aria-label="Main navigation">
           <a class="nav-link" href="#features">How it works</a>
           <a class="nav-link" href="#faq">FAQ</a>
-          <a class="nav-cta" href="#download">Get Routine <ArrowUpRight size={15} aria-hidden="true" /></a>
+          <a class="nav-cta" href="#download">Get Routine <FiArrowUpRight aria-hidden="true" /></a>
         </nav>
       </div>
     </header>
@@ -66,36 +60,30 @@ const features = [
           <h1 id="hero-title">Small steps.<br />Better days.</h1>
           <p class="body-copy">Make room for what matters. Routine brings your daily tasks, habits, and progress together in one calm place.</p>
           <div class="hero-actions">
-            <DownloadButton client:load />
-            <a class="text-link" href="#features">Explore Routine <ArrowDown size={16} aria-hidden="true" /></a>
+            <StoreButtons client:load />
+            <a class="text-link" href="#features">Explore Routine <FiArrowDown aria-hidden="true" /></a>
           </div>
-          <p class="availability">Made for iPhone. Built around you.</p>
         </div>
         <div class="hero-visual">
           <div class="hero-orbit" aria-hidden="true"></div>
           <Phone image={home} alt="Routine on iPhone: a simple daily task list with morning walk, reading, water, and stretching. Sample tasks." priority />
-          <span class="visual-note">One small step is a good start.</span>
         </div>
       </section>
       <section class="shell features" id="features" aria-labelledby="features-title">
         <div class="section-intro">
           <h2 id="features-title">Less noise. More routine.</h2>
-          <p>A few thoughtful tools. A little more ease in your everyday.</p>
         </div>
         {features.map((feature, index) => (
           <article class:list={["feature", { "feature-reverse": index === 1 }]}>
             <div class="feature-visual">
               <Phone image={feature.image} alt={feature.alt} />
-              <p class="visual-note">{feature.caption}</p>
             </div>
             <div class="feature-copy">
               <h3>{feature.title}</h3>
               <p class="body-copy">{feature.description}</p>
-              <p class="feature-detail"><Check size={17} strokeWidth={1.5} aria-hidden="true" />{feature.detail}</p>
             </div>
           </article>
         ))}
-        <p class="sample-note">App previews show sample tasks and activity.</p>
       </section>
       <section class="shell faq-section" id="faq" aria-labelledby="faq-title">
         <div>
@@ -105,15 +93,13 @@ const features = [
       </section>
       <section class="shell closing" id="download" aria-labelledby="cta-title">
         <h2 id="cta-title">Make a little room<br />for a better everyday.</h2>
-        <p>Start small. Find your rhythm. Make it Routine.</p>
-        <DownloadButton client:load />
-        <span class="availability">Thoughtfully made for iPhone.</span>
+        <StoreButtons client:load />
       </section>
     </main>
     <footer class="shell footer">
       <Brand />
       <p>A little more intention, every day.</p>
-      <div><span>© {new Date().getFullYear()} Routine</span><a href="#top">Back to top <ArrowUpRight size={14} aria-hidden="true" /></a></div>
+      <div><span>© {new Date().getFullYear()} Routine</span><a href="#top">Back to top <FiArrowUpRight aria-hidden="true" /></a></div>
     </footer>
   </body>
 </html>
