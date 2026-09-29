@@ -1,8 +1,37 @@
 ---
-const workspaces = [
-  { name: "Mobile", stack: "SwiftUI + Xcode", path: "apps/mobile" },
-  { name: "API", stack: "Bun + Hono", path: "apps/api" },
-  { name: "Web", stack: "Bun + Astro", path: "apps/web" },
+import Brand from "@/components/Brand.astro";
+import Phone from "@/components/Phone.astro";
+import DownloadButton from "@/components/DownloadButton";
+import FAQ from "@/components/FAQ";
+import { ArrowDown, ArrowUpRight, Check } from "lucide-react";
+import home from "@/assets/home.png";
+import habits from "@/assets/habits.png";
+import insights from "@/assets/insights.png";
+import "@/styles/global.css";
+import "@/styles/landing.css";
+
+const features = [
+  {
+    title: "A clear place for\nyour everyday.",
+    description: "The morning walk. A few pages. A moment to stretch. Keep the things you want to make time for together, in one simple list.",
+    detail: "Add a task. Make it yours. Check it off.",
+    image: home, alt: "Routine’s daily task list with three completed tasks and an evening stretch still to do.",
+    caption: "Your day, at a glance.",
+  },
+  {
+    title: "Small steps.\nA rhythm that sticks.",
+    description: "You don’t need to do everything at once. See what you’ve done and what’s up next, so it’s easy to keep moving at your own pace.",
+    detail: "A simple check-in for every small win.",
+    image: habits, alt: "Routine Habits showing three of four tasks completed and the next habit to work on.",
+    caption: "A little progress is still progress.",
+  },
+  {
+    title: "Your effort,\nin perspective.",
+    description: "Look back on your week or zoom out to the month. Check-ins, active days, and streaks help you see the consistency you’re building.",
+    detail: "Less guesswork. More perspective.",
+    image: insights, alt: "Routine Insights with a seven-day streak, fourteen completed tasks, and a daily activity chart. Sample data.",
+    caption: "The small things add up.",
+  },
 ];
 ---
 
@@ -11,163 +40,80 @@ const workspaces = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f7f7f5" />
-    <title>Routine workspace</title>
-    <style>
-      :root {
-        color: #181816;
-        background: #f7f7f5;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-synthesis: none;
-        text-rendering: optimizeLegibility;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-      }
-
-      main {
-        width: min(100% - 40px, 880px);
-        margin: 0 auto;
-        padding: 72px 0 56px;
-      }
-
-      header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 14px;
-        font-weight: 650;
-        letter-spacing: -0.02em;
-      }
-
-      .mark {
-        display: grid;
-        width: 30px;
-        height: 30px;
-        place-items: center;
-        border-radius: 9px;
-        color: white;
-        background: #181816;
-      }
-
-      .eyebrow {
-        margin: 80px 0 14px;
-        color: #686863;
-        font-size: 11px;
-        font-weight: 650;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-      }
-
-      h1 {
-        max-width: 660px;
-        margin: 0;
-        font-size: clamp(42px, 7vw, 68px);
-        font-weight: 600;
-        letter-spacing: -0.065em;
-        line-height: 0.98;
-      }
-
-      .intro {
-        max-width: 500px;
-        margin: 22px 0 0;
-        color: #686863;
-        font-size: 17px;
-        line-height: 1.6;
-      }
-
-      .workspace-list {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 54px;
-      }
-
-      article {
-        min-height: 154px;
-        padding: 20px;
-        border: 1px solid #e3e3df;
-        border-radius: 14px;
-        background: #fff;
-      }
-
-      article h2 {
-        margin: 0 0 22px;
-        font-size: 17px;
-        font-weight: 600;
-        letter-spacing: -0.03em;
-      }
-
-      article p {
-        margin: 5px 0;
-        color: #686863;
-        font-size: 13px;
-      }
-
-      article p:last-child {
-        color: #92928c;
-      }
-
-      .api-link {
-        display: inline-flex;
-        margin-top: 28px;
-        color: #181816;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration-thickness: 1px;
-        text-underline-offset: 4px;
-      }
-
-      @media (max-width: 640px) {
-        main {
-          padding-top: 36px;
-        }
-
-        .eyebrow {
-          margin-top: 64px;
-        }
-
-        .workspace-list {
-          grid-template-columns: 1fr;
-          margin-top: 36px;
-        }
-
-        article {
-          min-height: auto;
-        }
-      }
-    </style>
+    <meta name="theme-color" content="#f7f7f7" />
+    <meta name="description" content="Make room for a better everyday. Routine brings your daily tasks, habits, and progress together in a calm, simple iPhone app." />
+    <meta property="og:title" content="Routine — Small steps. Better days." />
+    <meta property="og:description" content="A little structure. A little more space for what matters. Meet Routine for iPhone." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Routine — Small steps. Better days.</title>
   </head>
   <body>
-    <main>
-      <header>
-        <span class="mark" aria-hidden="true">R</span>
-        <span>Routine</span>
-      </header>
-
-      <p class="eyebrow">Product workspace</p>
-      <h1>One workspace.<br />Three apps.</h1>
-      <p class="intro">
-        The native iOS app, API, and web surface now share one repository.
-        Start each workspace from the repository root with Bun.
-      </p>
-
-      <section class="workspace-list" aria-label="Project workspaces">
-        {workspaces.map((workspace) => (
-          <article>
-            <h2>{workspace.name}</h2>
-            <p>{workspace.stack}</p>
-            <p>{workspace.path}</p>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="shell nav-row">
+        <Brand />
+        <nav aria-label="Main navigation">
+          <a class="nav-link" href="#features">How it works</a>
+          <a class="nav-link" href="#faq">FAQ</a>
+          <a class="nav-cta" href="#download">Get Routine <ArrowUpRight size={15} aria-hidden="true" /></a>
+        </nav>
+      </div>
+    </header>
+    <main id="main">
+      <section class="shell hero" aria-labelledby="hero-title" id="top">
+        <div class="hero-copy">
+          <h1 id="hero-title">Small steps.<br />Better days.</h1>
+          <p class="body-copy">Make room for what matters. Routine brings your daily tasks, habits, and progress together in one calm place.</p>
+          <div class="hero-actions">
+            <DownloadButton client:load />
+            <a class="text-link" href="#features">Explore Routine <ArrowDown size={16} aria-hidden="true" /></a>
+          </div>
+          <p class="availability">Made for iPhone. Built around you.</p>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-orbit" aria-hidden="true"></div>
+          <Phone image={home} alt="Routine on iPhone: a simple daily task list with morning walk, reading, water, and stretching. Sample tasks." priority />
+          <span class="visual-note">One small step is a good start.</span>
+        </div>
+      </section>
+      <section class="shell features" id="features" aria-labelledby="features-title">
+        <div class="section-intro">
+          <h2 id="features-title">Less noise. More routine.</h2>
+          <p>A few thoughtful tools. A little more ease in your everyday.</p>
+        </div>
+        {features.map((feature, index) => (
+          <article class:list={["feature", { "feature-reverse": index === 1 }]}>
+            <div class="feature-visual">
+              <Phone image={feature.image} alt={feature.alt} />
+              <p class="visual-note">{feature.caption}</p>
+            </div>
+            <div class="feature-copy">
+              <h3>{feature.title}</h3>
+              <p class="body-copy">{feature.description}</p>
+              <p class="feature-detail"><Check size={17} strokeWidth={1.5} aria-hidden="true" />{feature.detail}</p>
+            </div>
           </article>
         ))}
+        <p class="sample-note">App previews show sample tasks and activity.</p>
       </section>
-
-      <a class="api-link" href="http://localhost:3001/healthz">Open API health endpoint</a>
+      <section class="shell faq-section" id="faq" aria-labelledby="faq-title">
+        <div>
+          <h2 id="faq-title">Simple by design.<br />Questions welcome.</h2>
+        </div>
+        <FAQ client:load />
+      </section>
+      <section class="shell closing" id="download" aria-labelledby="cta-title">
+        <h2 id="cta-title">Make a little room<br />for a better everyday.</h2>
+        <p>Start small. Find your rhythm. Make it Routine.</p>
+        <DownloadButton client:load />
+        <span class="availability">Thoughtfully made for iPhone.</span>
+      </section>
     </main>
+    <footer class="shell footer">
+      <Brand />
+      <p>A little more intention, every day.</p>
+      <div><span>© {new Date().getFullYear()} Routine</span><a href="#top">Back to top <ArrowUpRight size={14} aria-hidden="true" /></a></div>
+    </footer>
   </body>
 </html>
