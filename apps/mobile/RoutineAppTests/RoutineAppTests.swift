@@ -87,11 +87,14 @@ struct RoutineAppTests {
         #expect(RoutineScreen(rawValue: "reminder") == .reminder)
     }
 
-    @Test func quizStartsWithReferenceSelectionsForConsistencyAndTime() {
+    @Test func quizStartsUnansweredAndPlanUsesReferenceFallbacks() {
         let router = AppRouter(arguments: ["RoutineApp", "-screen", "quiz"])
         #expect(router.quizAnswers.count == 5)
-        #expect(router.quizAnswers[2] == "Starting again")
-        #expect(router.quizAnswers[3] == "10–15 minutes")
+        #expect(router.quizAnswers.allSatisfy { $0 == nil })
+
+        let plan = RoutinePlanContext(name: "", answers: router.quizAnswers)
+        #expect(plan.consistencyAnswer == "Starting again")
+        #expect(plan.timeAnswer == "10–15 minutes")
     }
 
     @Test func debugScreenLaunchCanSeedANameForVisualVerification() {
