@@ -1,6 +1,26 @@
 import Foundation
 
 enum AppConfig {
+    static var apiBaseURL: URL? {
+        guard let rawURL = Bundle.main.object(forInfoDictionaryKey: "ROUTINE_API_BASE_URL") as? String else {
+            return nil
+        }
+
+        let value = rawURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let url = URL(string: value) else { return nil }
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              components.host != nil,
+              components.path.isEmpty || components.path == "/",
+              components.query == nil,
+              components.fragment == nil else { return nil }
+        #if DEBUG
+        guard ["http", "https"].contains(url.scheme?.lowercased() ?? "") else { return nil }
+        #else
+        guard url.scheme?.lowercased() == "https" else { return nil }
+        #endif
+        return url
+    }
+
     static var displayName: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? "Routine"
     }

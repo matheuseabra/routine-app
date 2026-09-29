@@ -17,7 +17,7 @@ The iOS app and its Xcode project live in `apps/mobile`. The API and web app liv
 1. Views should not contain provider-specific SDK code.
 2. Production integrations sit behind small protocols.
 3. Preview/demo data must be clearly separated from persisted user data.
-4. Optional integrations must be safe when unconfigured; mock auth is Debug-only and RevenueCat can show demo pricing without credentials.
+4. Optional integrations must be safe when unconfigured; native Apple authentication uses the configured API, Google remains unavailable until implemented, and RevenueCat can show demo pricing without credentials.
 5. A clone must run without requiring third-party credentials.
 6. `scripts/verify.sh` is the deterministic quality gate for humans and coding agents.
 
