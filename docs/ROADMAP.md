@@ -249,8 +249,8 @@ Before implementation:
 
 - [ ] Decide whether to use a dedicated auth library/provider or own the small OIDC/session layer.
 - [ ] Document why the selected option is appropriate for Bun/Hono/Drizzle.
-- [ ] Keep the existing `AuthProviding` seam in iOS.
-- [ ] Start with Sign in with Apple.
+- [x] Keep the existing `AuthProviding` seam in iOS.
+- [x] Start with Sign in with Apple.
 - [ ] Treat Google sign-in as a separate optional slice.
 
 ## API identity model
@@ -263,7 +263,7 @@ Before implementation:
 
 ## iOS
 
-- [ ] Add a real `AuthProviding` implementation.
+- [x] Add a real `AuthProviding` implementation for Apple ID-token sign-in.
 - [ ] Store refresh/session credentials in Keychain, not UserDefaults.
 - [ ] Keep auth disabled when credentials/provider configuration is absent.
 - [ ] Identify the user with a stable internal backend user ID after login.
