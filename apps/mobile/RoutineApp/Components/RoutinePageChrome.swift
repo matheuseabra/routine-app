@@ -13,15 +13,15 @@ struct RoutinePageHeader<Trailing: View>: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: RoutineSpacing.md) {
+        HStack(alignment: .center, spacing: RoutineSpacing.md) {
             VStack(alignment: .leading, spacing: RoutineSpacing.xxs) {
                 Text(title)
                     .routineTitleStyle()
             }
             Spacer(minLength: RoutineSpacing.sm)
             trailing
-                .padding(.top, RoutineSpacing.xxs)
         }
+        .frame(minHeight: 44)
     }
 }
 
@@ -47,30 +47,43 @@ struct RoutineEmptyState: View {
     let icon: RoutineIconName
     let title: String
     let message: String
-    let actionTitle: String
-    let action: () -> Void
+    var actionTitle: String? = nil
+    var action: (() -> Void)? = nil
 
     var body: some View {
-        RoutineCard {
-            VStack(alignment: .leading, spacing: RoutineSpacing.md) {
-                RoutineIcon(icon, color: RoutineColors.primaryText)
-                    .frame(width: 26, height: 26)
-                    .frame(width: 52, height: 52)
-                    .background(RoutineColors.track, in: Circle())
-                    .accessibilityHidden(true)
+        VStack(spacing: RoutineSpacing.md) {
+            RoutineIcon(icon, color: RoutineColors.secondaryText, pointSize: 34)
+                .frame(width: 44, height: 44)
+                .accessibilityHidden(true)
 
-                VStack(alignment: .leading, spacing: RoutineSpacing.xs) {
-                    Text(title)
-                        .font(RoutineTypography.compactTitle)
-                        .foregroundStyle(RoutineColors.primaryText)
-                    Text(message)
-                        .routineSubtitleStyle()
-                        .fixedSize(horizontal: false, vertical: true)
+            Text(title)
+                .font(RoutineTypography.bodyMedium)
+                .foregroundStyle(RoutineColors.primaryText)
+
+            Text(message)
+                .font(RoutineTypography.secondary)
+                .foregroundStyle(RoutineColors.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if let actionTitle, let action {
+                Button(action: action) {
+                    HStack(spacing: RoutineSpacing.xs) {
+                        Text(actionTitle)
+                            .font(RoutineTypography.small)
+                        RoutineIcon(.caretRight)
+                            .frame(width: 14, height: 14)
+                            .accessibilityHidden(true)
+                    }
+                    .foregroundStyle(RoutineColors.primaryText)
+                    .frame(minHeight: 44)
+                    .contentShape(Rectangle())
                 }
-
-                RoutinePrimaryButton(title: actionTitle, action: action)
+                .buttonStyle(.plain)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: 320)
+        .padding(.horizontal, RoutineSpacing.lg)
+        .frame(maxWidth: .infinity)
     }
 }

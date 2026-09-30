@@ -120,12 +120,14 @@ struct ProfileView: View {
                     actionTitle: "View your dashboard",
                     action: onOpenDashboard
                 )
+                .frame(minHeight: 220)
             } else {
                 VStack(spacing: RoutineSpacing.sm) {
                     ForEach(checkIns.prefix(4)) { checkIn in
                         HStack {
                             RoutineIcon(.check, color: RoutineColors.secondaryText)
                                 .frame(width: 18, height: 18)
+                                .accessibilityHidden(true)
                             Text(checkIn.completedAt, format: .dateTime.month().day().hour().minute())
                                 .font(RoutineTypography.secondary)
                             Spacer()

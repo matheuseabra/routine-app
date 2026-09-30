@@ -12,7 +12,12 @@ struct SettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                RoutinePageHeader(title: "Settings")
+                RoutinePageHeader(title: "Settings") {
+                    Button("Done") { dismiss() }
+                        .font(RoutineTypography.secondary)
+                        .foregroundStyle(RoutineColors.primaryText)
+                        .frame(minWidth: 44, minHeight: 44)
+                }
                     .padding(.top, RoutineSpacing.xl)
                     .padding(.bottom, RoutineSpacing.lg)
 
