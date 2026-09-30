@@ -47,8 +47,6 @@ struct RoutineEmptyState: View {
     let icon: RoutineIconName
     let title: String
     let message: String
-    var actionTitle: String? = nil
-    var action: (() -> Void)? = nil
 
     var body: some View {
         VStack(spacing: RoutineSpacing.md) {
@@ -64,22 +62,6 @@ struct RoutineEmptyState: View {
                 .font(RoutineTypography.secondary)
                 .foregroundStyle(RoutineColors.secondaryText)
                 .fixedSize(horizontal: false, vertical: true)
-
-            if let actionTitle, let action {
-                Button(action: action) {
-                    HStack(spacing: RoutineSpacing.xs) {
-                        Text(actionTitle)
-                            .font(RoutineTypography.small)
-                        RoutineIcon(.caretRight)
-                            .frame(width: 14, height: 14)
-                            .accessibilityHidden(true)
-                    }
-                    .foregroundStyle(RoutineColors.primaryText)
-                    .frame(minHeight: 44)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-            }
         }
         .multilineTextAlignment(.center)
         .frame(maxWidth: 320)

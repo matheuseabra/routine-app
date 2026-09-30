@@ -43,11 +43,10 @@ struct MainAppView: View {
                 ProfileView(
                     userName: userName,
                     tasks: tasks,
-                    checkIns: checkIns,
-                    onOpenDashboard: { selectedTab = .home }
+                    checkIns: checkIns
                 )
             case .insights:
-                InsightsView(checkIns: checkIns, onOpenDashboard: { selectedTab = .home })
+                InsightsView(checkIns: checkIns)
             }
         }
         .id(selectedTab)

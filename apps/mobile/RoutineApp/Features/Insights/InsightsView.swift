@@ -16,13 +16,11 @@ private struct InsightPoint: Identifiable {
 
 struct InsightsView: View {
     let checkIns: [RoutineCheckIn]
-    let onOpenDashboard: () -> Void
     @State private var selectedRange: InsightRange = .week
     @State private var rangeHapticTrigger = 0
 
-    init(checkIns: [RoutineCheckIn] = [], onOpenDashboard: @escaping () -> Void = {}) {
+    init(checkIns: [RoutineCheckIn] = []) {
         self.checkIns = checkIns
-        self.onOpenDashboard = onOpenDashboard
     }
 
     var body: some View {
@@ -36,9 +34,7 @@ struct InsightsView: View {
                 RoutineEmptyState(
                     icon: .chartLineUp,
                     title: "Your first check-in starts here",
-                    message: "Complete a task to see your activity and consistency here.",
-                    actionTitle: "View your dashboard",
-                    action: onOpenDashboard
+                    message: "Complete a task to see your activity and consistency here."
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {

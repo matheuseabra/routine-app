@@ -4,7 +4,6 @@ struct ProfileView: View {
     let userName: String
     let tasks: [RoutineTask]
     let checkIns: [RoutineCheckIn]
-    let onOpenDashboard: () -> Void
 
     @State private var isSettingsPresented = false
     @State private var settingsHapticTrigger = 0
@@ -12,13 +11,11 @@ struct ProfileView: View {
     init(
         userName: String = "",
         tasks: [RoutineTask] = [],
-        checkIns: [RoutineCheckIn] = [],
-        onOpenDashboard: @escaping () -> Void = {}
+        checkIns: [RoutineCheckIn] = []
     ) {
         self.userName = userName
         self.tasks = tasks
         self.checkIns = checkIns
-        self.onOpenDashboard = onOpenDashboard
     }
 
     var body: some View {
@@ -116,9 +113,7 @@ struct ProfileView: View {
                 RoutineEmptyState(
                     icon: .check,
                     title: "No check-ins yet",
-                    message: "Finish a task and your first entry will appear here.",
-                    actionTitle: "View your dashboard",
-                    action: onOpenDashboard
+                    message: "Finish a task and your first entry will appear here."
                 )
                 .frame(minHeight: 220)
             } else {

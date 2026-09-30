@@ -2,7 +2,7 @@ import XCTest
 
 final class EmptyStateUITests: XCTestCase {
     @MainActor
-    func testEmptyTabsStayCenteredAndDashboardLinkWorks() throws {
+    func testEmptyTabsStayCenteredWithoutDashboardLinks() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-screen", "main", "-empty-data"]
         app.launch()
@@ -21,13 +21,15 @@ final class EmptyStateUITests: XCTestCase {
         let insightsTitle = app.staticTexts["Your first check-in starts here"]
         XCTAssertTrue(insightsTitle.waitForExistence(timeout: 2))
         XCTAssertEqual(insightsTitle.frame.midX, app.frame.midX, accuracy: 3)
-        app.buttons["View your dashboard"].tap()
+        XCTAssertFalse(app.buttons["View your dashboard"].exists)
+        app.buttons["Home"].tap()
         XCTAssertTrue(homeTitle.waitForExistence(timeout: 2))
 
         app.buttons["Profile"].tap()
         let historyTitle = app.staticTexts["No check-ins yet"]
         XCTAssertTrue(historyTitle.waitForExistence(timeout: 2))
         XCTAssertEqual(historyTitle.frame.midX, app.frame.midX, accuracy: 3)
+        XCTAssertFalse(app.buttons["View your dashboard"].exists)
         app.buttons["Settings"].tap()
         XCTAssertTrue(app.buttons["Done"].waitForExistence(timeout: 2))
         app.buttons["Done"].tap()
