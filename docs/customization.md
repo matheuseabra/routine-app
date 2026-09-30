@@ -34,7 +34,7 @@ Subscriptions use RevenueCat by default:
 - configure products, packages, and the current Offering in the RevenueCat dashboard
 - attach purchased products to the same entitlement ID configured above; the paywall validates that exact entitlement after purchase/restore
 
-Authentication is disabled by default. Add `--enable-auth` during bootstrap (or set `AUTH_ENABLED = YES`) only when the auth step is desired. When enabled, Debug builds use `ROUTINE_API_BASE_URL` (default `http://localhost:3001`) and sign in with Apple through the Hono/Better Auth API. Configure the API's Apple credentials and the iOS Sign in with Apple entitlement before using real accounts. Google sign-in is not implemented yet. Release builds use the configured HTTPS API endpoint or fail as unavailable.
+Debug builds always skip authentication and omit the Sign in with Apple entitlement, so they can be signed with a Personal Team. The Debug configuration forces `AUTH_ENABLED = NO`, even if `Local.xcconfig` enables auth. To exercise authentication in Release, add `--enable-auth` during bootstrap (or set `AUTH_ENABLED = YES`), configure the API's Apple credentials, and use a team that supports the Sign in with Apple capability. Google sign-in is not implemented yet. Release builds use the configured HTTPS API endpoint or fail as unavailable.
 
 Analytics, notifications, and backend sync remain replaceable adapters.
 

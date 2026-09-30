@@ -1,2 +1,4 @@
 #include "Base.xcconfig"
+// Personal Teams cannot provision Sign in with Apple, so Debug skips authentication.
+AUTH_ENABLED = NO
 SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG $(inherited)
