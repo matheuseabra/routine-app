@@ -12,18 +12,18 @@ struct PaywallTrialReminderView: View {
     private let steps = [
         RoutineTimelineStep(
             icon: .calendarCheck,
-            title: "Choose a plan",
-            subtitle: "Pick the billing period that works for you."
+            title: "Today",
+            subtitle: "Unlock unlimited access to all Routine features."
         ),
         RoutineTimelineStep(
             icon: .clock,
-            title: "Review the price",
-            subtitle: "See the amount before you confirm."
+            title: "Day 5",
+            subtitle: "We'll remind you with a notification that your trial is ending."
         ),
         RoutineTimelineStep(
             icon: .check,
-            title: "Stay in control",
-            subtitle: "Manage or cancel in your App Store account."
+            title: "Day 7",
+            subtitle: "Your subscription will start on day 7. Cancel anytime before."
         )
     ]
 
@@ -55,9 +55,7 @@ struct PaywallTrialReminderView: View {
     }
 
     private var headline: String {
-        userName.isEmpty
-            ? "Choose what fits you."
-            : "\(userName), choose what fits."
+        userName.isEmpty ? "7 Day Free Trial" : "\(userName), 7 Day Free Trial"
     }
 }
 
