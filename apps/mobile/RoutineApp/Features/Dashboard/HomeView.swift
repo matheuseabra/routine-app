@@ -16,7 +16,11 @@ struct HomeView: View {
                 .padding(.bottom, tasks.isEmpty ? 0 : RoutineSpacing.xl)
 
             if tasks.isEmpty {
-                emptyState
+                RoutineEmptyState(
+                    icon: .clipboardText,
+                    title: "Start with one small step",
+                    message: "Small steps make a routine easier to keep."
+                )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
@@ -57,25 +61,6 @@ struct HomeView: View {
 
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var emptyState: some View {
-        VStack(alignment: .center, spacing: RoutineSpacing.md) {
-            RoutineIcon(.clipboardText, color: RoutineColors.secondaryText, pointSize: 34)
-                .frame(width: 44, height: 44)
-                .accessibilityHidden(true)
-
-            Text("Start with one small step")
-                .font(RoutineTypography.bodyMedium)
-                .foregroundStyle(RoutineColors.primaryText)
-                .multilineTextAlignment(.center)
-
-            Text("Small steps make a routine easier to keep.")
-                .font(RoutineTypography.secondary)
-                .foregroundStyle(RoutineColors.secondaryText)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var taskList: some View {
@@ -124,13 +109,17 @@ private struct TaskSearchSheet: View {
             }
             .overlay {
                 if !hasQuery {
-                    ContentUnavailableView(
-                        "Find a task",
-                        systemImage: "magnifyingglass",
-                        description: Text("Type a task name to find it.")
+                    RoutineEmptyState(
+                        icon: .magnifyingGlass,
+                        title: "Find a task",
+                        message: "Type a task name to find it."
                     )
                 } else if filteredTasks.isEmpty {
-                    ContentUnavailableView.search(text: query)
+                    RoutineEmptyState(
+                        icon: .magnifyingGlass,
+                        title: "No tasks found",
+                        message: "Try a different name or add a task to your routine."
+                    )
                 }
             }
             .scrollContentBackground(.hidden)

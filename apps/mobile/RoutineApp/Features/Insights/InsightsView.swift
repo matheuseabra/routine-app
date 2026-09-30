@@ -16,44 +16,45 @@ private struct InsightPoint: Identifiable {
 
 struct InsightsView: View {
     let checkIns: [RoutineCheckIn]
-    let onOpenDashboard: () -> Void
     @State private var selectedRange: InsightRange = .week
     @State private var rangeHapticTrigger = 0
 
-    init(checkIns: [RoutineCheckIn] = [], onOpenDashboard: @escaping () -> Void = {}) {
+    init(checkIns: [RoutineCheckIn] = []) {
         self.checkIns = checkIns
-        self.onOpenDashboard = onOpenDashboard
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                RoutinePageHeader(title: "Insights")
+        VStack(spacing: 0) {
+            RoutinePageHeader(title: "Insights")
+                .padding(.horizontal, RoutineSpacing.lg)
                 .padding(.top, RoutineSpacing.lg)
-                .padding(.bottom, RoutineSpacing.xl)
+                .padding(.bottom, checkIns.isEmpty ? 0 : RoutineSpacing.xl)
 
-                if checkIns.isEmpty {
-                    RoutineEmptyState(
-                        icon: .chartLineUp,
-                        title: "Your progress starts with a check-in",
-                        message: "Complete a task to see your activity and consistency here.",
-                        actionTitle: "View your dashboard",
-                        action: onOpenDashboard
-                    )
-                } else {
-                    RoutineSectionHeader(title: "Your activity")
-                        .padding(.bottom, RoutineSpacing.sm)
-                    rangePicker
-                        .padding(.bottom, RoutineSpacing.lg)
-                    metrics
-                        .padding(.bottom, RoutineSpacing.lg)
-                    trendCard
+            if checkIns.isEmpty {
+                RoutineEmptyState(
+                    icon: .chartLineUp,
+                    title: "Your first check-in starts here",
+                    message: "Complete a task to see your activity and consistency here."
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        RoutineSectionHeader(title: "Your activity")
+                            .padding(.bottom, RoutineSpacing.sm)
+                        rangePicker
+                            .padding(.bottom, RoutineSpacing.lg)
+                        metrics
+                            .padding(.bottom, RoutineSpacing.lg)
+                        trendCard
+                    }
+                    .padding(.horizontal, RoutineSpacing.lg)
+                    .padding(.bottom, RoutineSpacing.huge)
                 }
+                .scrollIndicators(.hidden)
             }
-            .padding(.horizontal, RoutineSpacing.lg)
-            .padding(.bottom, RoutineSpacing.huge)
         }
-        .scrollIndicators(.hidden)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(RoutineColors.background)
     }
 

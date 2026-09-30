@@ -33,7 +33,7 @@ Build overrides:
   IOS_CONFIGURATION           Build configuration (default: Debug).
   IOS_SCHEME                  Xcode scheme (default: RoutineApp).
   IOS_BUNDLE_ID               Optional bundle identifier override. Defaults to apps/mobile/Config/Local.xcconfig or apps/mobile/Config/Base.xcconfig.
-  IOS_ALLOW_PROVISIONING_UPDATES=1  Allow Xcode to update signing profiles for a physical build.
+  IOS_TEAM_ID                 Optional Apple Developer team override for a physical build.
 
 Examples:
   ./scripts/run-app.sh
@@ -100,12 +100,10 @@ if [[ "$physical" -eq 1 ]]; then
     -destination "$destination"
     -derivedDataPath "$derived_data"
     CODE_SIGN_STYLE=Automatic
+    -allowProvisioningUpdates
   )
   if [[ -n "${IOS_TEAM_ID:-}" ]]; then
     build_args+=(DEVELOPMENT_TEAM="$IOS_TEAM_ID")
-  fi
-  if [[ "${IOS_ALLOW_PROVISIONING_UPDATES:-0}" == "1" ]]; then
-    build_args+=(-allowProvisioningUpdates)
   fi
 
   echo "Building $scheme for physical iPhone $device_id"

@@ -13,15 +13,15 @@ struct RoutinePageHeader<Trailing: View>: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: RoutineSpacing.md) {
+        HStack(alignment: .center, spacing: RoutineSpacing.md) {
             VStack(alignment: .leading, spacing: RoutineSpacing.xxs) {
                 Text(title)
                     .routineTitleStyle()
             }
             Spacer(minLength: RoutineSpacing.sm)
             trailing
-                .padding(.top, RoutineSpacing.xxs)
         }
+        .frame(minHeight: 44)
     }
 }
 
@@ -47,30 +47,25 @@ struct RoutineEmptyState: View {
     let icon: RoutineIconName
     let title: String
     let message: String
-    let actionTitle: String
-    let action: () -> Void
 
     var body: some View {
-        RoutineCard {
-            VStack(alignment: .leading, spacing: RoutineSpacing.md) {
-                RoutineIcon(icon, color: RoutineColors.primaryText)
-                    .frame(width: 26, height: 26)
-                    .frame(width: 52, height: 52)
-                    .background(RoutineColors.track, in: Circle())
-                    .accessibilityHidden(true)
+        VStack(spacing: RoutineSpacing.md) {
+            RoutineIcon(icon, color: RoutineColors.secondaryText, pointSize: 34)
+                .frame(width: 44, height: 44)
+                .accessibilityHidden(true)
 
-                VStack(alignment: .leading, spacing: RoutineSpacing.xs) {
-                    Text(title)
-                        .font(RoutineTypography.compactTitle)
-                        .foregroundStyle(RoutineColors.primaryText)
-                    Text(message)
-                        .routineSubtitleStyle()
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+            Text(title)
+                .font(RoutineTypography.bodyMedium)
+                .foregroundStyle(RoutineColors.primaryText)
 
-                RoutinePrimaryButton(title: actionTitle, action: action)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            Text(message)
+                .font(RoutineTypography.secondary)
+                .foregroundStyle(RoutineColors.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
         }
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: 320)
+        .padding(.horizontal, RoutineSpacing.lg)
+        .frame(maxWidth: .infinity)
     }
 }

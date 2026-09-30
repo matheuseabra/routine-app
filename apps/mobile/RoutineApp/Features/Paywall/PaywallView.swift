@@ -103,9 +103,21 @@ struct PaywallView: View {
 
     private var benefits: some View {
         VStack(alignment: .leading, spacing: RoutineSpacing.md) {
-            benefitRow(icon: "checkmark", title: "Today: Instant access", subtitle: "With free 7-day trial")
-            benefitRow(icon: "bell", title: "Day 5: Trial reminder", subtitle: "We notify you about your trial end via email")
-            benefitRow(icon: "star", title: "Day 7: Full membership", subtitle: "Your account is charged; cancel anytime in the 24 hours before renewal.")
+            benefitRow(
+                icon: .target,
+                title: "A routine shaped around your goals",
+                subtitle: "Start with a plan built around your focus and available time."
+            )
+            benefitRow(
+                icon: .check,
+                title: "Small steps each day",
+                subtitle: "Turn your routine into tasks you can check off as you go."
+            )
+            benefitRow(
+                icon: .chartLineUp,
+                title: "See your progress over time",
+                subtitle: "Track activity, streaks, and consistency in one place."
+            )
         }
     }
 
@@ -134,13 +146,12 @@ struct PaywallView: View {
         .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 12))
     }
 
-    private func benefitRow(icon: String, title: String, subtitle: String) -> some View {
+    private func benefitRow(icon: RoutineIconName, title: String, subtitle: String) -> some View {
         HStack(spacing: RoutineSpacing.md) {
-            Image(systemName: icon)
-                .font(.system(size: 17, weight: .medium))
-                .foregroundStyle(RoutineColors.primaryText)
+            RoutineIcon(icon, pointSize: 17)
                 .frame(width: 40, height: 40)
                 .background(RoutineColors.track, in: Circle())
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: RoutineSpacing.xxs) {
                 Text(title)

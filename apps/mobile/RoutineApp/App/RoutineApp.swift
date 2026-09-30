@@ -9,8 +9,9 @@ struct RoutineApp: App {
     init() {
         RevenueCatBootstrap.configureIfNeeded()
 
-        let isDemoMode = ProcessInfo.processInfo.arguments.contains("-demo-data")
-        let configuration = ModelConfiguration(isStoredInMemoryOnly: isDemoMode)
+        let arguments = ProcessInfo.processInfo.arguments
+        let usesTemporaryStore = arguments.contains("-demo-data") || arguments.contains("-empty-data")
+        let configuration = ModelConfiguration(isStoredInMemoryOnly: usesTemporaryStore)
         do {
             modelContainer = try ModelContainer(
                 for: RoutineTask.self,

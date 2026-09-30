@@ -11,10 +11,14 @@ struct HabitsView: View {
             RoutinePageHeader(title: "Habits")
                 .padding(.horizontal, RoutineSpacing.lg)
                 .padding(.top, RoutineSpacing.lg)
-                .padding(.bottom, RoutineSpacing.xl)
+                .padding(.bottom, tasks.isEmpty ? 0 : RoutineSpacing.xl)
 
             if tasks.isEmpty {
-                emptyState
+                RoutineEmptyState(
+                    icon: .listChecks,
+                    title: "Build your first habit",
+                    message: "Start small and keep showing up."
+                )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
@@ -31,24 +35,6 @@ struct HabitsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(RoutineColors.background)
-    }
-
-    private var emptyState: some View {
-        VStack(spacing: RoutineSpacing.sm) {
-            RoutineIcon(.listChecks, color: RoutineColors.secondaryText, pointSize: 34)
-                .frame(width: 44, height: 44)
-                .accessibilityHidden(true)
-
-            Text("Build your first habit")
-                .font(RoutineTypography.bodyMedium)
-                .foregroundStyle(RoutineColors.primaryText)
-
-            Text("Start small and keep showing up.")
-                .font(RoutineTypography.secondary)
-                .foregroundStyle(RoutineColors.secondaryText)
-        }
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var taskList: some View {
