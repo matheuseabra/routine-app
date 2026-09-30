@@ -98,6 +98,7 @@ struct RoutineTimeline: View {
 }
 
 struct RoutineTaskRow: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let task: RoutineTask
     let onEdit: () -> Void
     let onDelete: () -> Void
@@ -115,12 +116,15 @@ struct RoutineTaskRow: View {
                 isCompleting = true
                 Task {
                     do {
-                        try await Task.sleep(for: .milliseconds(350))
+                        try await Task.sleep(for: .milliseconds(160))
                     } catch {
                         isCompleting = false
                         return
                     }
-                    withAnimation(.easeOut(duration: 0.3)) {
+                    let animation = reduceMotion
+                        ? Animation.easeOut(duration: 0.12)
+                        : Animation.snappy(duration: 0.24, extraBounce: 0)
+                    withAnimation(animation) {
                         action()
                         isCompleting = false
                     }
@@ -129,10 +133,10 @@ struct RoutineTaskRow: View {
                 HStack(spacing: RoutineSpacing.sm) {
                     ZStack {
                         Circle()
-                            .fill(task.isCompleted ? RoutineColors.primaryText : .clear)
+                            .fill(task.isCompleted || isCompleting ? RoutineColors.primaryText : .clear)
                         Circle()
-                            .stroke(task.isCompleted ? RoutineColors.primaryText : RoutineColors.tertiaryText, lineWidth: 1.3)
-                        if task.isCompleted {
+                            .stroke(task.isCompleted || isCompleting ? RoutineColors.primaryText : RoutineColors.tertiaryText, lineWidth: 1.3)
+                        if task.isCompleted || isCompleting {
                             RoutineIcon(.check, color: RoutineColors.inverseText)
                                 .frame(width: 9, height: 9)
                         }
@@ -140,7 +144,7 @@ struct RoutineTaskRow: View {
                     .frame(width: 22, height: 22)
                     Text(task.title)
                         .font(RoutineTypography.body)
-                        .foregroundStyle(task.isCompleted ? RoutineColors.secondaryText : RoutineColors.primaryText)
+                        .foregroundStyle(task.isCompleted || isCompleting ? RoutineColors.secondaryText : RoutineColors.primaryText)
                     Spacer()
                 }
                 .frame(minHeight: 52)
@@ -166,6 +170,97 @@ struct RoutineTaskRow: View {
             .accessibilityLabel("Actions for \(task.title)")
         }
         .transition(.opacity)
+    }
+}
+
+struct RoutineTaskList: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let tasks: [RoutineTask]
+    let onToggleTask: (RoutineTask) -> Void
+    let onEditTask: (RoutineTask) -> Void
+    let onDeleteTask: (RoutineTask) -> Void
+    @State private var isCompletedExpanded = false
+
+    private var activeTasks: [RoutineTask] {
+        tasks.filter { !$0.isCompleted }
+    }
+
+    private var completedTasks: [RoutineTask] {
+        tasks.filter(\.isCompleted)
+    }
+
+    var body: some View {
+        VStack(spacing: RoutineSpacing.sm) {
+            if !activeTasks.isEmpty {
+                taskCard(activeTasks)
+                    .transition(.opacity)
+            }
+            if !completedTasks.isEmpty {
+                completedCard
+                    .transition(.opacity)
+            }
+        }
+        .animation(listAnimation, value: activeTasks.map(\.id))
+    }
+
+    private var completedCard: some View {
+        VStack(spacing: 0) {
+            Button {
+                isCompletedExpanded.toggle()
+            } label: {
+                HStack(spacing: RoutineSpacing.xs) {
+                    Text("Completed")
+                    Text("\(completedTasks.count)")
+                        .contentTransition(.numericText())
+                    Spacer()
+                    RoutineIcon(.caretRight, color: RoutineColors.secondaryText)
+                        .frame(width: 16, height: 16)
+                        .rotationEffect(.degrees(isCompletedExpanded ? 90 : 0))
+                        .accessibilityHidden(true)
+                }
+                .font(RoutineTypography.small)
+                .foregroundStyle(RoutineColors.secondaryText)
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Completed tasks, \(completedTasks.count)")
+            .accessibilityValue(isCompletedExpanded ? "Expanded" : "Collapsed")
+
+            if isCompletedExpanded {
+                taskRows(completedTasks)
+                    .transition(.opacity)
+            }
+        }
+        .padding(.horizontal, RoutineSpacing.md)
+        .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private func taskCard(_ items: [RoutineTask]) -> some View {
+        taskRows(items)
+            .padding(.horizontal, RoutineSpacing.md)
+            .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private func taskRows(_ items: [RoutineTask]) -> some View {
+        VStack(spacing: 0) {
+            ForEach(Array(items.enumerated()), id: \.element.id) { index, task in
+                RoutineTaskRow(
+                    task: task,
+                    onEdit: { onEditTask(task) },
+                    onDelete: { onDeleteTask(task) }
+                ) {
+                    onToggleTask(task)
+                }
+                if index < items.count - 1 {
+                    Divider().overlay(RoutineColors.border)
+                }
+            }
+        }
+    }
+
+    private var listAnimation: Animation {
+        reduceMotion ? .easeOut(duration: 0.12) : .snappy(duration: 0.24, extraBounce: 0)
     }
 }
 
