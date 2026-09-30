@@ -3,7 +3,7 @@ import Brand from "@/components/Brand.astro";
 import Phone from "@/components/Phone.astro";
 import DownloadButton from "@/components/DownloadButton";
 import FAQ from "@/components/FAQ";
-import { FiArrowUpRight, FiCheck, FiList, FiTrendingUp } from "react-icons/fi";
+import { FiArrowUpRight, FiCheck, FiList, FiMessageCircle, FiTrendingUp } from "react-icons/fi";
 import home from "@/assets/home.png";
 import habits from "@/assets/habits.png";
 import insights from "@/assets/insights.png";
@@ -103,6 +103,29 @@ const features = [
             </div>
           </article>
         ))}
+      </section>
+      <section class="shell testimonials" id="testimonials" aria-labelledby="testimonials-title">
+        <div class="section-intro">
+          <p class="testimonial-label">Sample testimonials · Preview copy</p>
+          <h2 id="testimonials-title">Small routines, small wins.</h2>
+        </div>
+        <div class="testimonial-grid">
+          <article class="testimonial-card">
+            <FiMessageCircle aria-hidden="true" />
+            <blockquote>“A short walk feels easier to start when I can see it on my list.”</blockquote>
+            <p>Sample user</p>
+          </article>
+          <article class="testimonial-card">
+            <FiMessageCircle aria-hidden="true" />
+            <blockquote>“I like having my everyday tasks and habits together in one place.”</blockquote>
+            <p>Sample user</p>
+          </article>
+          <article class="testimonial-card">
+            <FiMessageCircle aria-hidden="true" />
+            <blockquote>“The weekly view helps me notice the small steps I took.”</blockquote>
+            <p>Sample user</p>
+          </article>
+        </div>
       </section>
       <section class="shell faq-section" id="faq" aria-labelledby="faq-title">
         <div>
