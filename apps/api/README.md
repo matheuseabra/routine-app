@@ -12,9 +12,15 @@ The API binds to `127.0.0.1:3001` by default. The local database is `data/routin
 
 ## Routes
 
+- `GET /docs` serves an interactive API reference for app and authentication routes.
+- `GET /openapi.json` serves the OpenAPI document for app-owned routes.
 - `GET /healthz` returns `{ "status": "ok" }`.
 - `GET /api/me` returns the current user's public profile or `401`.
 - Better Auth handles `GET` and `POST /api/auth/*`, including OAuth callbacks.
+
+Better Auth generates its authentication schema at
+`GET /api/auth/open-api/generate-schema`; the Scalar reference includes it as a
+separate source.
 
 From a web or mobile client, start social sign-in with Better Auth's client:
 
