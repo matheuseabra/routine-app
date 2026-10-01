@@ -24,7 +24,22 @@ struct HomeView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
-                    taskList
+                    VStack(spacing: RoutineSpacing.sm) {
+                        if activeTasks.isEmpty {
+                            RoutineEmptyState(
+                                icon: .check,
+                                title: "All done for today",
+                                message: "You’ve checked off everything on your list."
+                            )
+                            .frame(minHeight: 300)
+                        }
+                        RoutineTaskList(
+                            tasks: tasks,
+                            onToggleTask: onToggleTask,
+                            onEditTask: onEditTask,
+                            onDeleteTask: onDeleteTask
+                        )
+                    }
                     .padding(.horizontal, RoutineSpacing.lg)
                     .padding(.bottom, RoutineSpacing.huge)
                 }
@@ -63,21 +78,8 @@ struct HomeView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var taskList: some View {
-        VStack(spacing: 0) {
-            ForEach(Array(tasks.enumerated()), id: \.element.id) { index, task in
-                RoutineTaskRow(
-                    task: task,
-                    onEdit: { onEditTask(task) },
-                    onDelete: { onDeleteTask(task) }
-                ) { onToggleTask(task) }
-                if index < tasks.count - 1 {
-                    Divider().overlay(RoutineColors.border)
-                }
-            }
-        }
-        .padding(.horizontal, RoutineSpacing.md)
-        .background(RoutineColors.surface, in: RoundedRectangle(cornerRadius: 16))
+    private var activeTasks: [RoutineTask] {
+        tasks.filter { !$0.isCompleted }
     }
 }
 
