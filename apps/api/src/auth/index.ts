@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth/minimal";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { openAPI } from "better-auth/plugins";
 import type { ApiConfig } from "../config";
 import type { ApiDatabase } from "../db";
 import * as schema from "../db/schema";
@@ -18,6 +19,7 @@ export function createAuth(config: ApiConfig, db: ApiDatabase) {
     secret: config.authSecret,
     database: drizzleAdapter(db, { provider: "sqlite", schema }),
     emailAndPassword: { enabled: false },
+    plugins: [openAPI({ disableDefaultReference: true })],
     socialProviders,
     trustedOrigins: [
       ...config.corsOrigins,

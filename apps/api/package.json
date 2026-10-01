@@ -11,6 +11,8 @@
     "db:migrate": "bun src/db/migrate.ts"
   },
   "dependencies": {
+    "@hono/zod-openapi": "^1.6.3",
+    "@scalar/hono-api-reference": "^0.12.7",
     "better-auth": "1.7.6",
     "drizzle-orm": "^0.45.3",
     "hono": "^4.13.9",
