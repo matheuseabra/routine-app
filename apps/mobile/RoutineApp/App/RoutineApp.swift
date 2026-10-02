@@ -7,10 +7,12 @@ struct RoutineApp: App {
     private let modelContainer: ModelContainer
 
     init() {
-        RevenueCatBootstrap.configureIfNeeded()
+        if !E2ETestConfiguration.isEnabled {
+            RevenueCatBootstrap.configureIfNeeded()
+        }
 
         let arguments = ProcessInfo.processInfo.arguments
-        let usesTemporaryStore = arguments.contains("-demo-data") || arguments.contains("-empty-data")
+        let usesTemporaryStore = E2ETestConfiguration.isEnabled || arguments.contains("-demo-data") || arguments.contains("-empty-data")
         let configuration = ModelConfiguration(isStoredInMemoryOnly: usesTemporaryStore)
         do {
             modelContainer = try ModelContainer(

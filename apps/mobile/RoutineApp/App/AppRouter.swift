@@ -94,7 +94,7 @@ struct RoutineRootView: View {
     @State private var transitionDirection: Edge = .trailing
 
     init(arguments: [String] = ProcessInfo.processInfo.arguments) {
-        let appState = AppState()
+        let appState = AppState(defaults: E2ETestConfiguration.defaults)
         let router = AppRouter(
             arguments: arguments,
             hasCompletedOnboarding: appState.hasCompletedOnboarding
