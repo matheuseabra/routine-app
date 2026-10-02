@@ -42,6 +42,10 @@ The bootstrap script writes `apps/mobile/Config/Local.xcconfig`, which is intent
 
 Run the API and web shells together with `bun run dev`, or start one with `bun run dev:api` or `bun run dev:web`. Astro keeps its dev server in the background; stop it with `bun run stop:web`. The iOS app remains independently runnable with `./scripts/run-app.sh` or `bun run dev:mobile`. Build the API and web shells with `bun run build`.
 
+## Optional iOS E2E examples
+
+Run `bun run test:e2e:ios` for three credential-free simulator journeys: onboarding, a simulated subscription purchase, and first-task creation. Requires macOS, Xcode with an iOS runtime, Node.js 22.12+, Bun, and Python 3. The runner uses a disposable simulator and separate test app identity. It is optional and does not change the default verification gate. See [setup and customization](docs/ios-e2e.md).
+
 ## Optional integrations
 
 ### RevenueCat

@@ -27,3 +27,6 @@ apps/api/data/
 
 # Local App Store Connect CLI credentials
 **/.asc/config.json
+
+# Optional mobile E2E reports and replay cache
+apps/mobile/e2e/.e2e/
