@@ -166,7 +166,7 @@ final class AppServices {
 
     init(
         auth: (any AuthProviding)? = nil,
-        subscriptions: any SubscriptionProviding = RevenueCatSubscriptionProvider(),
+        subscriptions: (any SubscriptionProviding)? = nil,
         analytics: any AnalyticsTracking = NoopAnalyticsTracker()
     ) {
         if let auth {
@@ -175,8 +175,15 @@ final class AppServices {
             self.auth = Self.defaultAuthProvider()
         }
 
-        self.subscriptions = subscriptions
+        self.subscriptions = subscriptions ?? Self.defaultSubscriptionProvider()
         self.analytics = analytics
+    }
+
+    private static func defaultSubscriptionProvider() -> any SubscriptionProviding {
+        #if DEBUG
+        if E2ETestConfiguration.isEnabled { return E2ESubscriptionProvider() }
+        #endif
+        return RevenueCatSubscriptionProvider()
     }
 
     private static func defaultAuthProvider() -> any AuthProviding {

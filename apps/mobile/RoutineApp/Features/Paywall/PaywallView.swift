@@ -69,6 +69,7 @@ struct PaywallView: View {
                 RoutinePrimaryButton(title: purchaseButtonTitle, action: {
                     purchaseSelectedPlan()
                 }, visualStyle: .funnel)
+                .accessibilityIdentifier("paywall-purchase")
                 .padding(.bottom, RoutineSpacing.xxs)
                 .disabled(isPurchasing || isLoadingPlans || selectedPlanID == nil || !isSubscriptionReady)
                 .accessibilityHint(isSubscriptionReady ? "Starts the selected subscription." : "Live purchases are unavailable in this build.")
@@ -263,6 +264,7 @@ struct PaywallView: View {
         .sensoryFeedback(.selection, trigger: planSelectionHapticTrigger)
         .accessibilityLabel("\(cadenceName), \(plan.displayPrice)\(billingInterval)\(isYearly ? ", Best value" : "")")
         .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityIdentifier("paywall-plan-\(plan.period)")
     }
 
     private func isYearlyPlan(_ plan: SubscriptionPlan) -> Bool {

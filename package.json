@@ -15,6 +15,7 @@
     "build:api": "bun run --filter @routine/api build",
     "build:web": "bun run --filter @routine/web build",
     "test:api": "bun run --filter @routine/api test",
-    "verify:mobile": "bun run --filter @routine/mobile verify"
+    "verify:mobile": "bun run --filter @routine/mobile verify",
+    "test:e2e:ios": "bun run --filter @routine/mobile test:e2e"
   }
 }

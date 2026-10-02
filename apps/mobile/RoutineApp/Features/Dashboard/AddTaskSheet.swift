@@ -41,6 +41,7 @@ struct AddTaskSheet: View {
                 .disabled(isTaskTitleEmpty)
                 .sensoryFeedback(.success, trigger: hapticTrigger)
                 .accessibilityLabel(isEditing ? "Save task" : "Add task")
+                .accessibilityIdentifier("task-editor-save")
             }
         }
         .padding(.horizontal, RoutineSpacing.lg)

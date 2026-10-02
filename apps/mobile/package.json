@@ -4,6 +4,14 @@
   "scripts": {
     "dev": "../../scripts/run-app.sh",
     "verify": "../../scripts/verify.sh",
-    "preflight": "../../scripts/preflight.sh"
+    "preflight": "../../scripts/preflight.sh",
+    "test:e2e": "../../scripts/test-e2e-ios.sh",
+    "typecheck:e2e": "tsc --project e2e/tsconfig.json"
+  },
+  "devDependencies": {
+    "@e2e-dev/mobile": "0.9.0",
+    "@types/node": "22.19.15",
+    "e2e": "0.15.2",
+    "typescript": "5.9.3"
   }
 }
